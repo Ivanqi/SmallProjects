@@ -3,7 +3,7 @@
 #include <cmath>
 #include <string>
 #include <vector>
-#include "dictionary_2.h"
+#include "dictionary.h"
 
 const short MaxWordLength = 20;     // 词典中最大词的长度
 const short Separator = '/';        // 词界标记

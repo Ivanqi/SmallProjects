@@ -46,7 +46,8 @@ Dictionary::Dictionary()
 
     // 将每个词加入集合
     while (getline(fin, strline, '\n')) {
-        istringstream istr(strline);
+        std::size_t found = strline.find(" ");
+        istringstream istr(strline.substr(0, found));
         istr >> word;           // 从流中读取单词
         ++word_map[word];
         ++arr_1[word.size()];
