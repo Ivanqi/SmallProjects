@@ -5,7 +5,9 @@
 #include <algorithm>
 #include <sys/time.h>
 #include <sys/stat.h>
-#include "segmentwords.cpp"
+#include "segmentwords.h"
+
+using namespace std;
 
 const long MaxCount = 50000;    // 需要切分的最大句子数量，若该值大于文件中。实际的句子数量，以实际句子数量为准
 
@@ -62,7 +64,7 @@ string SegmentSentenceMM(string s1, int flag)
                 // 如果是换行或回车符，将它拷贝给s2输出
                 s2 += s1.substr(0, 1);
             } else {
-                s2 += s1.substr(0, i) + Separator;
+                s2 += s1.substr(0, i) + "/";
             }
 
             s1 = s1.substr(i, dd);
@@ -81,7 +83,7 @@ string SegmentSentenceMM(string s1, int flag)
 					||   (unsigned char)s1[i+1] == 169 || (unsigned char)s1[i+1] == 172 || (unsigned char)s1[i+1] == 186 
 					||   (unsigned char)s1[i+1] == 187 || (unsigned char)s1[i+1] == 191)))) {
                         //假定没有半个汉字
-                        i = i + 2
+                        i = i + 2;
                 }
 
                 //出现中文标点
@@ -90,7 +92,7 @@ string SegmentSentenceMM(string s1, int flag)
                 }
 
                 // 中文标点每个加一个分词标记；其他非汉字双字节字符连续输出，只加一个分词标记
-                s2 += s1.substr(0, i) + Separator;
+                s2 += s1.substr(0, i) + "/";
 
                 s1 = s1.substr(i, dd);
 
@@ -317,7 +319,7 @@ int main(int argc, char *argv[])
 	string strline_out_2;	// 逆向最大匹配分词完毕的语料
 	string strline_out_3;	// 最大概率方法分词完毕的语料
 	
-	ifstream fin("test.txt");	// 打开输入文件
+	ifstream fin("./data/test.txt");	// 打开输入文件
 	if(!fin){
 		cout << "Unable to open input file !" << argv[1] << endl;
 		exit(-1);
@@ -363,6 +365,8 @@ int main(int argc, char *argv[])
 			
 			//去掉分词标记
 			strline_in = removeSeparator(strline_right);
+			std::cout << strline_in << std::endl;
+			return - 1;
  
 			//正向最大匹配分词
 			strline_out_1 = strline_right;

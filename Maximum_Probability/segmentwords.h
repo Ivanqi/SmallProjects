@@ -1,6 +1,8 @@
+#ifndef SEGMENTWORDS_H
+#define SEGMENTWORDS_H
 #include <cmath>
 #include <string>
-#include <iostream>
+#include <vector>
 #include "dictionary_2.h"
 
 const short MaxWordLength = 20;     // 词典中最大词的长度
@@ -135,7 +137,7 @@ string segmentSentence_MP(string s1)
     string s2 = "";     // 输出串初始化
     for (short i = min_id; i >= 0; i = vec_cd[i].bestPrev) {
         // 注意: 是先取后面的词
-        s2 = s1.substr(vec_cd[i].pos, vec_cd[i].length) + Separator + s2;
+        s2 = s1.substr(vec_cd[i].pos, vec_cd[i].length) + "/" + s2;
     }
 
     return s2;
@@ -165,7 +167,7 @@ string segmentSentence_1(string s1)
             n = word_dict.findWord(w);
         }
 
-        s2 = s2 + w + Separator;
+        s2 = s2 + w + "/";
         s1 = s1.substr(w.length(), s1.length() - w.length());
     }
 
@@ -196,10 +198,12 @@ string segmentSentence_2(string s1)
             n = word_dict.findWord(w);
         }
 
-        w = w + Separator;
+        w = w + "/";
         s2 = w + s2;
         s1 = s1.substr(0, s1.length() - len);
     }
 
     return s2;
 }
+
+#endif

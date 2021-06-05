@@ -1,3 +1,5 @@
+#ifndef DICTIONARY_H
+#define DICTIONARY_H
 #include <iostream>
 #include <string>
 #include <fstream>
@@ -36,14 +38,14 @@ Dictionary::Dictionary()
     }
 
     // 读取词典文件
-    fstream fin("dict_3.txt");
+    fstream fin("./data/dict.txt");
     if (!fin) {
         cerr << "open file error !" << endl;
         exit(-1);
     }
 
     // 将每个词加入集合
-    while (getline(fin, strline, '\n') {
+    while (getline(fin, strline, '\n')) {
         istringstream istr(strline);
         istr >> word;           // 从流中读取单词
         ++word_map[word];
@@ -74,3 +76,4 @@ int Dictionary::findWord(string word)
         return -1;
     }
 }
+#endif
