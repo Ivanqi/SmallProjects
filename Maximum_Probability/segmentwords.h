@@ -122,7 +122,7 @@ string segmentSentence_MP(string s1)
     getPrew(vec_cd);
 
     // 确定最小费用路径的终点词的序号
-    short n = (short)vec_cd.size();
+    short n = (short) vec_cd.size();
     for (short i = 0; i < n; i++) {
         if (vec_cd[i].pos + vec_cd[i].length == len) {
             // 如果当前词是s1的尾词
