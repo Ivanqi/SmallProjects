@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+// 参考资料: https://www.iteye.com/blog/josh-persistence-2243380
 #define HASH_LEN 39841  // 定义散列表大小
 #define STACK_LEN 100   // 定义栈大小
 #define MAX 5           // 最大匹配字数 
@@ -302,6 +303,7 @@ int main(int argc, char **argv) {
         // 申请5个字符的临时变量
         temp = malloc(sizeof(char) * 3 * MAX + 1);
         snprintf(temp, sizeof(char) * 3 * MAX + 1, "%s", string + i);
+        printf("temp:%s\n", temp);
 
         // 正向最大匹配
         if (!for_match(hash, &stack, temp, &i)) {
@@ -335,6 +337,7 @@ int main(int argc, char **argv) {
 
         temp = malloc(sizeof(char) * 3 * MAX + 1);
         snprintf(temp, sizeof(char) * 3 * MAX + 1, string + index);
+        printf("temp:%s\n", temp);
 
         // 开始逆向匹配
         if (!re_match(hash, &stack, temp, &i)) {
