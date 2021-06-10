@@ -1,6 +1,6 @@
 #include "Dictionary.h"
 
-#define MaxWordLength 10
+#define MaxWordLength 15
 #define Separator "/"   // 词界标记
 
 // 参考资料: https://www.52nlp.cn/maximum-matching-method-of-chinese-word-segmentation
@@ -19,18 +19,16 @@ string SegmentSentence_1(string s1) {
 
         string w = s1.substr(0, len);                   // (正向用)将输入串左边等于最大词长长度取出作为候选词
         int n = WordDic.FindWord(w);                    // 在词典中查找相应的词
-        // cout << "w:" << w << " | n:" << n << endl;
 
-        while (len > 2 && n == 0) {                     // 如果不是词
-            len -= 2;                                   // 从候选词右边减去一个汉字，将剩下的部分作为候选词
+        while (len > 3 && n == 0) {                     // 如果不是词
+            len -= 3;                                   // 从候选词右边减去一个汉字，将剩下的部分作为候选词
             w = w.substr(0, len);                       // 正向用
             n = WordDic.FindWord(w);
-            // cout << "w:" << w << " | n:" << n << endl;
         }
 
-        s2 += w + Separator;                            // (正向用) 将匹配得到的词连同词界标记加到输出串末尾
+        s2 += w + Separator;                                          // (正向用) 将匹配得到的词连同词界标记加到输出串末尾
 
-        s1 = s1.substr(w.length(), s1.length());        // (正向用)从s1-w处开始
+        s1 = s1.substr(w.length(), s1.length() - w.length());        // (正向用)从s1-w处开始
     }
 
     return s2;
@@ -50,8 +48,8 @@ string SegmentSentence_2(string s1) {
         string w = s1.substr(s1.length() - len, len);   // 逆向用
         int n = WordDic.FindWord(w);                    // 在词典中查找相应的词
 
-        while (len > 2 && n == 0) {                     // 如果不是词
-            len -= 2;                                   // 从候选词右边减去一个汉字，将剩下的部分作为候选词
+        while (len > 3 && n == 0) {                     // 如果不是词
+            len -= 3;                                   // 从候选词右边减去一个汉字，将剩下的部分作为候选词
             w = s1.substr(s1.length() - len, len);      // 逆向用
             n = WordDic.FindWord(w);
         }
@@ -73,8 +71,6 @@ string SegmentSentenceMM(string s1, int mode)
     string s2 = ""; // 用s2存放分词结果
     int i;
     int dd;
-    // string word = "一";
-    // cout << "word len:" << word.length() << endl;
 
     while (!s1.empty()) {
         unsigned char ch = (unsigned char)s1[0];
@@ -124,16 +120,14 @@ string SegmentSentenceMM(string s1, int mode)
             }
         }
 
-        i = 2; 
+        i = 3; 
         dd = (int)s1.length(); 
 
         // 非标点
         while(i < dd && (unsigned char)s1[i] >= 176) {
-            i += 2;
+            i += 3;
         }
-        
-        // cout << "xxx: " << s1.substr(0, i) << endl;
-
+                
         if (mode == 1) {
             s2 += SegmentSentence_1(s1.substr(0, i));
         } else {
@@ -144,6 +138,27 @@ string SegmentSentenceMM(string s1, int mode)
     }
 
     return s2;
+}
+
+
+/*
+ * 函数功能：删除分词标记（即去掉字符串中的/）
+ * 函数输入：含有分词标记的字符串
+ * 函数输出：不含分词标记的字符串
+ */
+string removeSeparator(string str_in){
+	char s[10000];
+	int j = 0;
+	for(int i = 0; i < str_in.length(); i++){
+		if(!(str_in[i] == '/')){
+			s[j] = str_in[i];
+			j++;
+		}
+	}
+	s[j] = '\0';
+	string str_out = s;
+	return str_out;
+
 }
 
 int main(int argc, char *argv[]) {
@@ -160,7 +175,7 @@ int main(int argc, char *argv[]) {
     int mode = atoi(argv[2]);
 
     while (getline(infile, strline, '\n')){         // 读入语料库中的每一行并用最大匹配法处理
-        line = strline;
+        line = removeSeparator(strline);
         line = SegmentSentenceMM(line, mode);       // 调用分词函数进行分词处理
         cout << "结果: " << line << endl;
     }
