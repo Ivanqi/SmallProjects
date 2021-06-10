@@ -102,7 +102,7 @@ string SegmentSentenceMM(string s1, int flag)
 
         // 以下处理汉字串
         i = 2;
-        dd = s1.length();
+        dd = (int)s1.length();
         while (i < dd && (unsigned char)s1[i] >= 176) {
             i += 2;
         }
@@ -117,8 +117,13 @@ string SegmentSentenceMM(string s1, int flag)
             //调用最大概率匹配
             s2 += segmentSentence_MP(s1.substr(0, i));
         }
-
-        s1 = s1.substr(i, dd); 
+		cout << "s1:" << s1  << ", s1 len: " << s1.length() <<", i: " << i << ", d: " << dd << endl;
+		if (s1.length() > i) {
+			s1 = s1.substr(i, dd);
+		} else {
+			s1 = "";
+			// s1 = s1.substr(0, dd);         		
+		}
     }
 
     return s2;
@@ -369,6 +374,7 @@ int main(int argc, char *argv[])
 			//正向最大匹配分词
 			strline_out_1 = strline_right;
 			strline_out_1 = SegmentSentenceMM(strline_in, 1);
+			cout << "xxx: " << strline_out_1 << endl;
 			
 			//逆向最大匹配分词
 			// strline_out_2 = strline_right;
