@@ -5,7 +5,7 @@
 #include <vector>
 #include "dictionary.h"
 
-const short MaxWordLength = 20;     // 词典中最大词的长度
+const short MaxWordLength = 15;     // 词典中最大词的长度
 const short Separator = '/';        // 词界标记
 
 Dictionary word_dict;               // 初始化一个词典
@@ -161,8 +161,8 @@ string segmentSentence_1(string s1)
         string w = s1.substr(0, len);
         int n = word_dict.findWord(w);  // 在词典中查找相应的词
 
-        while (len > 2 && n == -1) {
-            len -= 2;                   // 从候选词右边减掉一个汉字，将剩下的部分作为候选词
+        while (len > 3 && n == -1) {
+            len -= 3;                   // 从候选词右边减掉一个汉字，将剩下的部分作为候选词
             w = s1.substr(0, len);
             n = word_dict.findWord(w);
         }
@@ -192,8 +192,8 @@ string segmentSentence_2(string s1)
         string w = s1.substr(s1.length() - len, len);
         int n = word_dict.findWord(w);  // 在词典中查找相应的词
 
-        while (len > 2 && n == -1) {
-            len -= 2;                   // 从候选词左边减掉一个汉字，将剩下的部分作为候选词
+        while (len > 3 && n == -1) {
+            len -= 3;                   // 从候选词左边减掉一个汉字，将剩下的部分作为候选词
             w = s1.substr(s1.length() - len, len);
             n = word_dict.findWord(w);
         }

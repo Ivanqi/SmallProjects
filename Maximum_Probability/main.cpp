@@ -10,6 +10,7 @@
 using namespace std;
 
 const long MaxCount = 50000;    // 需要切分的最大句子数量，若该值大于文件中。实际的句子数量，以实际句子数量为准
+#define Separator "/"   // 词界标记
 
 // 获取当前时间(ms)
 long getCurrentTime()
@@ -64,7 +65,7 @@ string SegmentSentenceMM(string s1, int flag)
                 // 如果是换行或回车符，将它拷贝给s2输出
                 s2 += s1.substr(0, 1);
             } else {
-                s2 += s1.substr(0, i) + "/";
+                s2 += s1.substr(0, i) + Separator;
             }
 
             s1 = s1.substr(i, dd);
@@ -92,7 +93,7 @@ string SegmentSentenceMM(string s1, int flag)
                 }
 
                 // 中文标点每个加一个分词标记；其他非汉字双字节字符连续输出，只加一个分词标记
-                s2 += s1.substr(0, i) + "/";
+                s2 += s1.substr(0, i) + Separator;
 
                 s1 = s1.substr(i, dd);
 
@@ -101,10 +102,10 @@ string SegmentSentenceMM(string s1, int flag)
         }
 
         // 以下处理汉字串
-        i = 2;
+        i = 3;
         dd = (int)s1.length();
         while (i < dd && (unsigned char)s1[i] >= 176) {
-            i += 2;
+            i += 3;
         }
 
         if (flag == 1) {
@@ -117,13 +118,7 @@ string SegmentSentenceMM(string s1, int flag)
             //调用最大概率匹配
             s2 += segmentSentence_MP(s1.substr(0, i));
         }
-		cout << "s1:" << s1  << ", s1 len: " << s1.length() <<", i: " << i << ", d: " << dd << endl;
-		if (s1.length() > i) {
-			s1 = s1.substr(i, dd);
-		} else {
-			s1 = "";
-			// s1 = s1.substr(0, dd);         		
-		}
+		s1 = s1.substr(i, dd);
     }
 
     return s2;
@@ -374,15 +369,17 @@ int main(int argc, char *argv[])
 			//正向最大匹配分词
 			strline_out_1 = strline_right;
 			strline_out_1 = SegmentSentenceMM(strline_in, 1);
-			cout << "xxx: " << strline_out_1 << endl;
+			cout << "strline_out_1: " << strline_out_1 << endl;
 			
 			//逆向最大匹配分词
-			// strline_out_2 = strline_right;
-			// strline_out_2 = SegmentSentenceMM(strline_in, 2);
+			strline_out_2 = strline_right;
+			strline_out_2 = SegmentSentenceMM(strline_in, 2);
+			cout << "strline_out_2: " << strline_out_1 << endl;
  
 			//最大概率方法分词
-			// strline_out_3 = strline_right;
-			// strline_out_3 = SegmentSentenceMM(strline_in, 3);
+			strline_out_3 = strline_right;
+			strline_out_3 = SegmentSentenceMM(strline_in, 3);
+			cout << "strline_out_3: " << strline_out_1 << endl;
  
 			//输出分词结果
 			// count++;
