@@ -369,246 +369,243 @@ int main(int argc, char *argv[])
 			//正向最大匹配分词
 			strline_out_1 = strline_right;
 			strline_out_1 = SegmentSentenceMM(strline_in, 1);
-			cout << "strline_out_1: " << strline_out_1 << endl;
 			
 			//逆向最大匹配分词
 			strline_out_2 = strline_right;
 			strline_out_2 = SegmentSentenceMM(strline_in, 2);
-			cout << "strline_out_2: " << strline_out_1 << endl;
  
 			//最大概率方法分词
 			strline_out_3 = strline_right;
 			strline_out_3 = SegmentSentenceMM(strline_in, 3);
-			cout << "strline_out_3: " << strline_out_1 << endl;
  
 			//输出分词结果
-			// count++;
-			// cout << "----------------------------------------------" << endl;
-			// cout << "句子编号：" << count << endl;
-			// cout << endl;
-			// cout << "待分词的句子长度: " << strline_in.length() << "  句子：" << endl;
-			// cout << strline_in << endl;
-			// cout << endl;
-			// cout << "标准比对结果长度: " << strline_right.length() << "  句子：" << endl;
-			// cout << strline_right << endl;
-			// cout << endl;
-			// cout << "正向匹配分词长度: " << strline_out_1.length() << "  句子：" << endl;
-			// cout << strline_out_1 << endl;
-			// cout << endl;
-			// cout << "逆向匹配分词长度: " << strline_out_2.length() << "  句子：" << endl;
-			// cout << strline_out_2 << endl;
-			// cout << endl;
-			// cout << "最大概率分词长度: " << strline_out_3.length() << "  句子：" << endl;
-			// cout << strline_out_3 << endl;
-			// cout << endl;
+			count++;
+			cout << "----------------------------------------------" << endl;
+			cout << "句子编号：" << count << endl;
+			cout << endl;
+			cout << "待分词的句子长度: " << strline_in.length() << "  句子：" << endl;
+			cout << strline_in << endl;
+			cout << endl;
+			cout << "标准比对结果长度: " << strline_right.length() << "  句子：" << endl;
+			cout << strline_right << endl;
+			cout << endl;
+			cout << "正向匹配分词长度: " << strline_out_1.length() << "  句子：" << endl;
+			cout << strline_out_1 << endl;
+			cout << endl;
+			cout << "逆向匹配分词长度: " << strline_out_2.length() << "  句子：" << endl;
+			cout << strline_out_2 << endl;
+			cout << endl;
+			cout << "最大概率分词长度: " << strline_out_3.length() << "  句子：" << endl;
+			cout << strline_out_3 << endl;
+			cout << endl;
  
 			//输出分词结果的数字序列表示
-			// vector<int> vec_right = getPos(strline_right, strline_in);
-			// vector<int> vec_out_1 = getPos(strline_out_1, strline_in);
-			// vector<int> vec_out_2 = getPos(strline_out_2, strline_in);
-			// vector<int> vec_out_3 = getPos(strline_out_3, strline_in);
+			vector<int> vec_right = getPos(strline_right, strline_in);
+			vector<int> vec_out_1 = getPos(strline_out_1, strline_in);
+			vector<int> vec_out_2 = getPos(strline_out_2, strline_in);
+			vector<int> vec_out_3 = getPos(strline_out_3, strline_in);
  
-			// cout << "标准结果：" << endl;
-			// for(int i = 0; i < vec_right.size(); i++){
-			// 	cout << setw(4) << vec_right[i];
-			// }
-			// cout << endl;
-			// cout << "正向匹配结果：" << endl;
-			// for(int i = 0; i < vec_out_1.size(); i++){
-			// 	cout << setw(4) << vec_out_1[i];
-			// }
-			// cout << endl;
-			// cout << "逆向匹配结果：" << endl;
-			// for(int i = 0; i < vec_out_2.size(); i++){
-			// 	cout << setw(4) << vec_out_2[i];
-			// }
-			// cout << endl;
-			// cout << "最大概率结果：" << endl;
-			// for(int i = 0; i < vec_out_3.size(); i++){
-			// 	cout << setw(4) << vec_out_3[i];
-			// }
-			// cout << endl;
+			cout << "标准结果：" << endl;
+			for(int i = 0; i < vec_right.size(); i++){
+				cout << setw(4) << vec_right[i];
+			}
+			cout << endl;
+			cout << "正向匹配结果：" << endl;
+			for(int i = 0; i < vec_out_1.size(); i++){
+				cout << setw(4) << vec_out_1[i];
+			}
+			cout << endl;
+			cout << "逆向匹配结果：" << endl;
+			for(int i = 0; i < vec_out_2.size(); i++){
+				cout << setw(4) << vec_out_2[i];
+			}
+			cout << endl;
+			cout << "最大概率结果：" << endl;
+			for(int i = 0; i < vec_out_3.size(); i++){
+				cout << setw(4) << vec_out_3[i];
+			}
+			cout << endl;
  
 			//输出匹配的错误列表
-			// if(vec_right == vec_out_1 && vec_right == vec_out_2 && vec_right == vec_out_3){
-			// 	count_0++;
-			// }
+			if(vec_right == vec_out_1 && vec_right == vec_out_2 && vec_right == vec_out_3){
+				count_0++;
+			}
  
-			// cout << endl;
-			// if(vec_right == vec_out_1){
-			// 	cout << "正向最大匹配完全正确！" << endl;
-			// 	count_1++;
-			// }else{
-			// 	cout << "正向最大匹配错误列表：" << endl;
-			// }
-			// vector<int> vec_count_1 = getCount_2(strline_in, vec_right, vec_out_1, vec_err_1);
+			cout << endl;
+			if(vec_right == vec_out_1){
+				cout << "正向最大匹配完全正确！" << endl;
+				count_1++;
+			}else{
+				cout << "正向最大匹配错误列表：" << endl;
+			}
+			vector<int> vec_count_1 = getCount_2(strline_in, vec_right, vec_out_1, vec_err_1);
 			
-			// cout << endl;
-			// if(vec_right == vec_out_2){
-			// 	cout << "逆向最大匹配完全正确！" << endl;
-			// 	count_2++;
-			// }else{
-			// 	cout << "逆向最大匹配错误列表：" << endl;
-			// }
-			// vector<int> vec_count_2 = getCount_2(strline_in, vec_right, vec_out_2, vec_err_2);
-			// cout << endl;
-			// if(vec_right == vec_out_3){
-			// 	cout << "最大概率方法完全正确！" << endl;
-			// 	count_3++;
-			// }else{
-			// 	cout << "最大概率方法错误列表：" << endl;
-			// }
+			cout << endl;
+			if(vec_right == vec_out_2){
+				cout << "逆向最大匹配完全正确！" << endl;
+				count_2++;
+			}else{
+				cout << "逆向最大匹配错误列表：" << endl;
+			}
+			vector<int> vec_count_2 = getCount_2(strline_in, vec_right, vec_out_2, vec_err_2);
+			cout << endl;
+			if(vec_right == vec_out_3){
+				cout << "最大概率方法完全正确！" << endl;
+				count_3++;
+			}else{
+				cout << "最大概率方法错误列表：" << endl;
+			}
 			
-			// vector<int> vec_count_3 = getCount_2(strline_in, vec_right, vec_out_3, vec_err_3);
-			// cout << endl;
+			vector<int> vec_count_3 = getCount_2(strline_in, vec_right, vec_out_3, vec_err_3);
+			cout << endl;
  
-			// //准确的切分数量
-			// int count_right = vec_right.size();
-			// //切分得到的数量
-			// int count_out_1 = vec_out_1.size();
-			// int count_out_2 = vec_out_2.size();
-			// int count_out_3 = vec_out_3.size();
-			// //切分正确的数量
-			// int count_out_1_right = vec_count_1[0];
-			// int count_out_2_right = vec_count_2[0];
-			// int count_out_3_right = vec_count_3[0];
+			//准确的切分数量
+			int count_right = vec_right.size();
+			//切分得到的数量
+			int count_out_1 = vec_out_1.size();
+			int count_out_2 = vec_out_2.size();
+			int count_out_3 = vec_out_3.size();
+			//切分正确的数量
+			int count_out_1_right = vec_count_1[0];
+			int count_out_2_right = vec_count_2[0];
+			int count_out_3_right = vec_count_3[0];
  
-			// cout << "正向最大匹配：" << endl;	
-			// cout << "  组合型歧义：" << vec_count_1[1] << endl;
-			// cout << "  未登录词语：" << vec_count_1[2] << endl;
-			// cout << "  交集型歧义：" << vec_count_1[3] << endl;
-			// cout << "逆向最大匹配：" << endl;	
-			// cout << "  组合型歧义：" << vec_count_2[1] << endl;
-			// cout << "  未登录词语：" << vec_count_2[2] << endl;
-			// cout << "  交集型歧义：" << vec_count_2[3] << endl;
-			// cout << "最大概率方法：" << endl;	
-			// cout << "  组合型歧义：" << vec_count_3[1] << endl;
-			// cout << "  未登录词语：" << vec_count_3[2] << endl;
-			// cout << "  交集型歧义：" << vec_count_3[3] << endl;
+			cout << "正向最大匹配：" << endl;	
+			cout << "  组合型歧义：" << vec_count_1[1] << endl;
+			cout << "  未登录词语：" << vec_count_1[2] << endl;
+			cout << "  交集型歧义：" << vec_count_1[3] << endl;
+			cout << "逆向最大匹配：" << endl;	
+			cout << "  组合型歧义：" << vec_count_2[1] << endl;
+			cout << "  未登录词语：" << vec_count_2[2] << endl;
+			cout << "  交集型歧义：" << vec_count_2[3] << endl;
+			cout << "最大概率方法：" << endl;	
+			cout << "  组合型歧义：" << vec_count_3[1] << endl;
+			cout << "  未登录词语：" << vec_count_3[2] << endl;
+			cout << "  交集型歧义：" << vec_count_3[3] << endl;
 			
-			// count_right_all += count_right;
-			// count_out_1_all += count_out_1;
-			// count_out_2_all += count_out_2;
-			// count_out_3_all += count_out_3;
-			// count_out_1_right_all += count_out_1_right;
-			// count_out_2_right_all += count_out_2_right;
-			// count_out_3_right_all += count_out_3_right;
-			// count_out_1_fail_1_all += vec_count_1[1];
-			// count_out_1_fail_2_all += vec_count_1[2];
-			// count_out_1_fail_3_all += vec_count_1[3];
-			// count_out_2_fail_1_all += vec_count_2[1];
-			// count_out_2_fail_2_all += vec_count_2[2];
-			// count_out_2_fail_3_all += vec_count_2[3];
-			// count_out_3_fail_1_all += vec_count_3[1];
-			// count_out_3_fail_2_all += vec_count_3[2];
-			// count_out_3_fail_3_all += vec_count_3[3];
+			count_right_all += count_right;
+			count_out_1_all += count_out_1;
+			count_out_2_all += count_out_2;
+			count_out_3_all += count_out_3;
+			count_out_1_right_all += count_out_1_right;
+			count_out_2_right_all += count_out_2_right;
+			count_out_3_right_all += count_out_3_right;
+			count_out_1_fail_1_all += vec_count_1[1];
+			count_out_1_fail_2_all += vec_count_1[2];
+			count_out_1_fail_3_all += vec_count_1[3];
+			count_out_2_fail_1_all += vec_count_2[1];
+			count_out_2_fail_2_all += vec_count_2[2];
+			count_out_2_fail_3_all += vec_count_2[3];
+			count_out_3_fail_1_all += vec_count_3[1];
+			count_out_3_fail_2_all += vec_count_3[2];
+			count_out_3_fail_3_all += vec_count_3[3];
 			
 		}
 	}
 	
-	// long time_2 = getCurrentTime();
-	// unsigned long file_size = getFileSize("test.txt");
+	long time_2 = getCurrentTime();
+	unsigned long file_size = getFileSize("test.txt");
  
  
-	//打印错误的切分内容	
-	// cout << endl;
-	// cout << "---------------------------------" << endl;
-	// cout << "错误样例（已排序）：" << endl;
+	// 打印错误的切分内容	
+	cout << endl;
+	cout << "---------------------------------" << endl;
+	cout << "错误样例（已排序）：" << endl;
  
-	//选取样本（600个），去掉重复的
-	//vector<string> vec_small(vec_err.begin(), vec_err.begin() + 600);
+	// 选取样本（600个），去掉重复的
+	// vector<string> vec_small(vec_err.begin(), vec_err.begin() + 600);
 	//sort(vec_small.begin(), vec_small.end());
-	//vector<string>::iterator end_unique = unique(vec_small.begin(), vec_small.end());
+	// vector<string>::iterator end_unique = unique(vec_small.begin(), vec_small.end());
  
-	//对错误切分内容进行排序并掉重复的
-	// sort(vec_err_1.begin(), vec_err_1.end());
-	// sort(vec_err_2.begin(), vec_err_2.end());
-	// sort(vec_err_3.begin(), vec_err_3.end());
-	// vector<string>::iterator end_unique_1 = unique(vec_err_1.begin(), vec_err_1.end());
-	// vector<string>::iterator end_unique_2 = unique(vec_err_2.begin(), vec_err_2.end());
-	// vector<string>::iterator end_unique_3 = unique(vec_err_3.begin(), vec_err_3.end());
+	// 对错误切分内容进行排序并掉重复的
+	sort(vec_err_1.begin(), vec_err_1.end());
+	sort(vec_err_2.begin(), vec_err_2.end());
+	sort(vec_err_3.begin(), vec_err_3.end());
+	vector<string>::iterator end_unique_1 = unique(vec_err_1.begin(), vec_err_1.end());
+	vector<string>::iterator end_unique_2 = unique(vec_err_2.begin(), vec_err_2.end());
+	vector<string>::iterator end_unique_3 = unique(vec_err_3.begin(), vec_err_3.end());
  
-	// int num_1 = end_unique_1 - vec_err_1.begin();
-	// int num_2 = end_unique_2 - vec_err_2.begin();
-	// int num_3 = end_unique_3 - vec_err_3.begin();
- 
-	cout << "----------------------------------" << endl;
-	// cout << "正向最大匹配切分错误数量：" << num_1 << endl;
-	// for(int i = 0; i < num_1; i++){
-	// 	cout << vec_err_1[i] << endl;
-	// }
-	// cout << endl;
+	int num_1 = end_unique_1 - vec_err_1.begin();
+	int num_2 = end_unique_2 - vec_err_2.begin();
+	int num_3 = end_unique_3 - vec_err_3.begin();
  
 	cout << "----------------------------------" << endl;
-	// cout << "逆向最大匹配切分错误数量：" << num_2 << endl;
-	// for(int i = 0; i < num_2; i++){
-	// 	cout << vec_err_2[i] << endl;
-	// }
-	// cout << endl;
+	cout << "正向最大匹配切分错误数量：" << num_1 << endl;
+	for(int i = 0; i < num_1; i++){
+		cout << vec_err_1[i] << endl;
+	}
+	cout << endl;
  
 	cout << "----------------------------------" << endl;
-	// cout << "最大概率方法切分错误数量：" << num_3 << endl;
-	// for(int i = 0; i < num_3; i++){
-	// 	cout << vec_err_3[i] << endl;
-	// }
-	// cout << endl;
+	cout << "逆向最大匹配切分错误数量：" << num_2 << endl;
+	for(int i = 0; i < num_2; i++){
+		cout << vec_err_2[i] << endl;
+	}
+	cout << endl;
+ 
+	cout << "----------------------------------" << endl;
+	cout << "最大概率方法切分错误数量：" << num_3 << endl;
+	for(int i = 0; i < num_3; i++){
+		cout << vec_err_3[i] << endl;
+	}
+	cout << endl;
  
 	//计算准确率和召回率
-	// double kk_1 = (double)count_out_1_right_all / count_out_1_all;	//正向最大匹配准确率
-	// double kk_2 = (double)count_out_1_right_all / count_right_all;	//正向最大匹配召回率
-	// double kk_3 = (double)count_out_2_right_all / count_out_2_all;	//逆向最大匹配准确率
-	// double kk_4 = (double)count_out_2_right_all / count_right_all;	//逆向最大匹配召回率
-	// double kk_5 = (double)count_out_3_right_all / count_out_3_all;	//最大概率方法准确率
-	// double kk_6 = (double)count_out_3_right_all / count_right_all;	//最大概率方法召回率
+	double kk_1 = (double)count_out_1_right_all / count_out_1_all;	//正向最大匹配准确率
+	double kk_2 = (double)count_out_1_right_all / count_right_all;	//正向最大匹配召回率
+	double kk_3 = (double)count_out_2_right_all / count_out_2_all;	//逆向最大匹配准确率
+	double kk_4 = (double)count_out_2_right_all / count_right_all;	//逆向最大匹配召回率
+	double kk_5 = (double)count_out_3_right_all / count_out_3_all;	//最大概率方法准确率
+	double kk_6 = (double)count_out_3_right_all / count_right_all;	//最大概率方法召回率
  
 	//集中输出结果
-	// cout << endl;
-	// cout << "---------------------------------" << endl;
-	// cout << "分词消耗时间：" << time_2 - time_1 << "ms" << endl;
-	// cout << "测试文件大小：" << file_size/1024 << " KB" << endl;
-	// cout << "分词速度为：  " << (double)file_size*1000/((time_2 - time_1)*1024) << " KB/s" << endl;
+	cout << endl;
+	cout << "---------------------------------" << endl;
+	cout << "分词消耗时间：" << time_2 - time_1 << "ms" << endl;
+	cout << "测试文件大小：" << file_size/1024 << " KB" << endl;
+	cout << "分词速度为：  " << (double)file_size*1000/((time_2 - time_1)*1024) << " KB/s" << endl;
  
-	// cout << endl;
-	// cout << "词典规模：" << word_dict.size << endl;
+	cout << endl;
+	cout << "词典规模：" << word_dict.size << endl;
  
-	// cout << endl;
-	// cout << "句子总数：" << count << endl;
-	// cout << "三种方法切分都正确的句子数目：   " << count_0 << "\t （ " << (double)count_0*100/count << " % ）" << endl;
-	// cout << "正向最大匹配完全正确的句子数目： " << count_1 << "\t （ " << (double)count_1*100/count << " % ）" << endl;
-	// cout << "逆向最大匹配完全正确的句子数目： " << count_2 << "\t （ " << (double)count_2*100/count << " % ）" << endl;
-	// cout << "最大概率方法完全正确的句子数目： " << count_3 << "\t （ " << (double)count_3*100/count << " % ）" << endl;
-	// cout << endl;
+	cout << endl;
+	cout << "句子总数：" << count << endl;
+	cout << "三种方法切分都正确的句子数目：   " << count_0 << "\t （ " << (double)count_0*100/count << " % ）" << endl;
+	cout << "正向最大匹配完全正确的句子数目： " << count_1 << "\t （ " << (double)count_1*100/count << " % ）" << endl;
+	cout << "逆向最大匹配完全正确的句子数目： " << count_2 << "\t （ " << (double)count_2*100/count << " % ）" << endl;
+	cout << "最大概率方法完全正确的句子数目： " << count_3 << "\t （ " << (double)count_3*100/count << " % ）" << endl;
+	cout << endl;
  
-	// cout << "准确的切分总数：" << count_right_all << endl;		//准确的切分总数
-	// cout << "正向匹配切分总数：" << count_out_1_all << endl;		//正向匹配切分总数
-	// cout << "逆向匹配切分总数：" << count_out_2_all << endl;		//逆向匹配切分总数
-	// cout << "最大概率切分总数：" << count_out_3_all << endl;		//最大概率切分总数
-	// cout << "正向匹配切分正确总数：" << count_out_1_right_all << endl;	//正向匹配切分正确总数
-	// cout << "逆向匹配切分正确总数：" << count_out_2_right_all << endl;	//逆向匹配切分正确总数
-	// cout << "最大概率切分正确总数：" << count_out_3_right_all << endl;	//逆向匹配切分正确总数
+	cout << "准确的切分总数：" << count_right_all << endl;		//准确的切分总数
+	cout << "正向匹配切分总数：" << count_out_1_all << endl;		//正向匹配切分总数
+	cout << "逆向匹配切分总数：" << count_out_2_all << endl;		//逆向匹配切分总数
+	cout << "最大概率切分总数：" << count_out_3_all << endl;		//最大概率切分总数
+	cout << "正向匹配切分正确总数：" << count_out_1_right_all << endl;	//正向匹配切分正确总数
+	cout << "逆向匹配切分正确总数：" << count_out_2_right_all << endl;	//逆向匹配切分正确总数
+	cout << "最大概率切分正确总数：" << count_out_3_right_all << endl;	//逆向匹配切分正确总数
  
-	// cout << endl;
-	// cout << "正向最大匹配：" << endl;
-	// long count_out_1_fail_all = count_out_1_fail_1_all + count_out_1_fail_2_all + count_out_1_fail_3_all;	
-	// cout << "  组合型歧义：" << count_out_1_fail_1_all << "\t ( " << (double)count_out_1_fail_1_all*100/count_out_1_fail_all << " % )" << endl;
-	// cout << "  未登录词语：" << count_out_1_fail_2_all << "\t ( " << (double)count_out_1_fail_2_all*100/count_out_1_fail_all << " % )" << endl;
-	// cout << "  交集型歧义：" << count_out_1_fail_3_all << "\t ( " << (double)count_out_1_fail_3_all*100/count_out_1_fail_all << " % )" << endl;
-	// cout << "逆向最大匹配：" << endl;	
-	// long count_out_2_fail_all = count_out_2_fail_1_all + count_out_2_fail_2_all + count_out_2_fail_3_all;	
-	// cout << "  组合型歧义：" << count_out_2_fail_1_all << "\t ( " << (double)count_out_2_fail_1_all*100/count_out_2_fail_all << " % )" << endl;
-	// cout << "  未登录词语：" << count_out_2_fail_2_all << "\t ( " << (double)count_out_2_fail_2_all*100/count_out_2_fail_all << " % )" << endl;
-	// cout << "  交集型歧义：" << count_out_2_fail_3_all << "\t ( " << (double)count_out_2_fail_3_all*100/count_out_2_fail_all << " % )" << endl;
-	// cout << "最大概率方法：" << endl;	
-	// long count_out_3_fail_all = count_out_3_fail_1_all + count_out_3_fail_2_all + count_out_3_fail_3_all;	
-	// cout << "  组合型歧义：" << count_out_3_fail_1_all << "\t ( " << (double)count_out_3_fail_1_all*100/count_out_3_fail_all << " % )" << endl;
-	// cout << "  未登录词语：" << count_out_3_fail_2_all << "\t ( " << (double)count_out_3_fail_2_all*100/count_out_3_fail_all << " % )" << endl;
-	// cout << "  交集型歧义：" << count_out_3_fail_3_all << "\t ( " << (double)count_out_3_fail_3_all*100/count_out_3_fail_all << " % )" << endl;
+	cout << endl;
+	cout << "正向最大匹配：" << endl;
+	long count_out_1_fail_all = count_out_1_fail_1_all + count_out_1_fail_2_all + count_out_1_fail_3_all;	
+	cout << "  组合型歧义：" << count_out_1_fail_1_all << "\t ( " << (double)count_out_1_fail_1_all*100/count_out_1_fail_all << " % )" << endl;
+	cout << "  未登录词语：" << count_out_1_fail_2_all << "\t ( " << (double)count_out_1_fail_2_all*100/count_out_1_fail_all << " % )" << endl;
+	cout << "  交集型歧义：" << count_out_1_fail_3_all << "\t ( " << (double)count_out_1_fail_3_all*100/count_out_1_fail_all << " % )" << endl;
+	cout << "逆向最大匹配：" << endl;	
+	long count_out_2_fail_all = count_out_2_fail_1_all + count_out_2_fail_2_all + count_out_2_fail_3_all;	
+	cout << "  组合型歧义：" << count_out_2_fail_1_all << "\t ( " << (double)count_out_2_fail_1_all*100/count_out_2_fail_all << " % )" << endl;
+	cout << "  未登录词语：" << count_out_2_fail_2_all << "\t ( " << (double)count_out_2_fail_2_all*100/count_out_2_fail_all << " % )" << endl;
+	cout << "  交集型歧义：" << count_out_2_fail_3_all << "\t ( " << (double)count_out_2_fail_3_all*100/count_out_2_fail_all << " % )" << endl;
+	cout << "最大概率方法：" << endl;	
+	long count_out_3_fail_all = count_out_3_fail_1_all + count_out_3_fail_2_all + count_out_3_fail_3_all;	
+	cout << "  组合型歧义：" << count_out_3_fail_1_all << "\t ( " << (double)count_out_3_fail_1_all*100/count_out_3_fail_all << " % )" << endl;
+	cout << "  未登录词语：" << count_out_3_fail_2_all << "\t ( " << (double)count_out_3_fail_2_all*100/count_out_3_fail_all << " % )" << endl;
+	cout << "  交集型歧义：" << count_out_3_fail_3_all << "\t ( " << (double)count_out_3_fail_3_all*100/count_out_3_fail_all << " % )" << endl;
  
-	// cout << endl;		
-	// cout << "统计结果：" << endl;
-	// cout << "正向最大匹配    准确率：" << kk_1*100 << "%  \t召回率：" << kk_2*100 << "%" << endl;
-	// cout << "逆向最大匹配    准确率：" << kk_3*100 << "%  \t召回率：" << kk_4*100 << "%" << endl;
-	// cout << "最大概率方法    准确率：" << kk_5*100 << "%  \t召回率：" << kk_6*100 << "%" << endl;
+	cout << endl;		
+	cout << "统计结果：" << endl;
+	cout << "正向最大匹配    准确率：" << kk_1*100 << "%  \t召回率：" << kk_2*100 << "%" << endl;
+	cout << "逆向最大匹配    准确率：" << kk_3*100 << "%  \t召回率：" << kk_4*100 << "%" << endl;
+	cout << "最大概率方法    准确率：" << kk_5*100 << "%  \t召回率：" << kk_6*100 << "%" << endl;
  
 	return 0;
 }
