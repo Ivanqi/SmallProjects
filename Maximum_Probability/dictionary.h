@@ -21,7 +21,7 @@ class Dictionary
 
     public:
         long size;                  // 词典规模
-        long freq_all;
+        long freq_all;              // 词典总数
         long arr_1[20];
         double arr_2[20];
         Dictionary();

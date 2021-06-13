@@ -6,11 +6,16 @@
 #include <sys/time.h>
 #include <sys/stat.h>
 #include "segmentwords.h"
-
 using namespace std;
 
+
+/**
+ * 参考资料:
+ * 	https://blog.csdn.net/u010189459/article/details/37956689
+ */
+
 const long MaxCount = 50000;    // 需要切分的最大句子数量，若该值大于文件中。实际的句子数量，以实际句子数量为准
-#define Separator "/"   // 词界标记
+#define Separator "/"   		// 词界标记
 
 // 获取当前时间(ms)
 long getCurrentTime()
@@ -219,7 +224,7 @@ string getString(string word, int pos, vector<int> vec_right)
 /*
  * 函数功能：获取单个句子切分的结果统计
  * 函数输入：1.vec_right 正确的分词标记位置集合
- *           2.vec_out   函数切分得到的分词标记位置集合
+ *          2.vec_out   函数切分得到的分词标记位置集合
  * 函数输出：返回一个veceor，含有4个元素，分别为：
  *          切分正确、组合型歧义、未登录词、交集型歧义的数量
  *
@@ -237,10 +242,10 @@ vector<int> getCount_2(string strline, vector<int> vec_right, vector<int> vec_ou
 		map_result[vec_out[i]] += 2;
 	}
  
-	//统计map中的信息
-	//若value=1，只在vec_right中
-	//若value=2，只在vec_out中
-	//若value=3，在vec_right和vec_out中都有
+	// 统计map中的信息
+	// 若value=1，只在vec_right中
+	// 若value=2，只在vec_out中
+	// 若value=3，在vec_right和vec_out中都有
 	map<int, int>::iterator p_pre, p_cur;
 	int count_value_1 = 0;
 	int count_value_2 = 0;
@@ -251,8 +256,8 @@ vector<int> getCount_2(string strline, vector<int> vec_right, vector<int> vec_ou
 	while (p_cur != map_result.end()){
 		while (p_cur != map_result.end() && p_cur -> second == 3) {
 			p_pre = p_cur;
-			++count_value_3;	//切分正确的数目
-			++p_cur;		//迭代器后移
+			++count_value_3;	// 切分正确的数目
+			++p_cur;			// 迭代器后移
 		}
 		
 		while (p_cur != map_result.end() && p_cur -> second != 3) {
@@ -324,41 +329,34 @@ int main(int argc, char *argv[])
 		cout << "Unable to open input file !" << argv[1] << endl;
 		exit(-1);
 	}
+
  
-	/*
-	ofstream fout("result.txt");	//确定输出文件
-	if(!fout){
-		cout << "Unable to open output file !" << endl;
-		exit(-1);
-	}
-	*/
+	long count = 0;						// 句子编号
+	long count_0 = 0;					// 三种方法切分都正确的句子总数
+	long count_1 = 0;					// 正向最大匹配完全正确的句子总数
+	long count_2 = 0;					// 逆向最大匹配完全正确的句子总数
+	long count_3 = 0;					// 最大概率方法完全正确的句子总数
  
-	long count = 0;			//句子编号
-	long count_0 = 0;		//三种方法切分都正确的句子总数
-	long count_1 = 0;		//正向最大匹配完全正确的句子总数
-	long count_2 = 0;		//逆向最大匹配完全正确的句子总数
-	long count_3 = 0;		//最大概率方法完全正确的句子总数
+	long count_right_all = 0;			// 准确的切分总数
+	long count_out_1_all = 0;			// 正向最大匹配切分总数
+	long count_out_2_all = 0;			// 逆向最大匹配切分总数
+	long count_out_3_all = 0;			// 最大概率方法切分总数
+	long count_out_1_right_all = 0;		// 正向最大匹配切分正确总数
+	long count_out_2_right_all = 0;		// 逆向最大匹配切分正确总数
+	long count_out_3_right_all = 0;		// 最大概率方法切分正确总数
+	long count_out_1_fail_1_all = 0;	// 正向最大匹配（组合型歧义）
+	long count_out_1_fail_2_all = 0;	// 正向最大匹配（未登录词语）
+	long count_out_1_fail_3_all = 0;	// 正向最大匹配（交集型歧义）
+	long count_out_2_fail_1_all = 0;	// 逆向最大匹配（组合型歧义）
+	long count_out_2_fail_2_all = 0;	// 逆向最大匹配（未登录词语）
+	long count_out_2_fail_3_all = 0;	// 逆向最大匹配（交集型歧义）
+	long count_out_3_fail_1_all = 0;	// 最大概率方法（组合型歧义）
+	long count_out_3_fail_2_all = 0;	// 最大概率方法（未登录词语）
+	long count_out_3_fail_3_all = 0;	// 最大概率方法（交集型歧义）
  
-	long count_right_all = 0;	//准确的切分总数
-	long count_out_1_all = 0;	//正向最大匹配切分总数
-	long count_out_2_all = 0;	//逆向最大匹配切分总数
-	long count_out_3_all = 0;	//最大概率方法切分总数
-	long count_out_1_right_all = 0;	//正向最大匹配切分正确总数
-	long count_out_2_right_all = 0;	//逆向最大匹配切分正确总数
-	long count_out_3_right_all = 0;	//最大概率方法切分正确总数
-	long count_out_1_fail_1_all = 0;//正向最大匹配（组合型歧义）
-	long count_out_1_fail_2_all = 0;//正向最大匹配（未登录词语）
-	long count_out_1_fail_3_all = 0;//正向最大匹配（交集型歧义）
-	long count_out_2_fail_1_all = 0;//逆向最大匹配（组合型歧义）
-	long count_out_2_fail_2_all = 0;//逆向最大匹配（未登录词语）
-	long count_out_2_fail_3_all = 0;//逆向最大匹配（交集型歧义）
-	long count_out_3_fail_1_all = 0;//最大概率方法（组合型歧义）
-	long count_out_3_fail_2_all = 0;//最大概率方法（未登录词语）
-	long count_out_3_fail_3_all = 0;//最大概率方法（交集型歧义）
- 
-	vector<string> vec_err_1;	//正向最大匹配切分错误的词
-	vector<string> vec_err_2;	//逆向最大匹配切分错误的词
-	vector<string> vec_err_3;	//最大概率方法切分错误的词
+	vector<string> vec_err_1;			// 正向最大匹配切分错误的词
+	vector<string> vec_err_2;			// 逆向最大匹配切分错误的词
+	vector<string> vec_err_3;			// 最大概率方法切分错误的词
  
 	while(getline(fin, strline_right, '\n') && count < MaxCount){
 		if (strline_right.length() > 1) {
@@ -406,53 +404,56 @@ int main(int argc, char *argv[])
 			vector<int> vec_out_3 = getPos(strline_out_3, strline_in);
  
 			cout << "标准结果：" << endl;
-			for(int i = 0; i < vec_right.size(); i++){
+			for (int i = 0; i < vec_right.size(); i++) {
 				cout << setw(4) << vec_right[i];
 			}
 			cout << endl;
 			cout << "正向匹配结果：" << endl;
-			for(int i = 0; i < vec_out_1.size(); i++){
+			for (int i = 0; i < vec_out_1.size(); i++) {
 				cout << setw(4) << vec_out_1[i];
 			}
 			cout << endl;
 			cout << "逆向匹配结果：" << endl;
-			for(int i = 0; i < vec_out_2.size(); i++){
+			for (int i = 0; i < vec_out_2.size(); i++) {
 				cout << setw(4) << vec_out_2[i];
 			}
 			cout << endl;
 			cout << "最大概率结果：" << endl;
-			for(int i = 0; i < vec_out_3.size(); i++){
+			for (int i = 0; i < vec_out_3.size(); i++) {
 				cout << setw(4) << vec_out_3[i];
 			}
 			cout << endl;
  
 			//输出匹配的错误列表
-			if(vec_right == vec_out_1 && vec_right == vec_out_2 && vec_right == vec_out_3){
+			if (vec_right == vec_out_1 && vec_right == vec_out_2 && vec_right == vec_out_3) {
 				count_0++;
 			}
  
 			cout << endl;
-			if(vec_right == vec_out_1){
+			if (vec_right == vec_out_1) {
 				cout << "正向最大匹配完全正确！" << endl;
 				count_1++;
-			}else{
+			} else {
 				cout << "正向最大匹配错误列表：" << endl;
 			}
+
 			vector<int> vec_count_1 = getCount_2(strline_in, vec_right, vec_out_1, vec_err_1);
-			
 			cout << endl;
-			if(vec_right == vec_out_2){
+
+			if (vec_right == vec_out_2) {
 				cout << "逆向最大匹配完全正确！" << endl;
 				count_2++;
-			}else{
+			} else {
 				cout << "逆向最大匹配错误列表：" << endl;
 			}
+
 			vector<int> vec_count_2 = getCount_2(strline_in, vec_right, vec_out_2, vec_err_2);
 			cout << endl;
-			if(vec_right == vec_out_3){
+
+			if (vec_right == vec_out_3) {
 				cout << "最大概率方法完全正确！" << endl;
 				count_3++;
-			}else{
+			} else {
 				cout << "最大概率方法错误列表：" << endl;
 			}
 			
@@ -511,11 +512,7 @@ int main(int argc, char *argv[])
 	cout << endl;
 	cout << "---------------------------------" << endl;
 	cout << "错误样例（已排序）：" << endl;
- 
-	// 选取样本（600个），去掉重复的
-	// vector<string> vec_small(vec_err.begin(), vec_err.begin() + 600);
-	//sort(vec_small.begin(), vec_small.end());
-	// vector<string>::iterator end_unique = unique(vec_small.begin(), vec_small.end());
+
  
 	// 对错误切分内容进行排序并掉重复的
 	sort(vec_err_1.begin(), vec_err_1.end());
