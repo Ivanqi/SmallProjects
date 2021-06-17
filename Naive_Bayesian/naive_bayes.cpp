@@ -27,3 +27,181 @@ bool naive_bayes::clear()
  * h: 属性, 需保证最后一列为目标属性，且为离散值
  * b: 属性是离散值(false), 还是数值型(true)
  */
+bool naive_bayes::set_data(vvs& d, vs& h, vb b)
+{
+    bool f = clear();
+    if (!f) return f;
+
+    assert(d.size() > 0);   // 数据集不能为空
+    datas_ = d;
+    headers_ = h;
+    num_attr_ = (int) headers_.size();
+    num_data_ = (int) d.size();
+
+    is_numeric_ = b;
+    is_numeric_.resize(num_attr_, false);
+    
+    assert(is_numeric_.back() == false);    // 目标属性必须为离散值
+
+    target_attr_ = headers_.back();
+
+    attr_to_int_.resize(num_attr_);
+    int_to_attr_.resize(num_attr_);
+    attrs_size_.resize(num_attr_);
+
+    for (int i = 0; i < num_data_; ++i) {
+        auto& e = d[i];
+        for (int j = 0; j < num_attr_; ++j) {
+            if (is_numeric_[j]) {
+                continue;   // 数值型数据不需要映射
+            }
+
+            auto it = attr_to_int_[j].find(e[j]);
+            if (it == attr_to_int_[j].end()) {
+                attr_to_int_[j][e[j]] = (int) int_to_attr_[j].size();
+                int_to_attr_[j].push_back(e[j]);
+            }
+        }
+    }
+
+    for (int i = 0; i < num_attr_; ++i) {
+        attrs_size_[i] = (int) int_to_attr_[i].size();
+    }
+
+    num_targ_ = attrs_size_.back();
+
+    // 目标属性值下标
+    for (int i = 0; i < num_data_; ++i) {
+        target_to_label_.push_back(attr_to_int_[num_attr_ - 1][d[i][num_attr_ - 1]]);
+    }
+
+    return true;
+}
+
+/**
+ * function: naive_bayes::run  获取各部分概率值，为分类做好准备
+ */
+bool naive_bayes::run()
+{
+    p_target_.resize(num_targ_);
+    p_datas_.resize(num_targ_);             // 每行表示一个目标属性值
+
+    for (int i = 0; i < num_targ_; ++i) {
+        p_datas_[i].resize(num_attr_ - 1);  // 每列表示一个非目标属性
+    }
+
+    for (int k = 0; k < num_targ_; ++k) {
+        // 对每个目标属性值
+        vi data_k;  // 目标属性值下标为k的数据集
+        for (int i = 0; i < num_data_; ++i) {
+            if (target_to_label_[i] == k) {
+                data_k.push_back(i);
+            }
+        }
+
+        p_target_[k] = (double) data_k.size() / num_data_;  // 计算每个属性值的概率
+
+        for (int j = 0; j < num_attr_ - 1; ++j) {
+            // 对每个非目标属性
+            int k_size = (int) data_k.size();
+            auto& p = p_datas_[k][j];           // 当前需要计算的结点
+
+            if (is_numeric_[j]) {
+                // 计算均值和方差
+                double mean_value = 0, variance = 0, sum = 0;
+                vd tmp;
+                tmp.resize(k_size);
+
+                for (int i = 0; i < k_size; ++i) {
+                    tmp[i] = std::stod(datas_[data_k[k]][j]), sum += tmp[i];
+                }
+
+                mean_value = sum / k_size;
+
+                for (int i = 0; i < k_size; ++i) {
+                    variance += (tmp[i] - mean_value) * (tmp[i] - mean_value);
+                }
+
+                variance /= k_size;
+
+                // 保存结果
+                p.is_num_ = true;
+                p.mean_value_ = mean_value;
+                p.variance_ = variance;
+                continue;
+            }
+
+            // else
+            p.is_num_ = false;
+            p.p_attr_.clear();
+            p.p_attr_.resize(attrs_size_[j], 0.0);
+
+            // 计算每个属性值的数量，即有多少条数据具有该属性值
+            for (int i = 0; i < k_size; ++i) {
+                int tmp = attr_to_int_[j][datas_[data_k[i]][j]];
+            }
+
+            // 计算概率
+            double pp = 1.0 / attrs_size_[j];   // 用于 m-估计的先验概率
+            for (int i = 0; i < attrs_size_[j]; ++i) {
+                p.p_attr_[i] = (p.p_attr_[i] + m_estimate_ * pp) / (k_size + m_estimate_);
+            }
+        }
+    }
+    
+    return true;
+}
+
+/**
+ * function: naive_bayes::classification 对数据进行分类
+ * return: 该数据最可能的目标属性值
+ */
+std::string naive_bayes::classification(vs& data)
+{
+    assert((int) data.size() == num_attr_ - 1);
+
+    // 为了防止溢出，以下对概率值取了对数
+    int max_index = -1;
+    double p_max = -1e300;  // 最大概率
+    
+    vd p_targ_val;          // 每个目标值对该数据的概率 P(data | target_attr[i])
+    p_targ_val.resize(num_targ_, 0.0);
+
+    auto f = [&](double x, double u, double d) {
+        // 求正态分布概率密度
+        return std::exp(-(x - u) * (x - u) / (2 * d)) / sqrt(4 * std::acos(-1) * d);
+    };
+
+    for (int i = 0; i < num_targ_; ++i) {
+        auto& t = p_targ_val[i];
+        t = std::log(p_target_[i]); // 取对数
+        
+        for (int j = 0; j < num_attr_ - 1; ++j) {
+            auto& p = p_datas_[i][j];
+            if (is_numeric_[j]) {
+                t += std::log(f(std::stod(data[j]), p.mean_value_, p.variance_));
+            } else {
+                auto it = attr_to_int_[j].find(data[j]);
+                if (it == attr_to_int_[j].end()) {
+                    std::cerr << "No such attribute value. " << std::endl;
+                    exit(1);
+                }
+                t += std::log(p.p_attr_[it->second]);
+            }
+        }
+    }
+
+    // 找到最大概率值
+    for (int i = 0; i < num_targ_; ++i) {
+        if (p_max < p_targ_val[i]) {
+            p_max = p_targ_val[i], max_index = i;
+        }
+    }
+
+    return int_to_attr_[num_attr_ - 1][max_index];
+}
+
+naive_bayes::~naive_bayes()
+{
+    clear();
+}
