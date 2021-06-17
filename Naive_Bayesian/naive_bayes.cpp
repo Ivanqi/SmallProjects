@@ -49,16 +49,17 @@ bool naive_bayes::set_data(vvs& d, vs& h, vb b)
     int_to_attr_.resize(num_attr_);
     attrs_size_.resize(num_attr_);
 
+    // 类型分类
     for (int i = 0; i < num_data_; ++i) {
         auto& e = d[i];
         for (int j = 0; j < num_attr_; ++j) {
             if (is_numeric_[j]) {
                 continue;   // 数值型数据不需要映射
             }
-
+            // std::cout << j << " | " << e[j] << std::endl;
             auto it = attr_to_int_[j].find(e[j]);
             if (it == attr_to_int_[j].end()) {
-                attr_to_int_[j][e[j]] = (int) int_to_attr_[j].size();
+                attr_to_int_[j][e[j]] = (int) int_to_attr_[j].size();   // 每次都是更新 attr_to_int_[j]中 e[j] 数量
                 int_to_attr_[j].push_back(e[j]);
             }
         }
@@ -68,10 +69,14 @@ bool naive_bayes::set_data(vvs& d, vs& h, vb b)
         attrs_size_[i] = (int) int_to_attr_[i].size();
     }
 
+    // back 返回vector中最后一个元素
     num_targ_ = attrs_size_.back();
 
     // 目标属性值下标
     for (int i = 0; i < num_data_; ++i) {
+        // 取attr_to_int_最后一个桶里的map
+        // 取d[i]中最后一个元素
+        // 然后得到d[i]中最后一个元素在attr_to_int_中记录的次数
         target_to_label_.push_back(attr_to_int_[num_attr_ - 1][d[i][num_attr_ - 1]]);
     }
 

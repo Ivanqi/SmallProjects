@@ -21,6 +21,7 @@ bool playTennis() {
     // 读入属性名
     string line, tmp;
     getline(input, line);
+
     
     istringstream iss(line);
 

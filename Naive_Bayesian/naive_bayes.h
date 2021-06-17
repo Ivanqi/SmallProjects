@@ -53,8 +53,8 @@ class naive_bayes
         vb is_numeric_;              // 属性是否为数值型
         vvs datas_;                  // 保存原始数据
         vvn p_datas_;                // 保存各概率值
-        vi target_to_label_;         // 目标属性值的下标
         vd p_target_;                // 每个目标属性值的概率
+        vi target_to_label_;         // 目标属性值的下标
         int num_attr_;               // 属性数量
         int num_data_;               // 数据集大小
         int num_targ_;               // 目标属性有多少不同的取值
