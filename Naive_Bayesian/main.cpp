@@ -122,8 +122,13 @@ bool iris() {
     return true;
 }
 
-int main() {
+int main(int argc, char* argv[]) {
 
-    playTennis();
+    if (argc >=2 && atoi(argv[1]) == 2) {
+        iris();
+    } else {
+        playTennis();
+    }
+
     return 0;
 }

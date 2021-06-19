@@ -1,4 +1,4 @@
-Outlook  Temperature Humidity Wind   PlayTennis
+    Outlook  Temperature Humidity Wind   PlayTennis
 Sunny    Hot         High     Weak   No
 Sunny    Hot         High     Strong No
 Overcast Hot         High     Weak   Yes

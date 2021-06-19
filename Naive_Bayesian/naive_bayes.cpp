@@ -35,18 +35,19 @@ bool naive_bayes::set_data(vvs& d, vs& h, vb b)
     assert(d.size() > 0);   // 数据集不能为空
     datas_ = d;
     headers_ = h;
-    num_attr_ = (int) headers_.size();
-    num_data_ = (int) d.size();
+    num_attr_ = (int) headers_.size();  // 列
+    num_data_ = (int) d.size();         // 行
+    std::cout << "num_attr_: " << num_attr_ << " | num_data_: " << num_data_ << std::endl;
 
     is_numeric_ = b;
     is_numeric_.resize(num_attr_, false);
     
     assert(is_numeric_.back() == false);    // 目标属性必须为离散值
 
-    target_attr_ = headers_.back();
+    target_attr_ = headers_.back();         // header的最后一个元素
 
     attr_to_int_.resize(num_attr_);
-    int_to_attr_.resize(num_attr_);
+    int_to_attr_.resize(num_attr_);         // 对样本数据进行去重
     attrs_size_.resize(num_attr_);
 
     // 类型分类
@@ -54,13 +55,15 @@ bool naive_bayes::set_data(vvs& d, vs& h, vb b)
         auto& e = d[i];
         for (int j = 0; j < num_attr_; ++j) {
             if (is_numeric_[j]) {
-                continue;   // 数值型数据不需要映射
+                continue;                   // 数值型数据不需要映射
             }
+
             // std::cout << j << " | " << e[j] << std::endl;
             auto it = attr_to_int_[j].find(e[j]);
             if (it == attr_to_int_[j].end()) {
                 attr_to_int_[j][e[j]] = (int) int_to_attr_[j].size();   // 每次都是更新 attr_to_int_[j]中 e[j] 数量
-                int_to_attr_[j].push_back(e[j]);
+                int_to_attr_[j].push_back(e[j]);                        // 相同下标的e[j] 存入 int_to_attr_[j] 中
+                // std::cout << "j: " << j << ", e[j]: " << e[j] << " | size: " << int_to_attr_[j].size() << std::endl;
             }
         }
     }
@@ -77,6 +80,7 @@ bool naive_bayes::set_data(vvs& d, vs& h, vb b)
         // 取attr_to_int_最后一个桶里的map
         // 取d[i]中最后一个元素
         // 然后得到d[i]中最后一个元素在attr_to_int_中记录的次数
+        // std::cout << "xxx: " << d[i][num_attr_ - 1] << " | " << attr_to_int_[num_attr_ - 1][d[i][num_attr_ - 1]] << std::endl;
         target_to_label_.push_back(attr_to_int_[num_attr_ - 1][d[i][num_attr_ - 1]]);
     }
 
@@ -97,7 +101,7 @@ bool naive_bayes::run()
 
     for (int k = 0; k < num_targ_; ++k) {
         // 对每个目标属性值
-        vi data_k;  // 目标属性值下标为k的数据集
+        vi data_k;                          // 目标属性值下标为k的数据集
         for (int i = 0; i < num_data_; ++i) {
             if (target_to_label_[i] == k) {
                 data_k.push_back(i);
@@ -109,7 +113,7 @@ bool naive_bayes::run()
         for (int j = 0; j < num_attr_ - 1; ++j) {
             // 对每个非目标属性
             int k_size = (int) data_k.size();
-            auto& p = p_datas_[k][j];           // 当前需要计算的结点
+            auto& p = p_datas_[k][j];                       // 当前需要计算的结点
 
             if (is_numeric_[j]) {
                 // 计算均值和方差
@@ -143,7 +147,13 @@ bool naive_bayes::run()
 
             // 计算每个属性值的数量，即有多少条数据具有该属性值
             for (int i = 0; i < k_size; ++i) {
+                // data_k[i] 基于 num_targ_ 从 target_to_label_ 得到的下标值
+                // datas_[x][y]: 样本数据
+                // datas_[data_k[i]][j]: 通过 data_k[i] 取出行的下标，j作为列的下标。然后这样的组合，取出样本数据
+                // attr_to_int_[j]: 得到样本数据的重复数据
                 int tmp = attr_to_int_[j][datas_[data_k[i]][j]];
+                // std::cout << "k:" << k << " | xxx: " << datas_[data_k[i]][j] << " | tmp: " << tmp << std::endl;
+                p.p_attr_[tmp]++;
             }
 
             // 计算概率
