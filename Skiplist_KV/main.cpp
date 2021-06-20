@@ -14,6 +14,16 @@ int main() {
     skipList.dump_file();
 
     skipList.search_element("name");
+    skipList.search_element("weather");
 
+    skipList.display_list();
+
+    std::cout << "\n-----------  delete_element --------------" << std::endl;
+    skipList.delete_element("temperature");
+    skipList.delete_element("address");
+
+    std::cout << "\nskipList size:" << skipList.size() << std::endl;
+
+    skipList.display_list();
     return 0;
 }

@@ -6,77 +6,12 @@
 #include <cstring>
 #include <mutex>
 #include <fstream>
+#include "skiplist_node.h"
 
 #define STORE_FILE "dumpFile"
 
 std::mutex mtx;                 // 临界的互斥锁
 std::string delimiter = ";";
-
-// 实现节点的类模板
-template<typename K, typename V>
-class Node
-{
-    private:
-        K key_;
-        V value_;
-
-    public:
-        Node()
-        {
-
-        }
-
-        Node(K k, V v, int);
-
-        ~Node();
-
-        K get_key() const;
-
-        V get_value() const;
-
-        void set_value(V);
-
-        // 用于保存指向不同级别的下一个节点的指针的线性数组
-        Node<K, V> **forward_;
-
-        int node_level_;
-};
-
-
-template<typename K, typename V>
-Node<K, V>::Node(const K k, const V v, int level)
-    :key_(k), value_(v), node_level_(level), forward_(new Node<K, V>*[level + 1])
-{
-    /**
-     * level + 1，因为数组索引是从 0 - level
-     * 
-     * 用 0(NULL) 填充前向数组
-     */
-    memset(forward_, 0, sizeof(Node<K, V>*) * (level + 1));
-}
-
-template<typename K, typename V>
-Node<K, V>::~Node()
-{
-    delete [] forward_;
-}
-
-template<typename K, typename V>
-K Node<K, V>::get_key() const
-{
-    return key_;
-}
-
-template<typename K, typename V> 
-V Node<K, V>::get_value() const {
-    return value_;
-};
-
-template<typename K, typename V>
-void Node<K, V>::set_value(V value)
-{
-    value_ = value;
-}
 
 // skiplist 的类模板
 template<typename K, typename V>
@@ -222,7 +157,7 @@ void SkipList<K, V>::display_list()
 template<typename K, typename V> 
 void SkipList<K, V>::dump_file()
 {
-    std::cout << "dump_file-----------------" << std::endl;
+    std::cout << "\n------------ dump_file ------------" << std::endl;
     file_writer_.open(STORE_FILE);
 
     Node<K, V> *node = header_->forward_[0];
@@ -244,7 +179,7 @@ template<typename K, typename V>
 void SkipList<K, V>::load_file()
 {
     file_reader_.open(STORE_FILE);
-    std::cout << "load_file-----------------" << std::endl;
+    std::cout << "\n ------------ load_file ------------" << std::endl;
 
     std::string line;
     std::string *key = new std::string();
@@ -308,7 +243,7 @@ void SkipList<K, V>::delete_element(K key)
                 break;
             }
 
-            update[i]->forward[i] = current->forward_[i];
+            update[i]->forward_[i] = current->forward_[i];
         }
 
         // 删除没有数据的层级 
@@ -347,7 +282,7 @@ level 0         1    4   9 10         30   40    50+-->60      70       100
 template<typename K, typename V> 
 bool SkipList<K, V>::search_element(K key)
 {
-    std::cout << "search_element-----------------" << std::endl;
+    std::cout << "\n-----------  search_element --------------" << std::endl;
     Node<K, V> *current = header_;
 
     // 从skiplist 的最大层级开始
