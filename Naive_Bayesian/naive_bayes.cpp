@@ -46,9 +46,9 @@ bool naive_bayes::set_data(vvs& d, vs& h, vb b)
 
     target_attr_ = headers_.back();         // header的最后一个元素
 
-    attr_to_int_.resize(num_attr_);
+    attr_to_int_.resize(num_attr_);         // 记录每列不重复key对应每列的不重复的列字段的数量
     int_to_attr_.resize(num_attr_);         // 对样本数据进行去重
-    attrs_size_.resize(num_attr_);
+    attrs_size_.resize(num_attr_);          // 记录每列去重后的数据的数量
 
     // 类型分类
     for (int i = 0; i < num_data_; ++i) {
@@ -150,7 +150,7 @@ bool naive_bayes::run()
                 // data_k[i] 基于 num_targ_ 从 target_to_label_ 得到的下标值
                 // datas_[x][y]: 样本数据
                 // datas_[data_k[i]][j]: 通过 data_k[i] 取出行的下标，j作为列的下标。然后这样的组合，取出样本数据
-                // attr_to_int_[j]: 得到样本数据的重复数据
+                // attr_to_int_[j]: 得到每列不重复key对应每列的不重复的列字段的数量
                 int tmp = attr_to_int_[j][datas_[data_k[i]][j]];
                 // std::cout << "k:" << k << " | xxx: " << datas_[data_k[i]][j] << " | tmp: " << tmp << std::endl;
                 p.p_attr_[tmp]++;
