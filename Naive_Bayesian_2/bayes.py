@@ -160,5 +160,61 @@ def testingNB():
     print(testEntry, '分类结果是: ', classifyNB(thisDoc, p0V, p1V, pAb))
 
 
+'''---------------项目案例2: 使用朴素贝叶斯过滤垃圾邮件----------------'''
+
+'''接收一个大字符串并将其解析为字符串列表'''
+def textParse(bigString):
+    import re
+    # 使用正则表达式来切分句子，其中分隔符是除单词、数字处的任意字符串
+    listOfTokens = re.split(r'\W*', bigString)
+    return [tok.lower() for tok in listOfTokens if len(tok) > 2]
+
+'''读取文本'''
+def testParseTest():
+    print(textParse(open('./email/ham/1.tx').read()))
+
+'''对贝叶斯垃圾邮件分类器进行自动化处理'''
+def spamTest():
+    docList = [];classList = [];fullText = []   # 文档列表、类别列表、文本特征
+    for i in range(1, 26):                      # 总共25个文档
+        # 切分，解析数据，并归类为1类别
+        wordList = textParse(open('./email/spam/%d.txt' % i).read())
+        docList.append(wordList)
+        classList.append(1)
+        # 切分，解析数据，并归类为0类别
+        wordList = textParse(open('./email/ham/%d.txt' % i), encoding='UTF-8').read()
+        docList.append(wordList)
+        classList.append(0)
+        fullText.extend(wordList)
+    
+    # 创建词汇表
+    vocabList = createVocabList(docList)
+    trainingSet = list(range(50))   # 词汇表文档索引
+    testSet = []
+
+    # 随机取10个邮件用来测试
+    for i in range(10):
+        # random.uniform(x, y) 随机生成一个范围为 x - y 的实数
+        randIndex = int(random.uniform(0, len(trainingSet)))
+        testSet.append(trainingSet[randIndex])                  # 随机抽取测试样本
+        del(trainingSet[randIndex])                             # 训练集中删除选择为测试集的文档
+
+    trainMat = [];trainClasses = []                             # 训练集合训练标签
+    for docIndex in trainingSet:
+        traninMat.append(setOfWords2Vec(vocabList, docList[docIndex]))
+        trainClasses.append(classList[docIndex])
+    
+    p0V, p1V, pSpam = trainNB0(array(trainMat), array(trainClasses))
+    errorCount = 0
+
+    for docIndex in testSet:
+        wordVector = setOfWords2Vec(vocabList, docList[docIndex])
+        if classifyNB(array(wordVector), p0V, p1V, pSpam) != classList[docIndex]:
+            errorCount += 1
+    
+    print('the errorCount is: ', errorCount)
+    print('the testSet length is :', len(testSet))
+    print('the error rate is :', float(errorCount)/len(testSet))
+
 if __name__ == "__main__":
     testingNB()
