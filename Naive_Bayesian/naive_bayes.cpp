@@ -46,8 +46,8 @@ bool naive_bayes::set_data(vvs& d, vs& h, vb b)
 
     target_attr_ = headers_.back();         // header的最后一个元素
 
-    attr_to_int_.resize(num_attr_);         // 记录每列不重复key对应每列的不重复的列字段的数量
-    int_to_attr_.resize(num_attr_);         // 对样本数据进行去重
+    attr_to_int_.resize(num_attr_);         // 记录列不重复key对应每行的不重复的行字段的数量
+    int_to_attr_.resize(num_attr_);         // 对样本数据进行去重[每列去重后的数据]
     attrs_size_.resize(num_attr_);          // 记录每列去重后的数据的数量
 
     // 类型分类
@@ -184,16 +184,19 @@ std::string naive_bayes::classification(vs& data)
 
     auto f = [&](double x, double u, double d) {
         // 求正态分布概率密度
+        // exp: 计算指数函数
+        // acos: 计算反余弦
         return std::exp(-(x - u) * (x - u) / (2 * d)) / sqrt(4 * std::acos(-1) * d);
     };
 
     for (int i = 0; i < num_targ_; ++i) {
-        auto& t = p_targ_val[i];
+        auto& t = p_targ_val[i];    // 值引用
         t = std::log(p_target_[i]); // 取对数
         
         for (int j = 0; j < num_attr_ - 1; ++j) {
             auto& p = p_datas_[i][j];
             if (is_numeric_[j]) {
+                // stod: 将字符串转换为双精度
                 t += std::log(f(std::stod(data[j]), p.mean_value_, p.variance_));
             } else {
                 auto it = attr_to_int_[j].find(data[j]);

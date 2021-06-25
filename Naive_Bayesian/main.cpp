@@ -8,6 +8,13 @@
 #include "naive_bayes.h"
 using namespace std;
 
+/**
+ * 是否能打网球?
+ *  流程
+ *      1. 数据准备
+ *          1. 遍历data.txt 行列的数据
+ *          2. 获得 列不重复key对应每行的不重复的行字段的数量
+ */
 bool playTennis() {
 
     vector<string> header;
