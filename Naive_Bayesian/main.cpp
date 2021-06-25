@@ -91,11 +91,11 @@ bool playTennis() {
 bool iris() {
 
     vector<string> header {
-        "sepal length",
-        "sepal width",
-        "petal length",
-        "petal width",
-        "class"
+        "sepal length", // 萼片长度
+        "sepal width",  // 萼片宽度
+        "petal length", // 花瓣长度
+        "petal width",  // 花瓣宽度
+        "class"         // 类别
     };
 
     vector<vector<string>> examples;
@@ -111,7 +111,6 @@ bool iris() {
         while (iss >> tmp) {
             v.push_back(tmp);
         }
-
         examples.push_back(v);
     }
 
@@ -139,7 +138,6 @@ bool iris() {
             cout << j << ", ";
         }
         cout << real << ">\t the answer is" << ans << endl;
-
     }
 
     return true;

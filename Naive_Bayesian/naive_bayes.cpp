@@ -122,7 +122,7 @@ bool naive_bayes::run()
                 tmp.resize(k_size);
 
                 for (int i = 0; i < k_size; ++i) {
-                    tmp[i] = std::stod(datas_[data_k[k]][j]), sum += tmp[i];
+                    tmp[i] = std::stod(datas_[data_k[i]][j]), sum += tmp[i];
                 }
 
                 mean_value = sum / k_size;
