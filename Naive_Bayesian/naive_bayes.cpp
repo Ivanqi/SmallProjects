@@ -46,9 +46,9 @@ bool naive_bayes::set_data(vvs& d, vs& h, vb b)
 
     target_attr_ = headers_.back();         // header的最后一个元素
 
-    attr_to_int_.resize(num_attr_);         // 记录列不重复key对应每行的不重复的行字段的数量
-    int_to_attr_.resize(num_attr_);         // 对样本数据进行去重[每列去重后的数据]
-    attrs_size_.resize(num_attr_);          // 记录每列去重后的数据的数量
+    attr_to_int_.resize(num_attr_);         // 按列(header)计算每个 header 下不重复的key的数量
+    int_to_attr_.resize(num_attr_);         // 按列(header)记录每个不重复key
+    attrs_size_.resize(num_attr_);          // 按列(header)得到不重复key的数量
 
     // 类型分类
     for (int i = 0; i < num_data_; ++i) {
