@@ -13,7 +13,7 @@ using namespace std;
  *  流程
  *      1. 数据准备
  *          1. 遍历data.txt 行列的数据
- *          2. 获得 按列(header)计算每个 header 下不重复的key的数量. 代号A
+ *          2. 获得 按列(header)计算每个 header 下不重复的key的类别序号. 代号A
  *          3. 获得 按列(header)记录每个不重复key. 代号B
  *          4. 获得 按列(header)得到不重复key的数量. 代号C，这个数据是从B的数据统计出来的
  *          5. 获得 当前事件下(playTennis)的标识。 NO:0, Yes: 1. 代号D, 这个数据是从A的数据得到的

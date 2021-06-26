@@ -46,7 +46,7 @@ bool naive_bayes::set_data(vvs& d, vs& h, vb b)
 
     target_attr_ = headers_.back();         // header的最后一个元素
 
-    attr_to_int_.resize(num_attr_);         // 按列(header)计算每个 header 下不重复的key的数量
+    attr_to_int_.resize(num_attr_);         // 按列(header)计算每个 header 下不重复的key的类别序号
     int_to_attr_.resize(num_attr_);         // 按列(header)记录每个不重复key
     attrs_size_.resize(num_attr_);          // 按列(header)得到不重复key的数量
 
