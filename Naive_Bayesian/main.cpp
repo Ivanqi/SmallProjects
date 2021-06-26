@@ -88,6 +88,18 @@ bool playTennis() {
     return true;
 }
 
+/**
+ * 究竟是那种类别的花?
+ *  1. 数据准备
+ *      1. 遍历iris.data的数据
+ *      2. 获得 iris的类别数据(Iris-setosa:0, Iris-versicolor:1, Iris-virginica: 2),代号A
+ *  2. 统计分布概率
+ *      1. 根据iris的类别数据A,得到该类别每行所得到的平均值和方差
+ *  3. 数据分类
+ *      1. 通过传入的数据(例如: 5.1 3.5 1.4 0.2) 求每个类别下的概率
+ *      2. 通过整个一列的每个数据和每行的平均和方差做正态分布。然后把正态分布后的概率累加起来
+ *      3. P(数据集|Iris-setosa), P(数据集|Iris-versicolor), P(数据集|Iris-virginica)求最大概率
+ */
 bool iris() {
 
     vector<string> header {
@@ -118,6 +130,10 @@ bool iris() {
     vector<vector<string>> test;    // 测试集
 
     for (int i = 40; i < 50; ++i) {
+        // for (auto xx: examples[i]) {
+        //     cout << xx << "\t";
+        // }
+        // cout << endl;
         test.push_back(examples[i]);
         test.push_back(examples[i + 50]), test.push_back(examples[i + 100]);
     }

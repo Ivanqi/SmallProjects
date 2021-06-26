@@ -79,7 +79,7 @@ bool naive_bayes::set_data(vvs& d, vs& h, vb b)
     for (int i = 0; i < num_data_; ++i) {
         // 取attr_to_int_最后一个桶里的map
         // 取d[i]中最后一个元素
-        // 然后得到d[i]中最后一个元素在attr_to_int_中记录的次数
+        // 然后得到d[i]中最后一个元素在attr_to_int_中记录的分类ID
         // std::cout << "xxx: " << d[i][num_attr_ - 1] << " | " << attr_to_int_[num_attr_ - 1][d[i][num_attr_ - 1]] << std::endl;
         target_to_label_.push_back(attr_to_int_[num_attr_ - 1][d[i][num_attr_ - 1]]);
     }
@@ -98,6 +98,7 @@ bool naive_bayes::run()
     for (int i = 0; i < num_targ_; ++i) {
         p_datas_[i].resize(num_attr_ - 1);  // 每列表示一个非目标属性
     }
+
 
     for (int k = 0; k < num_targ_; ++k) {
         // 对每个目标属性值
@@ -122,6 +123,7 @@ bool naive_bayes::run()
                 tmp.resize(k_size);
 
                 for (int i = 0; i < k_size; ++i) {
+                    // std::stod 将字符串转换为双精度
                     tmp[i] = std::stod(datas_[data_k[i]][j]), sum += tmp[i];
                 }
 
@@ -152,7 +154,7 @@ bool naive_bayes::run()
                 // datas_[data_k[i]][j]: 通过 data_k[i] 取出行的下标，j作为列的下标。然后这样的组合，取出样本数据
                 // attr_to_int_[j]: 得到每列不重复key对应每列的不重复的列字段的数量
                 int tmp = attr_to_int_[j][datas_[data_k[i]][j]];
-                // std::cout << "k:" << k << " | xxx: " << datas_[data_k[i]][j] << " | tmp: " << tmp << std::endl;
+                std::cout << "k:" << k << " | xxx: " << datas_[data_k[i]][j] << " | tmp: " << tmp << std::endl;
                 p.p_attr_[tmp]++;
             }
 
