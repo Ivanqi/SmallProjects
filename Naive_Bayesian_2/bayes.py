@@ -146,18 +146,17 @@ def testingNB():
     for postinDoc in dataSet:
         # 返回m*len(myVocabList)的矩阵， 记录的都是0，1信息
         trainMat.append(setOfWords2Vec(myVocabList, postinDoc))
-    
     # 4. 训练数据
     p0V, p1V, pAb = trainNB0(array(trainMat), array(Classlabels))
 
-    # 5. 测试数据
-    testEntry = ['love', 'my', 'dalmation']
-    thisDoc = array(setOfWords2Vec(myVocabList, testEntry))
-    print(testEntry, '分类结果是: ', classifyNB(thisDoc, p0V, p1V, pAb))
+    # # 5. 测试数据
+    # testEntry = ['love', 'my', 'dalmation']
+    # thisDoc = array(setOfWords2Vec(myVocabList, testEntry))
+    # print(testEntry, '分类结果是: ', classifyNB(thisDoc, p0V, p1V, pAb))
 
-    testEntry = ['stupid', 'garbage']
-    thisDoc = array(setOfWords2Vec(myVocabList, testEntry))
-    print(testEntry, '分类结果是: ', classifyNB(thisDoc, p0V, p1V, pAb))
+    # testEntry = ['stupid', 'garbage']
+    # thisDoc = array(setOfWords2Vec(myVocabList, testEntry))
+    # print(testEntry, '分类结果是: ', classifyNB(thisDoc, p0V, p1V, pAb))
 
 
 '''---------------项目案例2: 使用朴素贝叶斯过滤垃圾邮件----------------'''
