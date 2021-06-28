@@ -82,9 +82,12 @@ def _trainNB0(trainMatrix, trainCategory):
 
 '''训练数据优化版本'''
 def trainNB0(trainMatrix, trainCategory):
+
     numTrainDocs = len(trainMatrix) # 总文件数
     numWords = len(trainMatrix[0])  # 总单词数
+
     pAbusive = sum(trainCategory) / float(numTrainDocs) # 侮辱性文件的出现概率
+
     # 构造单词出现次数列表,p0Num 正常的统计,p1Num 侮辱的统计
     # 避免单词列表中的任何一个单词为0，而导致最后的乘积为0，所以将每个单词的出现次数初始化为 1
     p0Num = ones(numWords)  # [0,0......]->[1,1,1,1,1.....],ones初始化1的矩阵
@@ -95,18 +98,24 @@ def trainNB0(trainMatrix, trainCategory):
     # p1Denom 侮辱的统计
     p0Denom = 2.0
     p1Denom = 2.0
-    
+
     for i in range(numTrainDocs):
         if trainCategory[i] == 1:
-            p1Num += trainMatrix[i] # 累加辱骂词的频率
+            p1Num += trainMatrix[i]         # 累加辱骂词的频率
             p1Denom += sum(trainMatrix[i])  # 对每篇文章的辱骂的频次，进行统计汇总
         else:
             p0Num += trainMatrix[i]
             p0Denom += sum(trainMatrix[i])
     
-    # 类别1，即侮辱性文档的[log(P(F1|C1)),log(P(F2|C1)),log(P(F3|C1)),log(P(F4|C1)),log(P(F5|C1))....]列表,取对数避免下溢出或浮点舍入出错
+    '''
+    类别1，即侮辱性文档的[log(P(F1|C1)),log(P(F2|C1)),log(P(F3|C1)),log(P(F4|C1)),log(P(F5|C1))....]列表
+    取对数避免下溢出或浮点舍入出错
+    '''
     p1Vect = log(p1Num / p1Denom)
-    # 类别0，即正常文档的[log(P(F1|C0)),log(P(F2|C0)),log(P(F3|C0)),log(P(F4|C0)),log(P(F5|C0))....]列表
+
+    '''
+    类别0，即正常文档的[log(P(F1|C0)),log(P(F2|C0)),log(P(F3|C0)),log(P(F4|C0)),log(P(F5|C0))....]列表
+    '''
     p0Vect = log(p0Num / p0Denom)
     return p0Vect, p1Vect, pAbusive
 
@@ -139,24 +148,27 @@ def classifyNB(vec2Classify, p0Vec, p1Vec, pClass1):
 def testingNB():
     # 1. 加载数据集
     dataSet, Classlabels = loadDataSet()
+
     # 2. 创建单词集合
     myVocabList = createVocabList(dataSet)
+
     # 3. 计算单词是否出现并创建数据矩阵
     trainMat = []
     for postinDoc in dataSet:
         # 返回m*len(myVocabList)的矩阵， 记录的都是0，1信息
         trainMat.append(setOfWords2Vec(myVocabList, postinDoc))
+    
     # 4. 训练数据
     p0V, p1V, pAb = trainNB0(array(trainMat), array(Classlabels))
 
     # # 5. 测试数据
-    # testEntry = ['love', 'my', 'dalmation']
-    # thisDoc = array(setOfWords2Vec(myVocabList, testEntry))
-    # print(testEntry, '分类结果是: ', classifyNB(thisDoc, p0V, p1V, pAb))
+    testEntry = ['love', 'my', 'dalmation']
+    thisDoc = array(setOfWords2Vec(myVocabList, testEntry))
+    print(testEntry, '分类结果是: ', classifyNB(thisDoc, p0V, p1V, pAb))
 
-    # testEntry = ['stupid', 'garbage']
-    # thisDoc = array(setOfWords2Vec(myVocabList, testEntry))
-    # print(testEntry, '分类结果是: ', classifyNB(thisDoc, p0V, p1V, pAb))
+    testEntry = ['stupid', 'garbage']
+    thisDoc = array(setOfWords2Vec(myVocabList, testEntry))
+    print(testEntry, '分类结果是: ', classifyNB(thisDoc, p0V, p1V, pAb))
 
 
 '''---------------项目案例2: 使用朴素贝叶斯过滤垃圾邮件----------------'''
@@ -241,6 +253,7 @@ def localWords(feed1,feed0):
     docList=[];classList=[];fullText=[]
     minLen=min(len(feed1['entries']),len(feed0['entries'])) # entries内容无法抓取，网站涉及反爬虫技术
     print(len(feed1['entries']),len(feed0['entries']))
+
     for i in range(minLen):
         wordList=textParse(feed1['entries'][i]['summary'])   #每次访问一条RSS源
         docList.append(wordList)
@@ -250,25 +263,31 @@ def localWords(feed1,feed0):
         docList.append(wordList)
         fullText.extend(wordList)
         classList.append(0)
+
     vocabList=createVocabList(docList)
     top30Words=calcMostFreq(vocabList,fullText)
+
     for pairW in top30Words:
         if pairW[0] in vocabList:vocabList.remove(pairW[0])    #去掉出现次数最高的那些词
+
     trainingSet=range(2*minLen);testSet=[]
     for i in range(20):
         randIndex=int(random.uniform(0,len(trainingSet)))
         testSet.append(trainingSet[randIndex])
         del(trainingSet[randIndex])
+    
     trainMat=[];trainClasses=[]
     for docIndex in trainingSet:
         trainMat.append(bagOfWords2VecMN(vocabList,docList[docIndex]))
         trainClasses.append(classList[docIndex])
+
     p0V,p1V,pSpam=trainNB0(array(trainMat),array(trainClasses))
     errorCount=0
     for docIndex in testSet:
         wordVector=bagOfWords2VecMN(vocabList,docList[docIndex])
         if classifyNB(array(wordVector),p0V,p1V,pSpam)!=classList[docIndex]:
             errorCount+=1
+    
     print('the error rate is:',float(errorCount)/len(testSet))
     return vocabList,p0V,p1V
 
@@ -278,15 +297,20 @@ def getTopWords(ny,sf):
     import operator
     vocabList,p0V,p1V=localWords(ny,sf)
     topNY=[];topSF=[]
+
     for i in range(len(p0V)):
         if p0V[i]>-6.0:topSF.append((vocabList[i],p0V[i]))
         if p1V[i]>-6.0:topNY.append((vocabList[i],p1V[i]))
+
     sortedSF=sorted(topSF,key=lambda pair:pair[1],reverse=True)
     print("SF**SF**SF**SF**SF**SF**SF**SF**SF**SF**SF**SF**SF**SF**")
+
     for item in sortedSF:
         print(item[0])
+
     sortedNY=sorted(topNY,key=lambda pair:pair[1],reverse=True)
     print("NY**NY**NY**NY**NY**NY**NY**NY**NY**NY**NY**NY**NY**NY**")
+    
     for item in sortedNY:
         print(item[0])
 
