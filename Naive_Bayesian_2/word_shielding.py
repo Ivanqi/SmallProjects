@@ -40,46 +40,6 @@ def setOfWords2Vec(vocabList, inputSet):
             print("单词: %s 不在词汇表之中!" % word)
     return returnVec
 
-'''文档词袋模型构建数据矩阵'''
-def bagOfWords2VecMN(vocabList, inputSet):
-    returnVec = [0] * len(vocabList)
-    for word in inputSet:
-        if word in vocabList:
-            returnVec[vocabList.index(word)] += 1
-    return returnVec
-
-'''朴素贝叶斯分类器训练函数'''
-def _trainNB0(trainMatrix, trainCategory):
-    numTrainDocs = len(trainMatrix) # 文件数
-    numWords = len(trainMatrix[0])  # 单词数
-
-    # 侮辱性文件的出现频率，即trainCategory中所有1的个数
-    # 代表的就是多少个侮辱性文件，与文件的总数相除就得到了侮辱性文件的出现频率
-    pAbusive = sum(trainCategory) / float(numTrainDocs)
-
-    # 构造单词出现次数列表
-    p0Num = zeros(numWords) # [0,0,0,.....]
-    p1Num = zeros(numWords) # [0,0,0,.....]
-    p0Denom = 0.0; p1Denom = 0.0    # 整个数据集单词出现的次数
-
-    for i in range(numTrainDocs):
-        # 遍历所有的文件，如果是侮辱性文件，就计算此侮辱文件中出现的侮辱性单词的个数
-        if trainCategory[i] == 1:
-            p1Num += trainMatrix[i] #[0,1,1,....]->[0,1,1,...]
-            p1Denom += sum(trainMatrix[i])
-        else:
-            # 如果不是侮辱性文件，则计算非侮辱文件中出现的侮辱性单词的个数
-            p0Num += trainMatrix[i]
-            p0Denom += sum(trainMatrix[i])
-    
-    # 类别1，即侮辱性文档的[P(F1|C1),P(F2|C1),P(F3|C1),P(F4|C1),P(F5|C1)....]列表
-    # 即在1类别下，每个单词出现次数的占比
-    p1Vect = p1Num / p1Denom# [1,2,3,5]/90->[1/90,...]
-    # 类别0，即正常文档的[P(F1|C0),P(F2|C0),P(F3|C0),P(F4|C0),P(F5|C0)....]列表
-    # 即 在0类别下，每个单词出现次数的占比
-    p0Vect = p0Num / p0Denom
-    return p0Vect, p1Vect, pAbusive
-
 '''训练数据优化版本'''
 def trainNB0(trainMatrix, trainCategory):
 
@@ -152,30 +112,31 @@ def classifyNB(vec2Classify, p0Vec, p1Vec, pClass1):
     else:
         return 0
 
+'''朴素贝叶斯算法屏蔽社区留言板的侮辱性言论的应用'''
+def testingNB():
+    # 1. 加载数据集
+    dataSet, Classlabels = loadDataSet()
+
+    # 2. 创建单词集合
+    myVocabList = createVocabList(dataSet)
+
+    # 3. 计算单词是否出现并创建数据矩阵
+    trainMat = []
+    for postinDoc in dataSet:
+        # 返回m*len(myVocabList)的矩阵， 记录的都是0，1信息
+        trainMat.append(setOfWords2Vec(myVocabList, postinDoc))
+    
+    # 4. 训练数据
+    p0V, p1V, pAb = trainNB0(array(trainMat), array(Classlabels))
+
+    # # 5. 测试数据
+    testEntry = ['love', 'my', 'dalmation']
+    thisDoc = array(setOfWords2Vec(myVocabList, testEntry))
+    print(testEntry, '分类结果是: ', classifyNB(thisDoc, p0V, p1V, pAb))
+
+    testEntry = ['stupid', 'garbage']
+    thisDoc = array(setOfWords2Vec(myVocabList, testEntry))
+    print(testEntry, '分类结果是: ', classifyNB(thisDoc, p0V, p1V, pAb))
 
 if __name__ == "__main__":
-    # 1 打印数据集和标签
-    dataSet, Classlabels = loadDataSet()
-    print(dataSet,'\n',Classlabels, '\n')
-
-    # 2 获取所有单词的集合
-    vocabList = createVocabList(dataSet)
-    print(vocabList, '\n')
-
-    # 3 文本转化为向量
-    # setOfWords2Vec(vocabList, dataSet[0])   # 单句文本向量转化
-    # bagOfWords2VecMN(vocabList, dataSet[0])
-
-    # 文本向量转化
-    trainMatrix = []
-    for postinDoc in dataSet:
-        trainMatrix.append(setOfWords2Vec(vocabList, postinDoc))
-    print(array(trainMatrix), '\n', Classlabels)
-
-    # 4.1 朴素贝叶斯分类器训练函数
-    p0V,p1V,pAb=_trainNB0(trainMatrix,Classlabels)
-    print(p0V, '\n', p1V,'\n', pAb, '\n')
-
-    # 4.2训练数据优化版本
-    p0V,p1V,pAb = trainNB0(trainMatrix, Classlabels)
-    print(p0V, '\n', p1V, '\n', pAb)
+    testingNB()
