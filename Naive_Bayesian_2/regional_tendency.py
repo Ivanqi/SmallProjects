@@ -1,26 +1,6 @@
 from numpy import *
 import feedparser
 
-'''
-贝叶斯公式
-p(xy)=p(x|y)p(y)=p(y|x)p(x)
-p(x|y)=p(y|x)p(x)/p(y)
-'''
-
-'''-----------项目案例1: 屏蔽社区留言板的侮辱性言论----------------'''
-'''创建数据集：单词列表postingList, 所属类别classVec'''
-def loadDataSet():
-    postingList = [
-        ['my', 'dog', 'has', 'flea', 'porblems', 'help', 'please'],
-        ['maybe', 'not', 'take', 'him', 'to', 'dog', 'park', 'stupid'],
-        ['my', 'dalmation', 'is', 'so', 'cute', 'I', 'love', 'him'],
-        ['stop', 'posting', 'stupid', 'worthless', 'garbage'],
-        ['mr', 'licks', 'ate', 'my', 'steak', 'how', 'to', 'stop', 'him'],
-        ['quit', 'buying', 'worthless', 'dog', 'food', 'stupid']
-    ]
-    classVec = [0, 1, 0, 1, 0, 1]   # 1代表侮辱性文字，0代表非侮辱文字
-    return postingList, classVec
-
 '''获取所有单词的集合:返回不含重复元素的单词列表'''
 def createVocabList(dataSet):
     vocabSet = set([])
@@ -152,32 +132,6 @@ def classifyNB(vec2Classify, p0Vec, p1Vec, pClass1):
     else:
         return 0
 
-'''朴素贝叶斯算法屏蔽社区留言板的侮辱性言论的应用'''
-def testingNB():
-    # 1. 加载数据集
-    dataSet, Classlabels = loadDataSet()
-
-    # 2. 创建单词集合
-    myVocabList = createVocabList(dataSet)
-
-    # 3. 计算单词是否出现并创建数据矩阵
-    trainMat = []
-    for postinDoc in dataSet:
-        # 返回m*len(myVocabList)的矩阵， 记录的都是0，1信息
-        trainMat.append(setOfWords2Vec(myVocabList, postinDoc))
-    
-    # 4. 训练数据
-    p0V, p1V, pAb = trainNB0(array(trainMat), array(Classlabels))
-
-    # # 5. 测试数据
-    testEntry = ['love', 'my', 'dalmation']
-    thisDoc = array(setOfWords2Vec(myVocabList, testEntry))
-    print(testEntry, '分类结果是: ', classifyNB(thisDoc, p0V, p1V, pAb))
-
-    testEntry = ['stupid', 'garbage']
-    thisDoc = array(setOfWords2Vec(myVocabList, testEntry))
-    print(testEntry, '分类结果是: ', classifyNB(thisDoc, p0V, p1V, pAb))
-
 
 # -----------项目案例3: 使用朴素贝叶斯从个人广告中获取区域倾向------------
 
@@ -202,69 +156,73 @@ def calcMostFreq(vocabList,fullText):
 
 def localWords(feed1,feed0):
     # import feedparser # feedparser是python中最常用的RSS程序库
-    docList=[];classList=[];fullText=[]
-    minLen=min(len(feed1['entries']),len(feed0['entries'])) # entries内容无法抓取，网站涉及反爬虫技术
+    docList = [];classList = [];fullText = []
+    minLen = min(len(feed1['entries']),len(feed0['entries'])) # entries内容无法抓取，网站涉及反爬虫技术
     print(len(feed1['entries']),len(feed0['entries']))
 
     for i in range(minLen):
-        wordList=textParse(feed1['entries'][i]['summary'])   #每次访问一条RSS源
+        wordList = textParse(feed1['entries'][i]['summary'])   #每次访问一条RSS源
         docList.append(wordList)
         fullText.extend(wordList)
         classList.append(1)
-        wordList=textParse(feed0['entries'][i]['summary'])
+        wordList = textParse(feed0['entries'][i]['summary'])
         docList.append(wordList)
         fullText.extend(wordList)
         classList.append(0)
 
-    vocabList=createVocabList(docList)
-    top30Words=calcMostFreq(vocabList,fullText)
+    vocabList = createVocabList(docList)
+    top30Words = calcMostFreq(vocabList,fullText)
 
     for pairW in top30Words:
         if pairW[0] in vocabList:vocabList.remove(pairW[0])    #去掉出现次数最高的那些词
 
-    trainingSet=range(2*minLen);testSet=[]
+    trainingSet = range(2 * minLen);testSet = []
     for i in range(20):
-        randIndex=int(random.uniform(0,len(trainingSet)))
+        randIndex = int(random.uniform(0,len(trainingSet)))
         testSet.append(trainingSet[randIndex])
         del(trainingSet[randIndex])
     
-    trainMat=[];trainClasses=[]
+    trainMat = [];trainClasses = []
     for docIndex in trainingSet:
         trainMat.append(bagOfWords2VecMN(vocabList,docList[docIndex]))
         trainClasses.append(classList[docIndex])
 
-    p0V,p1V,pSpam=trainNB0(array(trainMat),array(trainClasses))
-    errorCount=0
+    p0V, p1V, pSpam = trainNB0(array(trainMat), array(trainClasses))
+    errorCount = 0
+
     for docIndex in testSet:
-        wordVector=bagOfWords2VecMN(vocabList,docList[docIndex])
-        if classifyNB(array(wordVector),p0V,p1V,pSpam)!=classList[docIndex]:
-            errorCount+=1
+        wordVector = bagOfWords2VecMN(vocabList,docList[docIndex])
+        if classifyNB(array(wordVector), p0V, p1V, pSpam) != classList[docIndex]:
+            errorCount += 1
     
-    print('the error rate is:',float(errorCount)/len(testSet))
-    return vocabList,p0V,p1V
+    print('the error rate is:',float(errorCount) / len(testSet))
+    return vocabList, p0V, p1V
 
 
 # 最具表征性的词汇显示函数
-def getTopWords(ny,sf):
+def getTopWords(ny, sf):
     import operator
-    vocabList,p0V,p1V=localWords(ny,sf)
+    vocabList, p0V, p1V = localWords(ny, sf)
     topNY=[];topSF=[]
 
     for i in range(len(p0V)):
-        if p0V[i]>-6.0:topSF.append((vocabList[i],p0V[i]))
-        if p1V[i]>-6.0:topNY.append((vocabList[i],p1V[i]))
+        if p0V[i] > -6.0: topSF.append((vocabList[i], p0V[i]))
+        if p1V[i] > -6.0: topNY.append((vocabList[i], p1V[i]))
 
-    sortedSF=sorted(topSF,key=lambda pair:pair[1],reverse=True)
+    sortedSF = sorted(topSF, key = lambda pair:pair[1], reverse = True)
     print("SF**SF**SF**SF**SF**SF**SF**SF**SF**SF**SF**SF**SF**SF**")
 
     for item in sortedSF:
         print(item[0])
 
-    sortedNY=sorted(topNY,key=lambda pair:pair[1],reverse=True)
+    sortedNY = sorted(topNY, key = lambda pair:pair[1],reverse = True)
     print("NY**NY**NY**NY**NY**NY**NY**NY**NY**NY**NY**NY**NY**NY**")
 
     for item in sortedNY:
         print(item[0])
 
 if __name__ == "__main__":
-    testingNB()
+    ny = feedparser.parse('http://newyork.craigslist.org/stp/index.rss')
+    sf = feedparser.parse('http://sfbay.craigslist.org/stp/index.rss')
+    
+    vocabList, pSF , pNY = localWords(ny, sf)
