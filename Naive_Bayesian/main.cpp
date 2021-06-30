@@ -130,10 +130,6 @@ bool iris() {
     vector<vector<string>> test;    // 测试集
 
     for (int i = 40; i < 50; ++i) {
-        // for (auto xx: examples[i]) {
-        //     cout << xx << "\t";
-        // }
-        // cout << endl;
         test.push_back(examples[i]);
         test.push_back(examples[i + 50]), test.push_back(examples[i + 100]);
     }
@@ -149,7 +145,7 @@ bool iris() {
         data.pop_back();
         auto ans = nb.classification(data);
 
-        cout<<'<';
+        cout << '<';
         for (auto& j : data) {
             cout << j << ", ";
         }
@@ -161,7 +157,7 @@ bool iris() {
 
 int main(int argc, char* argv[]) {
 
-    if (argc >=2 && atoi(argv[1]) == 2) {
+    if (argc >= 2 && atoi(argv[1]) == 2) {
         iris();
     } else {
         playTennis();

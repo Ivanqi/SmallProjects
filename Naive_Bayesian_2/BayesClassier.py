@@ -124,7 +124,7 @@ def classifyNB(vec2Classify, pVect, pi):
         bnpi.append(sum(vec2Classify * pVect[x]) + log(pi[x]))
     
     # 分类集合
-    resList = ['Art','Literature','Education','Philosophy','History']
+    resList = ['Art', 'Literature', 'Education', 'Philosophy', 'History']
     # 根据最大概率，选择索引值
     index = [bnpi.index(res) for res in bnpi if res == max(bnpi)]
     return resList[index[0]]    # 返回分类值
@@ -146,12 +146,6 @@ def testingNB():
     dataSet, Classlabels, fullText = loadDataSet()
     # 2. 创建单词集合
     myVocabList = createVocabList(dataSet)
-    #去掉出现次数最高的那些词
-    # top30Words = calcMostFreq(myVocabList,fullText)
-    # for pairW in top30Words:
-    #     if pairW[0] in myVocabList:
-    #         myVocabList.remove(pairW[0])
-    # print(len(myVocabList))
 
     # 3. 计算单词是否出现并创建数据矩阵
     trainMat = []
