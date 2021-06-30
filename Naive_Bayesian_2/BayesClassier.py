@@ -2,6 +2,7 @@ from numpy import *
 import time, nltk
 from decimal import Decimal
 import jieba.posseg as pseg
+import re
 
 '''
 描述: 朴素贝叶斯新闻分类
@@ -36,7 +37,7 @@ def loadDataSet():
     for j in range(5):
         for i in range(1, 11):  # 总共10个文档
             # 切分，解析数据，并归类为1类别
-            wordList = textParse(open('./fudan/%s/%d.txt' % (dirlist[j], i), "rb", encoding='UTF-8').read().decode('GBK', 'ignore'))
+            wordList = textParse(open('./fudan/%s/%d.txt' % (dirList[j], i), "rb").read().decode('UTF-8', 'ignore'))
             docList.append(wordList)
             fullText.extend(wordList)
             classList.append(j)
@@ -46,9 +47,8 @@ def loadDataSet():
 # 利用jieba对文本进行分词，返回切词后的list
 def textParse(src_doc):
     # 正则过滤掉特殊符号、标点、英文、数字
-    import re
     r1 = '[a-zA-Z0-9’!"#$%&\'()*+,-./:;<=>?@，。?★、…【】《》？“”‘’！[\\]^_`{|}~]+'
-    str_doc = re.sub(r1, '', str_doc)
+    str_doc = re.sub(r1, '', src_doc)
 
     # 创建停用词列表
     stwlist = set([line.strip() for line in open('./stopwords.txt', 'r', encoding='utf-8').readlines()])
@@ -63,7 +63,7 @@ def textParse(src_doc):
 # 去掉一些停用词、数字、特殊符号
 def rm_tokens(words, stwlist):
     words_list = list(words)
-    for i in range(words_list.__len__())[::-1]
+    for i in range(words_list.__len__())[::-1]:
         word = words_list[i]
         if word in stwlist:     # 去除停用词
             word_list.pop(i)
@@ -114,7 +114,6 @@ def trainNB0(trainMatrix, trainCategory):
     for index in range(5):
         pVect.append(log(pNumlist[index] / pDenomlist[index]))
         pi.append(Numlist[index] / float(numTrainDocs))
-    
     return pVect, pi
 
 '''朴素贝叶斯分类函数,将乘法转换为加法'''
@@ -128,7 +127,7 @@ def classifyNB(vec2Classify, pVect, pi):
     resList = ['Art','Literature','Education','Philosophy','History']
     # 根据最大概率，选择索引值
     index = [bnpi.index(res) for res in bnpi if res == max(bnpi)]
-    return reslist[index[0]]    # 返回分类值
+    return resList[index[0]]    # 返回分类值
 
 '''-----------特征选择改进方案与朴素贝叶斯分类应用----------------'''
 
@@ -148,7 +147,7 @@ def testingNB():
     # 2. 创建单词集合
     myVocabList = createVocabList(dataSet)
     #去掉出现次数最高的那些词
-    # top30Words=calcMostFreq(myVocabList,fullText)
+    # top30Words = calcMostFreq(myVocabList,fullText)
     # for pairW in top30Words:
     #     if pairW[0] in myVocabList:
     #         myVocabList.remove(pairW[0])
@@ -158,33 +157,19 @@ def testingNB():
     trainMat = []
     for postinDoc in dataSet:
         trainMat.append(bagOfWords2VecMN(myVocabList, postinDoc))
+    
     with open('./word-bag.txt','w') as f:
         for i in trainMat:
-            f.write(str(i)+'\r\n')
+            f.write(str(i) + '\r\n')
 
     # 4. 训练数据
-    pVect,pi= trainNB0(array(trainMat), array(Classlabels))
+    pVect, pi = trainNB0(array(trainMat), array(Classlabels))
 
     # 5. 测试数据
-    testEntry = textParse(open('./fudan/test/C5-1.txt',encoding='UTF-8').read())
+    testEntry = textParse(open('./fudan/test/C5-1.txt', 'rb').read().decode('UTF-8', 'ignore'))
     # testEntry = textParse('我是一篇艺术类文本，艺术是我的全部，我爱艺术人生。')
     thisDoc = array(bagOfWords2VecMN(myVocabList, testEntry))
-    print(testEntry[:10], '分类结果是: ', classifyNB(thisDoc, pVect,pi))
+    print(testEntry[:10], '分类结果是: ', classifyNB(thisDoc, pVect, pi))
 
 if __name__ == "__main__":
-    t1=time.time()
-    # 1 打印数据集和标签
-    dataSet,Classlabels,fullText = loadDataSet()
-    # with open('./word-bag.txt','w') as f:
-    #     f.write(','.join(dataSet[0]))
-
-    # 2 词袋模型
-    # myVocabList = createVocabList(dataSet)
-    # bagOfWords2VecMN(myVocabList, dataSet[0])
-
-    # 测试中文文本分类
     testingNB()
-
-    t2=time.time()
-    totalTime=Decimal(str(t2-t1)).quantize(Decimal('0.0000'))
-    print("耗时："+str(totalTime)+" s"+"\n")
