@@ -47,10 +47,10 @@ void makeDB(string infile_1, string infile_2, string outfile)
     // 读取输入文件内容
     while (getline(fin_1, line)) {
         line = replace_all(line, "/", "");
-        if (line.size() >= 2) {
+        if (line.size() >= 3) {
             // 逐字读取
-            for (int i = 0; i < line.size() - 1; i += 2) {
-                cchar = line.substr(i, 2);
+            for (int i = 0; i < line.size() - 1; i += 3) {
+                cchar = line.substr(i, 3);
                 if (map_cchar.find(cchar) == map_cchar.end()) {
                     ++id;
                     map_cchar[cchar] = id;
@@ -61,10 +61,10 @@ void makeDB(string infile_1, string infile_2, string outfile)
 
     while (getline(fin_2, line)) {
         line = replace_all(line, "/", "");
-        if (line.size() >= 2) {
+        if (line.size() >= 3) {
             // 逐字读取
-            for (int i = 0; i < line.size() - 1; i += 2) {
-                cchar = line.substr(i, 2);
+            for (int i = 0; i < line.size() - 1; i += 3) {
+                cchar = line.substr(i, 3);
                 if (map_cchar.find(cchar) == map_cchar.end()) {
                     ++id;
                     map_cchar[cchar] = id;
@@ -97,7 +97,6 @@ void makeBMES(string infile, string outfile)
 {
     ifstream fin(infile.c_str());
     ofstream fout(outfile.c_str());
-
     if (!(fin && fout)) {
         cerr << "makeBMES: Open file failed!" << endl;
         exit(-1);
@@ -116,12 +115,12 @@ void makeBMES(string infile, string outfile)
 
             while (strstm >> word_in) {
                 word_out.clear();
-                if (word_in.size() % 2 != 0) {
+                if (word_in.size() % 3 != 0) {
                     cout << "单词不符合要求: " << word_in << endl;
                     continue;
                 }
 
-                int num = word_in.size() / 2;   // 单词中包含多少个汉字
+                int num = word_in.size() / 3;   // 单词中包含多少个汉字
                 if (num == 0) {
                     continue;
                 }
@@ -131,22 +130,21 @@ void makeBMES(string infile, string outfile)
                     word_out += "/S";
                 } else {
                     // 复制单词中的第一个字
-                    word_out.insert(word_out.size(), word_in, 0, 2);
+                    word_out.insert(word_out.size(), word_in, 0, 3);
                     word_out += "/B";
                     // 逐个复制单词中间的字
                     for (int i = 1; i < num - 1; i++) {
-                        word_out.insert(word_out.size(), word_in, 2 * i, 2);
+                        word_out.insert(word_out.size(), word_in, 3 * i, 3);
                         word_out += "/M";
                     }
 
                     // 复制单词中最后的汉字
-                    word_out.insert(word_out.size(), word_in, 2 * num - 2, 2);
+                    word_out.insert(word_out.size(), word_in, 3 * num - 3, 3);
                     word_out += "/E";
                 }
 
                 line_out += word_out;
             }
-
             fout << line_out << endl;
         }
     }
@@ -158,7 +156,6 @@ int main(int argc, char *argv[]) {
         cout << "Usage: " << argv[0] << " train_file test_file db_file bmes_file " << endl;
         exit(-1);
     }
-
     // 构造DB文件，输入训练语料、测试语料、输出文件名
     makeDB(argv[1], argv[2], argv[3]);
 
