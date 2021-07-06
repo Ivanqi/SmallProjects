@@ -14,7 +14,7 @@ const int M = 5236;         // 汉字的个数
 const double VALUE = 1.0;   // 平滑算法增加的值
 
 // 定义字典对象
-DB db("db.txt");
+DB db("./data/db.txt");
 
 /**
  * 模型训练，将频数转换为频率(加1平滑)
