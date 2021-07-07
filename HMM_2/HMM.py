@@ -229,6 +229,7 @@ def word_partition(HMM_parameter, article):
             line_partition += line[t]
             if (status[t] == 2 or status[t]==3) and t != len(line) - 1:
                 line_partition += '|'
+                
         # 结束输出，换行
         article_partition.append(line_partition)
     
@@ -264,8 +265,11 @@ if __name__=='__main__':
     print('**********自定义测试***************')
     line_num = int(input('请输出测试语句行数'))
     article_cumstmize = []
+
     for i in range(line_num):
         sentence = input('请输入语句：')
         article_cumstmize.append(sentence)
+
     article_cumstmize_partition=word_partition(param,article_cumstmize)
+    
     print(article_cumstmize_partition)
