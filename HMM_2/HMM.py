@@ -1,3 +1,4 @@
+#coding:utf-8
 # 训练数据：人民日报1998词料库
 
 # 测试用例：见test.txt
@@ -29,7 +30,7 @@ def train(fileName):
     '''
 
     # 定义一个状态映射字典。方便我们定位状态在列表中对应位置
-    status2num = {'B':0, 'M':1, 'E':2, 'S': 3}
+    status2num = {'B': 0, 'M': 1, 'E': 2, 'S': 3}
 
     # 定义状态转移矩阵。总共4个状态，所以4 x 4
     A = np.zeros((4, 4))
@@ -40,12 +41,12 @@ def train(fileName):
     所以B矩阵4 x 65536
     就代表每一种状态(词性)得到观测状态(字)
     '''
-    B = np.zeros((4, 4))
+    B = np.zeros((4, 65536))
 
     # 初始状态，每一个句子的开头只有4种状态(词性)
     PI = np.zeros(4)
 
-    with open(fileName, encoding='utf-8') as file:
+    with open(fileName, encoding = 'utf-8') as file:
         '''
         每一行读取
         如某一行语料为：    迈向  充满  希望  的  新  世纪 。
@@ -89,16 +90,16 @@ def train(fileName):
                     # status2num将其映射到list对应位置
                     PI[status2num[status[0]]] += 1
                 
-                # 使用extend，将status中每一个元素家在列表之中。而不是append直接将整个status放在后面
+                # 使用extend，将status中每一个元素加在列表之中。而不是append直接将整个status放在后面
                 wordStatus.extend(status)
-            
+
             # 遍历完了一行，然后更新矩阵A
             # A代表的是前一个状态到后一个状态的概率
             # 我们先统计频数
             for i in range(1, len(wordStatus)):
                 # wordStatus获得状态，使用status2num来映射到正确位置
-                A[status2num[wordStatus[i-1]]][status2num[wordStatus[i]]] += 1
-    
+                A[status2num[wordStatus[i - 1]]][status2num[wordStatus[i]]] += 1
+
     '''
     读取完毕文件，频数统计完成
     接下来计算概率
@@ -117,6 +118,7 @@ def train(fileName):
         else:
             # 取对数
             PI[i] = np.log(PI[i] / total)
+        
     
     '''
     计算A矩阵
@@ -125,7 +127,7 @@ def train(fileName):
     '''
     for i in range(len(A)):
         total = sum(A[i])
-        for j in range(len(A[[i]])):
+        for j in range(len(A[i])):
             if A[i][j] == 0:
                 A[i][j] = -3.14e+100
             else:
@@ -141,7 +143,7 @@ def train(fileName):
         total = sum(B[i])
         for j in range(len(B[i])):
             if B[i][j] == 0:
-                B[i][j] = 3.14e+100
+                B[i][j] = -3.14e+100
             else:
                 B[i][j] = np.log(B[i][j] / total)
     
@@ -178,11 +180,11 @@ def word_partition(HMM_parameter, article):
                 psi[t][:] = [0, 0, 0, 0]
                 for i in range(4):
                     # !!! 注意这里是加号，因为之前log处理了
-                    delta[t][i]=PI[i]+B[i][ord(line[t])]
+                    delta[t][i] = PI[i] + B[i][ord(line[t])]
 
-            #依照两个公式更细delta和psi
-            #注意每一个时刻的delta[t][i]代表的是到当前时刻t，结束状态为i的最有可能的概率
-            #psi[t][i]代表的是当前时刻t，结束状态为i，在t-1时刻最有可能的状态（S，M，E，B）
+            # 依照两个公式更细delta和psi
+            # 注意每一个时刻的delta[t][i]代表的是到当前时刻t，结束状态为i的最有可能的概率
+            # psi[t][i]代表的是当前时刻t，结束状态为i，在t-1时刻最有可能的状态（S，M，E，B）
             else:
                 for i in range(4):
                     # 一共4中状态，就不写for循环一个个求出在的max了，直接写成列表了
@@ -190,22 +192,22 @@ def word_partition(HMM_parameter, article):
                     # !!! 划重点，注意这里概率之间的计算用的加号
                     # 因为之前我们进行了log处理，所以之前的概率相乘变成了log相加
 
-                    # temp=[delta[t-1][0]+A[0][i],delta[t-1][1]+A[1][i],delta[t-1][2]+A[2][i],delta[t-1][3]+A[3][i]]
-                    temp = [delta[t - 1][j] + A[j][i] for j in range(4)] #写成列表生成式吧，短一点。和上面一样的
-                    #求出max在乘以b
+                    # temp = [delta[t-1][0]+A[0][i],delta[t-1][1]+A[1][i],delta[t-1][2]+A[2][i],delta[t-1][3]+A[3][i]]
+                    temp = [delta[t - 1][j] + A[j][i] for j in range(4)] # 写成列表生成式吧，短一点。和上面一样的
+                    # 求出max在乘以b
                     # b[i][ot]中，ot就是观测结果，即我们看到的字
                     # 我们使用ord将其对应到编码，然后就可以获得他在观测概率矩阵中，由状态i到观测结果（ord（line[t]))的概率了
                     delta[t][i] = max(temp) + B[i][ord(line[t])]
 
-                    #求psi
-                    #可以注意到，psi公式中，所求的是上一个最有可能的概率
-                    #argmax中的值就是上方的temp，所以我们只需要获得temp最大元素的索引即可
+                    # 求psi
+                    # 可以注意到，psi公式中，所求的是上一个最有可能的概率
+                    # argmax中的值就是上方的temp，所以我们只需要获得temp最大元素的索引即可
                     psi[t][i] = temp.index(max(temp))
         
         # 遍历完毕这一行了，我们可以计算每个词对应的状态了
         # 依照维比特算法步骤4，计算最优回溯路径
         # 我们保存的是索引，0，1，2，3。对应与B，M，E，S
-        status=[] # 用于保存最优状态链
+        status = [] # 用于保存最优状态链
 
         # 计算最优状态链
         # 最优的最后一个状态
@@ -242,13 +244,14 @@ def loadArticle(fileName):
     :return: 处理之后的文章
     '''
     # 我们需要将其空格去掉
-    with open(fileName,encoding='utf-8') as file:
+    with open(fileName, encoding = 'utf-8') as file:
         # 按行读取
         test_article = []
         for line in file.readlines():
             # 去除空格，以及换行符
             line = line.strip()
             test_article.append(line)
+
     return test_article
 
 
@@ -256,20 +259,20 @@ if __name__=='__main__':
     param = train('HMMTrainSet.txt')
 
     article = loadArticle('test.txt')
-    print(len(article))
+    # print(len(article))
 
-    article_partition = word_partition(param,article)
-    print(article_partition)
+    article_partition = word_partition(param, article)
+    # print(article_partition)
 
-    # 自定义测试
-    print('**********自定义测试***************')
-    line_num = int(input('请输出测试语句行数'))
-    article_cumstmize = []
+    # # 自定义测试
+    # print('**********自定义测试***************')
+    # line_num = int(input('请输出测试语句行数'))
+    # article_cumstmize = []
 
-    for i in range(line_num):
-        sentence = input('请输入语句：')
-        article_cumstmize.append(sentence)
+    # for i in range(line_num):
+    #     sentence = input('请输入语句：')
+    #     article_cumstmize.append(sentence)
 
-    article_cumstmize_partition=word_partition(param,article_cumstmize)
+    # article_cumstmize_partition=word_partition(param,article_cumstmize)
     
-    print(article_cumstmize_partition)
+    # print(article_cumstmize_partition)
