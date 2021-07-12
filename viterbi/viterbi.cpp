@@ -41,6 +41,8 @@ int main() {
         cout << delta[i][0] << endl;
     }
 
+    cout << "----------------" << endl;
+
     // 递归
     for (j = 1; j < row; j++) {             // 序列遍历，矩阵列遍历
         for (k = 0; k < column; k++) {      // 状态遍历
@@ -49,19 +51,23 @@ int main() {
 
             for (i = 0; i < column; i++) {  // 矩阵行遍历
                 double temp = delta[i][j - 1] * C[i][k] * E[k][outnum[j]];  // delta[i][j-1]*转移概率*发射概率
-                cout << delta[i][j - 1] << "" << E[k][outnum[j]] << endl;
-                cout << temp << endl;
+                cout << delta[i][j - 1] << " " << E[k][outnum[j]] << "\t";
+                cout << "temp: " << temp << "\t";
                 
                 if (temp > pro) {
                     pro = temp;
                     sta = i;    // 记录路径信息
                 }
             }
+            cout << endl;
 
             delta[k][j] = pro;
             path[k][j] = sta;
         }
     }
+
+    cout << "----------------" << endl;
+
 
     // 终止，找到概率最大值
     double max = 0;
