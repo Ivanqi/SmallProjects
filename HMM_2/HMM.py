@@ -204,10 +204,12 @@ def word_partition(HMM_parameter, article):
                     # argmax中的值就是上方的temp，所以我们只需要获得temp最大元素的索引即可
                     psi[t][i] = temp.index(max(temp))
         
+
         # 遍历完毕这一行了，我们可以计算每个词对应的状态了
         # 依照维比特算法步骤4，计算最优回溯路径
         # 我们保存的是索引，0，1，2，3。对应与B，M，E，S
         status = [] # 用于保存最优状态链
+        
 
         # 计算最优状态链
         # 最优的最后一个状态
@@ -229,7 +231,7 @@ def word_partition(HMM_parameter, article):
         line_partition=''
         for t in range(len(line)):
             line_partition += line[t]
-            if (status[t] == 2 or status[t]==3) and t != len(line) - 1:
+            if (status[t] == 2 or status[t] == 3) and t != len(line) - 1:
                 line_partition += '|'
                 
         # 结束输出，换行
@@ -264,15 +266,15 @@ if __name__=='__main__':
     article_partition = word_partition(param, article)
     # print(article_partition)
 
-    # # 自定义测试
-    # print('**********自定义测试***************')
-    # line_num = int(input('请输出测试语句行数'))
-    # article_cumstmize = []
+    # 自定义测试
+    print('**********自定义测试***************')
+    line_num = int(input('请输出测试语句行数'))
+    article_cumstmize = []
 
-    # for i in range(line_num):
-    #     sentence = input('请输入语句：')
-    #     article_cumstmize.append(sentence)
+    for i in range(line_num):
+        sentence = input('请输入语句：')
+        article_cumstmize.append(sentence)
 
-    # article_cumstmize_partition=word_partition(param,article_cumstmize)
+    article_cumstmize_partition = word_partition(param, article_cumstmize)
     
-    # print(article_cumstmize_partition)
+    print(article_cumstmize_partition)

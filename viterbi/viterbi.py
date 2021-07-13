@@ -82,7 +82,7 @@ def viterbi(obs, states, start_p, trans_p, emit_p):
         # 把第一个观测节点对应的各状态值计算出来
         result_m[0][s] = (E(start_p[s] * emit_p[s][obs[0]]), None)
 
-    for t in range(1,len(obs)):
+    for t in range(1, len(obs)):
         # 准备t时刻的结果存放字典，形式同上
         result_m.append({}) 
         '''
@@ -102,7 +102,7 @@ def viterbi(obs, states, start_p, trans_p, emit_p):
 """
 def example():
     result_m = viterbi(observations, states, start_probability, transition_probability, emission_probability)
-    display_result(observations,result_m)
+    display_result(observations, result_m)
 
     while True:
         user_obs = input("轮到你来输入观测,计算机来推断可能状态\n" 
