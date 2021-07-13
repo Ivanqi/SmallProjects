@@ -79,23 +79,28 @@ def viterbi(obs, states, start_p, trans_p, emit_p):
     
     # 其中state,p分别是当前状态下的概率值，pre_state表示该值由上一次的那个状态计算得到
     for s in states:  # 对于每一个状态
-        result_m[0][s] = (E(start_p[s]*emit_p[s][obs[0]]),None) # 把第一个观测节点对应的各状态值计算出来
+        # 把第一个观测节点对应的各状态值计算出来
+        result_m[0][s] = (E(start_p[s] * emit_p[s][obs[0]]), None)
 
     for t in range(1,len(obs)):
-        result_m.append({})  # 准备t时刻的结果存放字典，形式同上
+        # 准备t时刻的结果存放字典，形式同上
+        result_m.append({}) 
+        '''
+        对于每一个t时刻状态s,获取t-1时刻每个状态s0的p,结合由s0转化为s的转移概率和s状态至obs的发散概率
+        计算t时刻s状态的最大概率，并记录该概率的来源状态s0
+        max()内部比较的是一个tuple:(p,s0),max比较tuple内的第一个元素值
+        '''
+        for s in states:
+            result_m[t][s] = max([(E(result_m[t - 1][s0][0] * trans_p[s0][s] * emit_p[s][obs[t]]), s0) for s0 in states])
 
-        for s in states:    # 对于每一个t时刻状态s,获取t-1时刻每个状态s0的p,结合由s0转化为s的转移概率和s状态至obs的发散概率
-                            # 计算t时刻s状态的最大概率，并记录该概率的来源状态s0
-                            # max()内部比较的是一个tuple:(p,s0),max比较tuple内的第一个元素值
-            result_m[t][s] = max([(E(result_m[t-1][s0][0]*trans_p[s0][s]*emit_p[s][obs[t]]),s0) for s0 in states])
-
-    return result_m    # 所有结果（包括最佳路径）都在这里，但直观的最佳路径还需要依此结果单独生成，在显示的时候生成
+    # 所有结果（包括最佳路径）都在这里，但直观的最佳路径还需要依此结果单独生成，在显示的时候生成
+    return result_m    
 
 
+"""
+一个可以交互的示例
+"""
 def example():
-    """
-    一个可以交互的示例
-    """
     result_m = viterbi(observations, states, start_probability, transition_probability, emission_probability)
     display_result(observations,result_m)
 
@@ -104,7 +109,7 @@ def example():
                         "使用 'N' 代表'正常', 'C' 代表'发冷','D'代表'发晕'\n"
                         "您输入：('q'将退出):")
 
-        if len(user_obs) ==0 or 'q' in user_obs or 'Q' in user_obs:
+        if len(user_obs) == 0 or 'q' in user_obs or 'Q' in user_obs:
             break
         else:
             obs = []
