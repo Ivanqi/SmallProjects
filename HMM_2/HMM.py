@@ -33,6 +33,7 @@ def train(fileName):
     status2num = {'B': 0, 'M': 1, 'E': 2, 'S': 3}
 
     # 定义状态转移矩阵。总共4个状态，所以4 x 4
+    # 对状态链中位置t和t-1的状态进行统计，在矩阵中相应位置加1，全部结束后生成概率
     A = np.zeros((4, 4))
 
     '''
@@ -40,10 +41,17 @@ def train(fileName):
     在ord为所有unicode字符进行编码[example: ord('我')=25105]，大小为65536,总共4个状态
     所以B矩阵4 x 65536
     就代表每一种状态(词性)得到观测状态(字)
+
+    对于每个字的状态以及字内容，生成状态到字的发射计数，全部结束后生成概率
     '''
     B = np.zeros((4, 65536))
 
     # 初始状态，每一个句子的开头只有4种状态(词性)
+    '''
+    统计PI：该句第一个字的词性对应的PI中位置加1
+        例如：PI = [0， 0， 0， 0]，当本行第一个字是B，即表示开头时，PI中B对应位置为0
+        则PI = [1， 0， 0， 0]，全部统计结束后，按照计数值再除以总数得到概率
+    '''
     PI = np.zeros(4)
 
     with open(fileName, encoding = 'utf-8') as file:
@@ -92,13 +100,13 @@ def train(fileName):
                 
                 # 使用extend，将status中每一个元素加在列表之中。而不是append直接将整个status放在后面
                 wordStatus.extend(status)
-
             # 遍历完了一行，然后更新矩阵A
             # A代表的是前一个状态到后一个状态的概率
             # 我们先统计频数
             for i in range(1, len(wordStatus)):
                 # wordStatus获得状态，使用status2num来映射到正确位置
                 A[status2num[wordStatus[i - 1]]][status2num[wordStatus[i]]] += 1
+            
 
     '''
     读取完毕文件，频数统计完成
@@ -186,6 +194,8 @@ def word_partition(HMM_parameter, article):
             # 注意每一个时刻的delta[t][i]代表的是到当前时刻t，结束状态为i的最有可能的概率
             # psi[t][i]代表的是当前时刻t，结束状态为i，在t-1时刻最有可能的状态（S，M，E，B）
             else:
+                # 递推，依次处理整条链
+
                 for i in range(4):
                     # 一共4中状态，就不写for循环一个个求出在的max了，直接写成列表了
 
@@ -204,6 +214,8 @@ def word_partition(HMM_parameter, article):
                     # argmax中的值就是上方的temp，所以我们只需要获得temp最大元素的索引即可
                     psi[t][i] = temp.index(max(temp))
         
+        print(psi)
+        return
 
         # 遍历完毕这一行了，我们可以计算每个词对应的状态了
         # 依照维比特算法步骤4，计算最优回溯路径
