@@ -158,17 +158,16 @@ def train(fileName):
     # 返回三个参数
     return (PI, A, B)
 
+'''
+使用维特比算法进行预测(即得到路径中每一个最有可能的状态)
+:param HMM_parameter: PI, A, B, B 隐马尔可夫模型三要素
+:param article: 需要分词的文章,以数组的形式传入，每一个元素是一行
+:return: 分词后的文章
+'''
 def word_partition(HMM_parameter, article):
-    '''
-    使用维特比算法进行预测(即得到路径中每一个最有可能的状态)
-    :param HMM_parameter: PI, A, B, B 隐马尔可夫模型三要素
-    :param article: 需要分词的文章,以数组的形式传入，每一个元素是一行
-    :return: 分词后的文章
-    '''
-
+  
     PI, A, B = HMM_parameter
     article_partition = []      # 分词之后的文章
-
     '''
     需要计算的是Ψ（psi），δ（delta）
     delta对应于公式10.44,45.psi对应于公式10.46
@@ -189,6 +188,7 @@ def word_partition(HMM_parameter, article):
                 for i in range(4):
                     # !!! 注意这里是加号，因为之前log处理了
                     delta[t][i] = PI[i] + B[i][ord(line[t])]
+                    
 
             # 依照两个公式更细delta和psi
             # 注意每一个时刻的delta[t][i]代表的是到当前时刻t，结束状态为i的最有可能的概率
@@ -214,8 +214,6 @@ def word_partition(HMM_parameter, article):
                     # argmax中的值就是上方的temp，所以我们只需要获得temp最大元素的索引即可
                     psi[t][i] = temp.index(max(temp))
         
-        print(psi)
-        return
 
         # 遍历完毕这一行了，我们可以计算每个词对应的状态了
         # 依照维比特算法步骤4，计算最优回溯路径
@@ -270,9 +268,9 @@ def loadArticle(fileName):
 
 
 if __name__=='__main__':
-    param = train('HMMTrainSet.txt')
+    param = train('./data/HMMTrainSet.txt')
 
-    article = loadArticle('test.txt')
+    article = loadArticle('./data/test.txt')
     # print(len(article))
 
     article_partition = word_partition(param, article)
