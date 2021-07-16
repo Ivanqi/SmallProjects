@@ -187,8 +187,7 @@ def word_partition(HMM_parameter, article):
                 psi[t][:] = [0, 0, 0, 0]
                 for i in range(4):
                     # !!! 注意这里是加号，因为之前log处理了
-                    delta[t][i] = PI[i] + B[i][ord(line[t])]
-                    
+                    delta[t][i] = PI[i] + B[i][ord(line[t])]                    
 
             # 依照两个公式更细delta和psi
             # 注意每一个时刻的delta[t][i]代表的是到当前时刻t，结束状态为i的最有可能的概率
@@ -202,7 +201,7 @@ def word_partition(HMM_parameter, article):
                     # !!! 划重点，注意这里概率之间的计算用的加号
                     # 因为之前我们进行了log处理，所以之前的概率相乘变成了log相加
 
-                    # temp = [delta[t-1][0]+A[0][i],delta[t-1][1]+A[1][i],delta[t-1][2]+A[2][i],delta[t-1][3]+A[3][i]]
+                    # temp = [delta[t - 1][0] + A[0][i], delta[t - 1][1] + A[1][i], delta[t - 1][2] + A[2][i], delta[t - 1][3] + A[3][i]]
                     temp = [delta[t - 1][j] + A[j][i] for j in range(4)] # 写成列表生成式吧，短一点。和上面一样的
                     # 求出max在乘以b
                     # b[i][ot]中，ot就是观测结果，即我们看到的字
