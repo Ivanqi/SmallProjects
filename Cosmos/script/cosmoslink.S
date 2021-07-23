@@ -7,20 +7,19 @@
 #ifdef CFG_X86_PLATFORM
 #include "buildfile.h"
 
-/* 物理地址 */ 
+@ 物理地址
 LINEAR_ADDRESS = 0x2000000;
-/* 虚拟地址 */
+@ 虚拟地址
 VIRTUAL_ADDRESS = 0xffff800000000000; /*+0x1000000x400000;*/
 
 OUTPUT_ARCH(i386:x86-64)
 OUTPUT_FORMAT(elf64-x86-64)
 
-/*  ENTRY伪指令用于指定汇编程序的入口点 */
+@ ENTRY伪指令用于指定汇编程序的入口点
 ENTRY(_start)
 
 SECTIONS
 {
-        
 	. =LINEAR_ADDRESS;
 	__start_kernel = . + VIRTUAL_ADDRESS;
     __begin_start_text = .;
