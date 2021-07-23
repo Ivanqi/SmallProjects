@@ -1,0 +1,15 @@
+###################################################################
+#		主控自动化编译配置文件 Makefile			                      #
+###################################################################
+
+MAKEFLAGS = -sR
+
+MKDIR = mkdir
+RMDIR = rmdir
+CP = cp
+CD = cd
+DD = dd
+RM = rm
+MAKE = make
+
+PREMENTMFLGS = -C $(BUILD_PATH) -f pretreatment.mkf
