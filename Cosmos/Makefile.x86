@@ -4,6 +4,7 @@
 
 MAKEFLAGS = -sR
 
+# 命令
 MKDIR = mkdir
 RMDIR = rmdir
 CP = cp
@@ -12,4 +13,20 @@ DD = dd
 RM = rm
 MAKE = make
 
+# 目录
+BUILD_PATH = ./build/
+INITLDR_PATH = ./initldr/
+
 PREMENTMFLGS = -C $(BUILD_PATH) -f pretreatment.mkf
+HALYMFLGS = -C $(BUILD_PATH) -f hal.mk
+KRNLMFLGS = -C $(BUILD_PATH) -f krl.mk
+DRIVMFLGS = -C $(BUILD_PATH) -f drv.mk
+LIBSMFLGS = -C $(BUILD_PATH) -f lib.mk
+TASKMFLGS = -C $(BUILD_PATH) -f task.mk
+LINKMFLGS = -C $(BUILD_PATH) -f link.mk
+
+
+build: all
+
+all:
+	$(MAKE) $(PREMENTMFLGS)
