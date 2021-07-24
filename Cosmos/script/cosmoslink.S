@@ -7,21 +7,31 @@
 #ifdef CFG_X86_PLATFORM
 #include "buildfile.h"
 
-@ 物理地址
+/* 物理地址 */
 LINEAR_ADDRESS = 0x2000000;
-@ 虚拟地址
+/* 虚拟地址 */
 VIRTUAL_ADDRESS = 0xffff800000000000; /*+0x1000000x400000;*/
 
+/* 指定输出可执行文件的平台为 i386:x86-64 */
 OUTPUT_ARCH(i386:x86-64)
 OUTPUT_FORMAT(elf64-x86-64)
 
-@ ENTRY伪指令用于指定汇编程序的入口点
+/*
+	ENTRY伪指令用于指定汇编程序的入口点。将_start符号的值设置成入口地址
+	_start 汇编程序的缺省入口，但是可以更改，想要更改其他标志，到相应的链接脚本中去用ENTRY指明其他入口标志
+ */
 ENTRY(_start)
 
+/*
+	.是定位器符号，可以对定位器符号赋值指定接下来内容的存储位置，如“ .= 0x10000”
+	ALIGN(4): 返回一个基于location counter(.)的4字节对齐的地址值
+ */
 SECTIONS
 {
 	. =LINEAR_ADDRESS;
 	__start_kernel = . + VIRTUAL_ADDRESS;
+
+	/* 清除 .start.text 段 */
     __begin_start_text = .;
         .start.text : ALIGN(4) { *(.start.text) }
 	__end_start_text = .;
