@@ -14,6 +14,7 @@ VIRTUAL_ADDRESS = 0xffff800000000000; /*+0x1000000x400000;*/
 
 /* 指定输出可执行文件的平台为 i386:x86-64 */
 OUTPUT_ARCH(i386:x86-64)
+/* MIPS ELF目标的默认链接器脚本 */
 OUTPUT_FORMAT(elf64-x86-64)
 
 /*
@@ -32,6 +33,7 @@ SECTIONS
 	__start_kernel = . + VIRTUAL_ADDRESS;
 
 	/* 清除 .start.text 段 */
+	
     __begin_start_text = .;
         .start.text : ALIGN(4) { *(.start.text) }
 	__end_start_text = .;
