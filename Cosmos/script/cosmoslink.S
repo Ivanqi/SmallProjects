@@ -24,15 +24,29 @@ OUTPUT_FORMAT(elf64-x86-64)
 ENTRY(_start)
 
 /*
+	VMA: virtual memory address虚拟内存地址或程序地址空间地址
+	LMA: load memory address加载内存地址或进程地址空间地址
+
 	.是定位器符号，可以对定位器符号赋值指定接下来内容的存储位置，如“ .= 0x10000”
 	ALIGN(4): 返回一个基于location counter(.)的4字节对齐的地址值
+	'*' 匹配任意数量字符
+	.rodata 只读数据
+	AT( LAM_ADDR )：输出 section 的 LMA，默认情况下 LMA 等于 VMA，但可以通过关键字 AT() 指定 LMA
+		用关键字 AT()指定，括号内包含表达式，表达式的值用于设置LMA
+		如果不用AT()关键字，那么可用AT>LMA_REGION表达式设置指定该section加载地址的范围。这个属性主要用于构件ROM境象
+
+	ADDR 获取内存(VMA or LMA)
  */
 SECTIONS
 {
 	. =LINEAR_ADDRESS;
 	__start_kernel = . + VIRTUAL_ADDRESS;
 
-	/* 清除 .start.text 段 */
+	/* 
+		*(.start.text) 表示所有输入文件中的所有 .start.text 
+		链接器会将'.start.text' 输出段放置在地址 LINEAR_ADDRESS 处
+		在链接器放置'.start.text' 段后，位置计数器为 LINEAR_ADDRESS 加上 .start.text 段的大小
+	*/
 	
     __begin_start_text = .;
         .start.text : ALIGN(4) { *(.start.text) }

@@ -30,3 +30,4 @@ build: all
 
 all:
 	$(MAKE) $(PREMENTMFLGS)
+	$(CD) $(INITLDR_PATH) && $(MAKE)
