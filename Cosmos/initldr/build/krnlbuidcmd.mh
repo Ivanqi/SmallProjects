@@ -25,7 +25,7 @@ CFLAGS	= -I $(HEADFILE_PATH) -c -O2 -m64  -mcmodel=large -mno-red-zone -std=c99 
 
 CPPFLGSLDS	= $(HEADFILE_PATH) -E -P 
 
-CSCFLAGS = -I $(HEADFILE_PATH) -c   -fno-builtin -fno-common -fno-stack-protector -fno-ident -ffreestanding
+CSCFLAGS = -I $(HEADFILE_PATH) -c -fno-builtin -fno-common -fno-stack-protector -fno-ident -ffreestanding
 SCFLAGS	= -I $(HEADFILE_PATH) -S  -std=c99 -fno-ident -Wall -fno-builtin -fno-common -fno-stack-protector
 
 LDFLAGS		= -s -static -T boot.lds -n  -Map boot.map 
