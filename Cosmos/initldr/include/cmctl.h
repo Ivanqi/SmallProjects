@@ -9,4 +9,10 @@
 #include "realparm.h"
 #include "chkcpmm_t.h"
 #include "io.h"
+#include "vgastr.h"
+#include "inithead.h"
+#include "ldrkrlentry.h"
+#include "chkcpmm.h"
+#include "graph.h"
+#include "bstartparm.h"
 #endif
