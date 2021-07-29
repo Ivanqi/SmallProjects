@@ -380,6 +380,7 @@ typedef struct s_MRSDP
     u8_t rp_resv[3];
 }__attribute__((packed)) mrsdp_t;
 
+// 二级引导器收集的信息
 typedef struct s_MACHBSTART
 {
     u64_t   mb_migc;            // LMOSMBSP//0
