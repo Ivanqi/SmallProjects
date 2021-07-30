@@ -122,6 +122,7 @@ typedef struct s_DPT
     u32_t dp_plbasz;
 } __attribute__((packed)) dpt_t;
 
+// 主引导分区
 typedef struct s_MBR
 {
     char_t mb_byte[446];
