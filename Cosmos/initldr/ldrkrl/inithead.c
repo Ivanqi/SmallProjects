@@ -1,5 +1,10 @@
 #include "cmctl.h"
 
+/**
+ * 具体功能
+ *  分别别调用 write_realintsvefile();、write_ldrkrlfile() 函数
+ *  把映像文件中的 initldrsve.bin 文件和 initldrkrl.bin 文件写入到特定的内存地址空间中
+ */
 void inithead_entry()
 {
     init_curs();
@@ -21,6 +26,7 @@ void write_realintsvefile()
         error("not file initldrsve.bin");
     }
 
+    // 负责把映像文件复制到具体空间
     m2mcopy((void *)((u32_t)(fhdscstart->fhd_intsfsoff) + LDRFILEADR), (void *)REALDRV_PHYADR, (sint_t)fhdscstart->fhd_frealsz);
     return;
 }
@@ -80,6 +86,7 @@ void error(char_t *estr)
     return;
 }
 
+// 指针比较
 int strcmpl(const char *a, const char *b)
 {
     while (*b && *a && (*b == *a)) {

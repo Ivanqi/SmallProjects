@@ -23,7 +23,7 @@
 #define VGASADH_REG_INX 0x0c        // 12
 #define VGASADL_REG_INX 0x0d        // 13
 
-// 游标
+// 光标
 typedef struct s_CURSOR
 {
     uint_t vmem_s;

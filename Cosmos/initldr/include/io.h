@@ -46,6 +46,13 @@ KLINE u16_t in_u16(const u16_t port)
     return tmp;
 };
 
+/**
+ * 内存复制
+ * 
+ * 如果 sadr < dadr, 把sadr的内存复制到dadr
+ * 如果 sadr > dadr, 把dadr的内存复制到sadr
+ * 如果 sadr == sadr, 返回内存长度
+ */
 KLINE sint_t m2mcopy(void* sadr, void* dadr, sint_t len)
 {
     if (NULL == sadr || NULL == dadr || 1 > len) {

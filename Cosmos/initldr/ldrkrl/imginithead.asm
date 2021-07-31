@@ -14,10 +14,11 @@ _start:
 	jmp _entry
 align 4
 
-; GRUB所需要的头
 ; dd/DD （汇编语言中的伪操作命令）
 ; DD作为汇编语言中的伪操作命令，它用来定义操作数占用的字节数(DoubleWord的缩写)，即4个字节（32位）
 ; DW定义字类型变量，一个字数据占2个字节单元，读完一个，偏移量加2
+
+; GRUB所需要的头, 定义字节数据
 mbt_hdr:
 	dd MBT_HDR_MAGIC
 	dd MBT_HDR_FLAGS
@@ -53,19 +54,21 @@ mbhdr:
 	DD	8
 mhdrend:
 
-@ 关中断并加载 GDT
-@ 读端口用IN指令，写端口用OUT指令
+; 关中断并加载 GDT
+; 读端口用IN指令，写端口用OUT指令
 _entry:
-	cli	; 关中断
+	; 关中断
+	cli
+	; 关不可屏蔽中断
 
 	in al, 0x70
 	or al, 0x80	
 	out 0x70, al
 
-	lgdt [GDT_PTR]
+	lgdt [GDT_PTR]	; 重新加载GDT
 	jmp dword 0x8 :_32bits_mode
 
-@ 初始化段寄存器和通用寄存器、栈寄存器，这是为了给调用 inithead_entry 这个 C 函数做准备
+; 初始化段寄存器和通用寄存器、栈寄存器，这是为了给调用 inithead_entry 这个 C 函数做准备
 _32bits_mode:
 	mov ax, 0x10
 	mov ds, ax
@@ -81,10 +84,10 @@ _32bits_mode:
 	xor esi, esi
 	xor ebp, ebp
 	xor esp, esp
-	mov esp, 0x7c00
+	mov esp, 0x7c00		; 设置栈顶为0x7c00
 	call inithead_entry
-	@ 跳转到物理内存的 0x200000 地址处
-	@ 这时地址还是物理地址，这个地址正是在 inithead.c 中由 write_ldrkrlfile() 函数放置的 initldrkrl.bin 文件，这一跳就进入了二级引导器的主模块了
+	; 跳转到物理内存的 0x200000 地址处
+	; 这时地址还是物理地址，这个地址正是在 inithead.c 中由 write_ldrkrlfile() 函数放置的 initldrkrl.bin 文件，这一跳就进入了二级引导器的主模块了
 	jmp 0x200000
 
 
