@@ -2,6 +2,7 @@ package consistenthashing
 
 import (
 	"errors"
+	"hash/crc32"
 	"hash/fnv"
 	"sort"
 	"strconv"
@@ -54,7 +55,7 @@ func New() *Consistent {
 
 // eltKey为具有索引的元素生成字符串键
 func (c *Consistent) eltKey(elt string, idx int) string {
-	// return elt + "|" + strcov.Itoa(idx)
+	// return elt + "|" + strconv.Itoa(idx)
 	return strconv.Itoa(idx) + elt
 }
 
@@ -137,7 +138,7 @@ func (c *Consistent) Set(elts []string) {
 }
 
 func (c *Consistent) Members() []string {
-	c.Lock()
+	c.RLock()
 	defer c.RUnlock()
 
 	var m []string
@@ -247,9 +248,9 @@ func (c *Consistent) GetN(name string, n int) ([]string, error) {
 
 		elem = c.circle[c.sortedHashes[i]]
 
-		if !sliceContainsMember(res, elem) {
-			res = append(res, elem)
-		}
+		// if !sliceContainsMember(res, elem) {
+		// 	res = append(res, elem)
+		// }
 
 		if len(res) == n {
 			break
@@ -268,9 +269,13 @@ func (c *Consistent) hashKey(key string) uint32 {
 }
 
 func (c *Consistent) hashKeyCRC32(key string) uint32 {
-	h := fnv.New32a()
-	h.Write([]byte(key))
-	return h.Sum32()
+	if len(key) < 64 {
+		var scratch [64]byte
+		copy(scratch[:], key)
+		return crc32.ChecksumIEEE(scratch[:len(key)])
+	}
+	return crc32.ChecksumIEEE([]byte(key))
+
 }
 
 func (c *Consistent) hashKeyFnv(key string) uint32 {
