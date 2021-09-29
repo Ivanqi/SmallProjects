@@ -31,12 +31,12 @@ var ErrEmptyCircle = errors.New("empty circle")
 
 // Consistent保存有关一致散列循环成员的信息
 type Consistent struct {
-	circle           map[uint32]string
-	members          map[string]bool
-	sortedHashes     uints
+	Circle           map[uint32]string
+	Members          map[string]bool
+	SortedHashes     uints
 	NumberOfReplicas int
-	count            int64
-	scratch          [64]byte
+	Count            int64
+	Scratch          [64]byte
 	UseFnv           bool
 	sync.RWMutex
 }
@@ -48,20 +48,26 @@ type Consistent struct {
 func New() *Consistent {
 	c := new(Consistent)
 	c.NumberOfReplicas = 20
-	c.circle = make(map[uint32]string)
-	c.members = make(map[string]bool)
+	c.Circle = make(map[uint32]string)
+	c.Members = make(map[string]bool)
 	return c
+}
+
+func (c *Consistent) EltKey(elt string, idx int) string {
+	return c.eltKey(elt, idx);
 }
 
 // eltKey为具有索引的元素生成字符串键
 func (c *Consistent) eltKey(elt string, idx int) string {
 	// return elt + "|" + strconv.Itoa(idx)
+	// strconv.Itoa 数字转换成对应的字符串类型的数字
 	return strconv.Itoa(idx) + elt
 }
 
 // Add在一致散列中插入字符串元素
 func (c *Consistent) Add(elt string) {
 	c.Lock()
+	// defer后面的语句不会马上调用, 而是延迟到函数结束时调用
 	defer c.Unlock()
 	c.add(elt)
 }
@@ -69,11 +75,11 @@ func (c *Consistent) Add(elt string) {
 // 调用前需要c.Lock()
 func (c *Consistent) add(elt string) {
 	for i := 0; i < c.NumberOfReplicas; i++ {
-		c.circle[c.hashKey(c.eltKey(elt, i))] = elt
+		c.Circle[c.hashKey(c.eltKey(elt, i))] = elt
 	}
-	c.members[elt] = true
+	c.Members[elt] = true
 	c.updateSortedHashes()
-	c.count++
+	c.Count++
 }
 
 // 从hash中删除元素
@@ -86,26 +92,27 @@ func (c *Consistent) Remove(elt string) {
 // 调用前先执行c.Lock()
 func (c *Consistent) remove(elt string) {
 	for i := 0; i < c.NumberOfReplicas; i++ {
-		delete(c.circle, c.hashKey(c.eltKey(elt, i)))
+		delete(c.Circle, c.hashKey(c.eltKey(elt, i)))
 	}
 
-	delete(c.members, elt)
+	delete(c.Members, elt)
 	c.updateSortedHashes()
-	c.count--
+	c.Count--
 }
 
 func (c *Consistent) updateSortedHashes() {
-	hashes := c.sortedHashes[:0]
+	hashes := c.SortedHashes[:0]
 	// 如果我们坚持太多，重新分配（1/4）
-	if cap(c.sortedHashes)/(c.NumberOfReplicas*4) > len(c.circle) {
+	if cap(c.SortedHashes) / (c.NumberOfReplicas * 4) > len(c.Circle) {
 		hashes = nil
 	}
 
-	for k := range c.circle {
+	for k := range c.Circle {
 		hashes = append(hashes, k)
 	}
+	
 	sort.Sort(hashes)
-	c.sortedHashes = hashes
+	c.SortedHashes = hashes
 }
 
 // Set设置散列中的所有元素。如果存在不可用的现有元素
@@ -114,7 +121,7 @@ func (c *Consistent) Set(elts []string) {
 	c.Lock()
 	defer c.Unlock()
 
-	for k := range c.members {
+	for k := range c.Members {
 		found := false
 		for _, v := range elts {
 			if k == v {
@@ -129,7 +136,7 @@ func (c *Consistent) Set(elts []string) {
 	}
 
 	for _, v := range elts {
-		_, exists := c.members[v]
+		_, exists := c.Members[v]
 		if exists {
 			continue
 		}
@@ -137,13 +144,13 @@ func (c *Consistent) Set(elts []string) {
 	}
 }
 
-func (c *Consistent) Members() []string {
+func (c *Consistent) MembersList() []string {
 	c.RLock()
 	defer c.RUnlock()
 
 	var m []string
 
-	for k := range c.members {
+	for k := range c.Members {
 		m = append(m, k)
 	}
 
@@ -155,24 +162,24 @@ func (c *Consistent) Get(name string) (string, error) {
 	c.RLock()
 	defer c.RUnlock()
 
-	if len(c.circle) == 0 {
+	if len(c.Circle) == 0 {
 		return "", ErrEmptyCircle
 	}
 
 	key := c.hashKey(name)
 	i := c.search(key)
 
-	return c.circle[c.sortedHashes[i]], nil
+	return c.Circle[c.SortedHashes[i]], nil
 }
 
 func (c *Consistent) search(key uint32) (i int) {
 	f := func(x int) bool {
-		return c.sortedHashes[x] > key
+		return c.SortedHashes[x] > key
 	}
 
-	i = sort.Search(len(c.sortedHashes), f)
+	i = sort.Search(len(c.SortedHashes), f)
 
-	if i >= len(c.sortedHashes) {
+	if i >= len(c.SortedHashes) {
 		i = 0
 	}
 
@@ -184,15 +191,15 @@ func (c *Consistent) GetTwo(name string) (string, string, error) {
 	c.RLock()
 	defer c.RUnlock()
 
-	if len(c.circle) == 0 {
+	if len(c.Circle) == 0 {
 		return "", "", ErrEmptyCircle
 	}
 
 	key := c.hashKey(name)
 	i := c.search(key)
-	a := c.circle[c.sortedHashes[i]]
+	a := c.Circle[c.SortedHashes[i]]
 
-	if c.count == 1 {
+	if c.Count == 1 {
 		return a, "", nil
 	}
 
@@ -200,11 +207,11 @@ func (c *Consistent) GetTwo(name string) (string, string, error) {
 	var b string
 
 	for i = start + 1; i != start; i++ {
-		if i >= len(c.sortedHashes) {
+		if i >= len(c.SortedHashes) {
 			i = 0
 		}
 
-		b = c.circle[c.sortedHashes[i]]
+		b = c.Circle[c.SortedHashes[i]]
 
 		if b != a {
 			break
@@ -214,17 +221,27 @@ func (c *Consistent) GetTwo(name string) (string, string, error) {
 	return a, b, nil
 }
 
+func sliceContainsMember(set []string, member string) bool {
+	for _, m := range set {
+		if m == member {
+			return true
+		}
+	}
+
+	return false
+}
+
 // GetN返回与圆中输入的名称最近的N个不同元素
 func (c *Consistent) GetN(name string, n int) ([]string, error) {
 	c.RLock()
 	defer c.RUnlock()
 
-	if len(c.circle) == 0 {
+	if len(c.Circle) == 0 {
 		return nil, ErrEmptyCircle
 	}
 
-	if c.count < int64(n) {
-		n = int(c.count)
+	if c.Count < int64(n) {
+		n = int(c.Count)
 	}
 
 	var (
@@ -232,7 +249,7 @@ func (c *Consistent) GetN(name string, n int) ([]string, error) {
 		i     = c.search(key)
 		start = i
 		res   = make([]string, 0, n)
-		elem  = c.circle[c.sortedHashes[i]]
+		elem  = c.Circle[c.SortedHashes[i]]
 	)
 
 	res = append(res, elem)
@@ -242,15 +259,15 @@ func (c *Consistent) GetN(name string, n int) ([]string, error) {
 	}
 
 	for i = start + 1; i != start; i++ {
-		if i >= len(c.sortedHashes) {
+		if i >= len(c.SortedHashes) {
 			i = 0
 		}
 
-		elem = c.circle[c.sortedHashes[i]]
+		elem = c.Circle[c.SortedHashes[i]]
 
-		// if !sliceContainsMember(res, elem) {
-		// 	res = append(res, elem)
-		// }
+		if !sliceContainsMember(res, elem) {
+			res = append(res, elem)
+		}
 
 		if len(res) == n {
 			break
@@ -258,6 +275,10 @@ func (c *Consistent) GetN(name string, n int) ([]string, error) {
 	}
 
 	return res, nil
+}
+
+func (c *Consistent) HashKey(key string) uint32 {
+	return c.hashKey(key)
 }
 
 func (c *Consistent) hashKey(key string) uint32 {
@@ -282,14 +303,4 @@ func (c *Consistent) hashKeyFnv(key string) uint32 {
 	h := fnv.New32a()
 	h.Write([]byte(key))
 	return h.Sum32()
-}
-
-func (c *Consistent) sliceContainsMember(set []string, member string) bool {
-	for _, m := range set {
-		if m == member {
-			return true
-		}
-	}
-
-	return false
 }
