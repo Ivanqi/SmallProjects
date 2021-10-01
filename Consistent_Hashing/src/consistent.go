@@ -289,9 +289,12 @@ func (c *Consistent) hashKey(key string) uint32 {
 	return c.hashKeyCRC32(key)
 }
 
+
 func (c *Consistent) hashKeyCRC32(key string) uint32 {
 	if len(key) < 64 {
 		var scratch [64]byte
+		// copy() 可以将一个数组切片复制到另一个数组切片中，如果加入的两个数组切片不一样大，就会按照其中较小的那个数组切片的元素个数进行复制
+		// copy( destSlice, srcSlice []T) int
 		copy(scratch[:], key)
 		return crc32.ChecksumIEEE(scratch[:len(key)])
 	}
@@ -299,7 +302,12 @@ func (c *Consistent) hashKeyCRC32(key string) uint32 {
 
 }
 
+/*
+	先初始化 hash，然后循环 乘以素数 prime32，再与每位 byte 进行异或运算
+	https://segmentfault.com/a/1190000016933879
+*/
 func (c *Consistent) hashKeyFnv(key string) uint32 {
+	// New32a 返回一个新的32位 FNV-1a hash.Hash 。它的 Sum 方法将以 big-endian 字节顺序排列值
 	h := fnv.New32a()
 	h.Write([]byte(key))
 	return h.Sum32()
