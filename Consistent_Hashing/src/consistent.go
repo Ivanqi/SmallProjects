@@ -9,7 +9,7 @@ import (
 	"sync"
 )
 
-type uints []uint32
+type uints []uint32			// 32位无符号数组
 
 // Len返回uints数组的长度
 func (x uints) Len() int {
@@ -31,14 +31,14 @@ var ErrEmptyCircle = errors.New("empty circle")
 
 // Consistent保存有关一致散列循环成员的信息
 type Consistent struct {
-	Circle           map[uint32]string
-	Members          map[string]bool
-	SortedHashes     uints
-	NumberOfReplicas int
-	Count            int64
+	Circle           map[uint32]string	// hash环，key为hash值，值存放的是节点信息
+	Members          map[string]bool	// 存储元素成员的成员列表
+	SortedHashes     uints				// 已经排序的节点hash切片
+	NumberOfReplicas int				// 虚拟节点个数，用来增加hash的平衡性
+	Count            int64				// 统计数量
 	Scratch          [64]byte
 	UseFnv           bool
-	sync.RWMutex
+	sync.RWMutex						// 读写锁
 }
 
 /*
@@ -100,17 +100,20 @@ func (c *Consistent) remove(elt string) {
 	c.Count--
 }
 
+// 更新排序，方便查找
 func (c *Consistent) updateSortedHashes() {
 	hashes := c.SortedHashes[:0]
-	// 如果我们坚持太多，重新分配（1/4）
+	// 判断切片容量是否过大，如果过大则重置，重新分配（1/4）
 	if cap(c.SortedHashes) / (c.NumberOfReplicas * 4) > len(c.Circle) {
 		hashes = nil
 	}
 
+	// 添加hash
 	for k := range c.Circle {
 		hashes = append(hashes, k)
 	}
 	
+	// 排序
 	sort.Sort(hashes)
 	c.SortedHashes = hashes
 }
@@ -157,7 +160,7 @@ func (c *Consistent) MembersList() []string {
 	return m
 }
 
-// Get返回一个元素，该元素靠近名称在圆中散列的位置
+// Get返回一个元素，该元素靠近名称在圆中散列的位置. 根据数据表示，获取对应的服务器节点信息
 func (c *Consistent) Get(name string) (string, error) {
 	c.RLock()
 	defer c.RUnlock()
@@ -172,6 +175,7 @@ func (c *Consistent) Get(name string) (string, error) {
 	return c.Circle[c.SortedHashes[i]], nil
 }
 
+// 顺时针查找最近的节点
 func (c *Consistent) search(key uint32) (i int) {
 	f := func(x int) bool {
 		return c.SortedHashes[x] > key
@@ -183,7 +187,7 @@ func (c *Consistent) search(key uint32) (i int) {
 		i = 0
 	}
 
-	return
+	return 
 }
 
 // GetTwo返回与圆中输入的名称最接近的两个不同元素

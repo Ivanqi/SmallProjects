@@ -14,6 +14,7 @@ func hash(key int, nodes int) int {
 	return key % nodes
 }
 
+// 命令执行: go run ./hash.go -keys 10000000 -nodes 3 -new-nodes 4
 func main() {
 
 	flag.Parse()
@@ -31,5 +32,6 @@ func main() {
 	}
 
 	migrateRatio := float64(migrate) / float64(keys)
+	// 数据迁移比率
 	fmt.Printf("%f%%\n", migrateRatio*100)
 }

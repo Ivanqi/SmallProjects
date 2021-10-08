@@ -4,9 +4,8 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"strconv" // 包 strconv 实现与基本数据类型的字符串表示之间的转换
-
-	"stathat.com/c/consistent" // 一致性hash包
+	"strconv" 	// 包 strconv 实现与基本数据类型的字符串表示之间的转换
+	"./src" 	// 一致性hash包
 )
 
 // flag 包标志实现命令行标志解析
@@ -18,6 +17,7 @@ func hash(key int, nodes int) int {
 	return key % nodes
 }
 
+// 命令执行: go run ./consistent-hash.go -keys 10000000 -nodes 3 -new-nodes 4
 func main() {
 
 	flag.Parse()
@@ -25,12 +25,12 @@ func main() {
 	var nodes = *nodesPtr
 	var newNodes = *newNodesPtr
 
-	c := consistent.New()
+	c := consistenthashing.New()
 	for i := 0; i < nodes; i++ {
 		c.Add(strconv.Itoa(i))
 	}
 
-	newC := consistent.New()
+	newC := consistenthashing.New()
 	for i := 0; i < newNodes; i++ {
 		newC.Add(strconv.Itoa(i))
 	}
@@ -42,8 +42,9 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
+		
 
-		newServer, err = newC.Get(strconv.Itoa(i))
+		newServer, err := newC.Get(strconv.Itoa(i))
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -53,6 +54,7 @@ func main() {
 		}
 	}
 
+	// 数据迁移比率
 	migrateRatio := float64(migrate) / float64(keys)
-	fmt.Printf("%f%%\n", migrateRatio*100)
+	fmt.Printf("%f%%\n", migrateRatio * 100)
 }

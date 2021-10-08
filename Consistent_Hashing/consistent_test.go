@@ -36,6 +36,7 @@ func TestAdd(t *testing.T) {
 	checkNum(len(x.Circle), 20, t)
 	checkNum(len(x.SortedHashes), 20, t)
 
+	// sort.IsSorted 判断数据集合是否已经排好顺序
 	if sort.IsSorted(x.SortedHashes) == false {
 		t.Errorf("expected sorted hashes to be sorted")
 	}
@@ -68,9 +69,11 @@ func TestRemoveNonExisting(t *testing.T) {
 func TestGetEmpty(t *testing.T) {
 	x := consistenthashing.New()
 	_, err := x.Get("asdfsadfsadf")
+
 	if err == nil {
 		t.Errorf("expected error")
 	}
+
 	if err != consistenthashing.ErrEmptyCircle {
 		t.Errorf("expected empty circle error")
 	}
@@ -79,6 +82,7 @@ func TestGetEmpty(t *testing.T) {
 func TestGetSingle(t *testing.T) {
 	x := consistenthashing.New()
 	x.Add("abcdefg")
+
 	f := func(s string) bool {
 		y, err := x.Get(s)
 		if err != nil {
@@ -88,6 +92,7 @@ func TestGetSingle(t *testing.T) {
 		t.Logf("s = %q, y = %q", s, y)
 		return y == "abcdefg"
 	}
+
 	if err := quick.Check(f, nil); err != nil {
 		t.Fatal(err)
 	}

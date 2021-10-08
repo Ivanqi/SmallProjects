@@ -6,8 +6,7 @@ import (
 	"log"
 	"strconv"
 	"strings"
-
-	"stathat.com/c/consistent"
+	"./src"
 )
 
 var keysPtr = flag.Int("keys", 10000, "key number")
@@ -28,14 +27,14 @@ func main() {
 	var vnodes = *vnodesPtr
 	var nodeStr = ""
 
-	c := consistent.New()
+	c := consistenthashing.New()
 
 	for i := 0; i < nodes; i++ {
 		nodeStr = fmt.Sprintf("node-%d", i)
 		c.Add(nodeStr)
 	}
 
-	vnodeC := consistent.New()
+	vnodeC := consistenthashing.New()
 	for i := 0; i < nodes; i++ {
 		for j := 0; j < vnodes; j++ {
 			nodeStr = fmt.Sprintf("node-%d-vnode-%d", i, j)
@@ -46,9 +45,11 @@ func main() {
 	node0, node1, node2 := 0, 0, 0
 	for i := 0; i < keys; i++ {
 		server, err := c.Get(strconv.Itoa(i))
+
 		if err != nil {
 			log.Fatal(err)
 		}
+
 		if strings.Compare(server, "node-0") == 0 {
 			node0++
 		} else if strings.Compare(server, "node-1") == 0 {
@@ -60,9 +61,9 @@ func main() {
 		}
 	}
 
-	fmt.Println("normal mode: node0", ratio(node0, keys/3),
-		", node1", ratio(node1, keys/3),
-		", node2", ratio(node2, keys/3))
+	fmt.Println("normal mode: node0", ratio(node0, keys / 3),
+		", node1", ratio(node1, keys / 3),
+		", node2", ratio(node2, keys / 3))
 
 	node0, node1, node2 = 0, 0, 0
 
@@ -84,7 +85,7 @@ func main() {
 		}
 	}
 
-	fmt.Println("vnode mode: node0", ratio(node0, keys/3),
+	fmt.Println("vnode mode: node0", ratio(node0, keys / 3),
 		", node1", ratio(node1, keys/3),
 		", node2", ratio(node2, keys/3))
 }
