@@ -40,29 +40,36 @@ func main() {
 	chatbot.Register(chatbot.NewSimpleEN("simple.en", nil))
 	chatbot.Register(chatbot.NewSimpleCN("simple.cn", nil))
 	myChatbot := chatbot.Get(chatbotName)
+
 	if myChatbot == nil {
 		err := fmt.Errorf("Fatal error: Unsupported chatbot named %s\n", chatbotName)
 		checkError(nil, err, true)
 	}
+	
 	inputReader := bufio.NewReader(os.Stdin)
 	begin, err := myChatbot.Begin()
 	checkError(myChatbot, err, true)
 	fmt.Println(begin)
+
 	input, err := inputReader.ReadString('\n')
 	checkError(myChatbot, err, true)
 	fmt.Println(myChatbot.Hello(input[:len(input)-1]))
+
 	for {
 		input, err = inputReader.ReadString('\n')
 		if checkError(myChatbot, err, false) {
 			continue
 		}
+
 		output, end, err := myChatbot.Talk(input)
 		if checkError(myChatbot, err, false) {
 			continue
 		}
+
 		if output != "" {
 			fmt.Println(output)
 		}
+		
 		if end {
 			err = myChatbot.End()
 			checkError(myChatbot, err, false)
