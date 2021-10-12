@@ -53,7 +53,7 @@ func main() {
 
 	input, err := inputReader.ReadString('\n')
 	checkError(myChatbot, err, true)
-	fmt.Println(myChatbot.Hello(input[:len(input)-1]))
+	fmt.Println(myChatbot.Hello(input[:len(input) - 1]))
 
 	for {
 		input, err = inputReader.ReadString('\n')

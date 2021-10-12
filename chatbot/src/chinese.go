@@ -5,6 +5,7 @@ import (
 	"strings"
 )
 
+
 // simpleCN 代表针对中文的演示级聊天机器人
 type simpleCN struct {
 	name string
@@ -62,7 +63,7 @@ func (robot *simpleCN) Talk(heard string) (saying string, end bool, err error) {
 }
 
 // ReportError 是Chatbot接口的实现的一部分
-func (robot *simpleCN) simpleCN(err error) string {
+func (robot *simpleCN) ReportError(err error) string {
 	return fmt.Sprintf("发生了一个错误: %s\n", err)
 }
 
