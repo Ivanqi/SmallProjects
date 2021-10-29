@@ -23,11 +23,11 @@ func Bool (name string, value bool) Field {
 	return &boolField{name: name, fieldType: BoolType, value: value}
 }
 
-// 拥有int64类型的值的日志字段
+// 拥有int64类型的值的日志字段。
 type int64Field struct {
-	name string
+	name      string
 	fieldType FieldType
-	value int64
+	value     int64
 }
 
 func (field *int64Field) Name() string {
@@ -38,8 +38,12 @@ func (field *int64Field) Type() FieldType {
 	return field.fieldType
 }
 
+func (field *int64Field) Value() interface{} {
+	return field.value
+}
+
 func Int64(name string, value int64) Field {
-	return &int64Field{name: name, fieldType: int64Field, value: value}
+	return &int64Field{name: name, fieldType: Int64Type, value: value}
 }
 
 // 拥有float64 类型的值的日志字段

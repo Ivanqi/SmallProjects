@@ -3,25 +3,24 @@ package logrus
 import (
 	"os"
 	"testing"
-
 	"../base"
 	"../field"
 )
 
-func TestLogrusLogger(test *testing.T) {
+func TestLogrusLogger(t *testing.T) {
 	defer func() {
 		if p := recover(); p != nil {
 			switch i := p.(type) {
 			case error, string:
 				t.Fatalf("Fatal error: %s\n", i)
 			default:
-				t.Fatalf("Fatal erros: %#v\n")
+				t.Fatalf("Fatal error: %#v\n", i)
 			}
 		}
 	} ()
 
 	loggers := []base.MyLogger{}
-	loggers = append(loggers, MyLogger())
+	loggers = append(loggers, NewLogger())
 	loggers = append(loggers, NewLoggerBy(
 		base.LEVEL_DEBUG,
 		base.FORMAT_JSON,

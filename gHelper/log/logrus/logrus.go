@@ -3,7 +3,6 @@ package logrus
 import (
 	"io"
 	"os"
-
 	"../base"
 	"../field"
 	"gitee.com/Ivanmax/logrus"
@@ -32,6 +31,8 @@ func NewLogger() base.MyLogger {
 
 // NewLoggerBy 会根据指定的参数新建并返回一个日志记录器
 func NewLoggerBy(level base.LogLevel, format base.LogFormat, writer io.Writer, options []base.Option) base.MyLogger {
+	var logrusLevel logrus.Level
+
 	switch level {
 	default:
 		level = base.LEVEL_INFO
@@ -69,10 +70,10 @@ func NewLoggerBy(level base.LogLevel, format base.LogFormat, writer io.Writer, o
 
 // initInnerLogger 会初始化内部使用的日志记录器
 func initInnerLogger(level logrus.Level, format base.LogFormat, writer io.Writer) *logrus.Entry {
-	initInnerLogger := logrus.New()
+	innerLogger := logrus.New()
 
 	switch format {
-	case FORMAT_JSON:
+	case base.FORMAT_JSON:
 		innerLogger.Formatter = &logrus.JSONFormatter {
 			TimestampFormat: base.TIMESTAMP_FORMAT,
 		}
@@ -185,7 +186,7 @@ func (logger *loggerLogrus) WithFields(fields ...field.Field) base.MyLogger {
 
 	logrusFields := make(map[string]interface{}, fieldsLen)
 	for _, curfield := range fields {
-		loggerLogrus[curfield.Name()] = curfield.Value()
+		logrusFields[curfield.Name()] = curfield.Value()
 	}
 
 	return &loggerLogrus {
