@@ -45,7 +45,7 @@ func RegisterLogger (loggerType base.LoggerType, creator LoggerCreator, cover bo
 
 // DLogger 会返回一个新的默认日志记录器
 func DLogger() base.MyLogger {
-	return Logger(
+	return Logger (
 		base.TYPE_LOGRUS,
 		base.LEVEL_INFO,
 		base.FORMAT_TEXT,
