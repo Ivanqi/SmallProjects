@@ -1,7 +1,7 @@
 CC=gcc
 C-FLAGS=-O3
 CPP=g++
-CPP-FLAGS=-std=c++14 -O3
+CPP-FLAGS=-std=c++14 -O0 -g
 
 all: lc3-alt
 

@@ -6,6 +6,9 @@
 #include <signal.h>
 
 // Unix
+#include <unistd.h>
+#include <fcntl.h>
+
 #include <sys/time.h>
 #include <sys/types.h>
 #include <sys/termios.h>
@@ -126,7 +129,14 @@ void update_flags(uint16_t r) {
     }
 }
 
-// Read Image File
+/**
+ * Read Image File
+ *  1. size_t  fread(void *buffer, size_t size, size_t count, FILE * stream);
+ *      1. buffer为接收数据的地址，size为一个单元的大小，count为单元个数，stream为文件流
+ *      2. fread()函数每次从stream中最多读取count个单元，每个单元大小为size个字节，将读取的数据放到buffer
+ *      3. 文件流的位置指针后移 size * count 字节
+ *  2. 【返回值】返回实际读取的单元个数。如果小于count，则可能文件结束或读取出错
+*/
 void read_image_file(FILE *file) {
     // origin 告诉我们内存中放置Image的位置
     uint16_t origin;
@@ -157,7 +167,10 @@ int read_image(const char *image_path) {
     return 1;
 }
 
-// CHeck Key
+/**
+ * CHeck Key
+ *  STDIN_FILENO就是标准输入设备（一般是键盘）的文件描述符
+*/
 uint16_t check_key() {
     fd_set readfds;
     FD_ZERO(&readfds);
