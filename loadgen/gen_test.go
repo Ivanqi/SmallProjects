@@ -1,10 +1,10 @@
 package loadgen
 
 import (
+	loadgenlib "loadgen/lib"
+	helper "loadgen/testhelper"
 	"testing"
 	"time"
-	loadgenlib "./"
-	helper "./testhelper"
 )
 
 // printDetail 代表是否打印详细结果
@@ -24,12 +24,12 @@ func TestStart(t *testing.T) {
 	}
 
 	// 初始化载荷发生器
-	pset := ParamSet {
-		Caller: helper.NewTCPComm(serverAddr),
-		TimeoutNS: 50 * time.Millisecond,
-		LPS: uint32(1000),
+	pset := ParamSet{
+		Caller:     helper.NewTCPComm(serverAddr),
+		TimeoutNS:  50 * time.Millisecond,
+		LPS:        uint32(1000),
 		DurationNS: 10 * time.Second,
-		ResultCh: make(chan *loadgenlib.CallResult, 50),
+		ResultCh:   make(chan *loadgenlib.CallResult, 50),
 	}
 
 	t.Logf("Initialize load generator (timeoutNS=%v, lps=%d, durationNS=%v)...", pset.TimeoutNS, pset.LPS, pset.DurationNS)
@@ -56,14 +56,14 @@ func TestStart(t *testing.T) {
 	var total int
 	t.Log("RetCode Count:")
 	for k, v := range countMap {
-		codePlain :+ loadgenlib.GetRetCodePlain(k)
+		codePlain := loadgenlib.GetRetCodePlain(k)
 		t.Logf("	Code plain: %s(%d), Count: %d\n", codePlain, k, v)
 		total += v
 	}
 
 	t.Logf("Total: %d.\n", total)
 	successCount := countMap[loadgenlib.RET_CODE_SUCCESS]
-	tps := float64(successCount) / float64(pset.DurationNS / 1e9)
+	tps := float64(successCount) / float64(pset.DurationNS/1e9)
 	t.Logf("Loads per second: %d, Treatments per second: %f.\n", pset.LPS, tps)
 }
 

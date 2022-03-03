@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"flag"
 	"fmt"
+	"gLog/base"
 	"go/ast"
 	"go/format"
 	"go/parser"
@@ -15,7 +16,6 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
-	"../../base"
 )
 
 // field_decl_template 代表日志字段类型的声明的内容模板
@@ -45,7 +45,7 @@ func {{title .}}(name string, value {{if eq . "object"}}interface{}{{else}}{{.}}
 `
 
 var (
-	inputPath string
+	inputPath  string
 	outputPath string
 )
 

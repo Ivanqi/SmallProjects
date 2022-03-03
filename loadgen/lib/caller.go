@@ -10,8 +10,8 @@ type Caller interface {
 	BuildReq() RawReq
 
 	// 调用
-	Call(req []byte, timeoutNS time.Duration)([]byte, error)
+	Call(req []byte, timeoutNS time.Duration) ([]byte, error)
 
 	// 检查响应
-	CheckResp(rawReq RawReq, rawReq RawReq) *CallResult
+	CheckResp(rawReq RawReq, rawResp RawResp) *CallResult
 }

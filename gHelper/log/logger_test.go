@@ -1,9 +1,9 @@
 package log
 
 import (
+	"gLog/base"
 	"os"
 	"testing"
-	"./base"
 )
 
 func TestLogger(t *testing.T) {
@@ -44,6 +44,6 @@ func TestLogger(t *testing.T) {
 	if logger.Format() != logFormat {
 		t.Fatalf("Inconsistent log format: expected: %s, actual: %s", logFormat, logger.Format())
 	}
-	
+
 	t.Logf("The logrus logger: %#v\n", logger)
 }

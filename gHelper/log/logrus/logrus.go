@@ -1,11 +1,12 @@
 package logrus
 
 import (
+	"gLog/base"
+	"gLog/field"
 	"io"
 	"os"
-	"../base"
-	"../field"
-	"gitee.com/Ivanmax/logrus"
+
+	"github.com/sirupsen/logrus"
 )
 
 // loggerLogrus 代表基于logrus的日志记录器的类型
@@ -37,16 +38,16 @@ func NewLoggerBy(level base.LogLevel, format base.LogFormat, writer io.Writer, o
 	default:
 		level = base.LEVEL_INFO
 		logrusLevel = logrus.InfoLevel
-	
+
 	case base.LEVEL_DEBUG:
 		logrusLevel = logrus.DebugLevel
-	
+
 	case base.LEVEL_WARN:
 		logrusLevel = logrus.WarnLevel
-	
+
 	case base.LEVEL_ERROR:
 		logrusLevel = logrus.ErrorLevel
-	
+
 	case base.LEVEL_PANIC:
 		logrusLevel = logrus.PanicLevel
 	}
@@ -60,11 +61,11 @@ func NewLoggerBy(level base.LogLevel, format base.LogFormat, writer io.Writer, o
 		}
 	}
 
-	return &loggerLogrus {
-		level: level,
-		format: format,
+	return &loggerLogrus{
+		level:           level,
+		format:          format,
 		optWithLocation: optWithLocation,
-		inner: initInnerLogger(logrusLevel, format, writer),
+		inner:           initInnerLogger(logrusLevel, format, writer),
 	}
 }
 
@@ -74,11 +75,11 @@ func initInnerLogger(level logrus.Level, format base.LogFormat, writer io.Writer
 
 	switch format {
 	case base.FORMAT_JSON:
-		innerLogger.Formatter = &logrus.JSONFormatter {
+		innerLogger.Formatter = &logrus.JSONFormatter{
 			TimestampFormat: base.TIMESTAMP_FORMAT,
 		}
 	default:
-		innerLogger.Formatter = &logrus.TextFormatter {
+		innerLogger.Formatter = &logrus.TextFormatter{
 			FullTimestamp:   true,
 			TimestampFormat: base.TIMESTAMP_FORMAT,
 			DisableSorting:  false,
@@ -189,7 +190,7 @@ func (logger *loggerLogrus) WithFields(fields ...field.Field) base.MyLogger {
 		logrusFields[curfield.Name()] = curfield.Value()
 	}
 
-	return &loggerLogrus {
+	return &loggerLogrus{
 		level:           logger.level,
 		format:          logger.format,
 		optWithLocation: logger.optWithLocation,

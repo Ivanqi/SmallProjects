@@ -1,10 +1,10 @@
 package logrus
 
 import (
+	"gLog/base"
+	"gLog/field"
 	"os"
 	"testing"
-	"../base"
-	"../field"
 )
 
 func TestLogrusLogger(t *testing.T) {
@@ -17,7 +17,7 @@ func TestLogrusLogger(t *testing.T) {
 				t.Fatalf("Fatal error: %#v\n", i)
 			}
 		}
-	} ()
+	}()
 
 	loggers := []base.MyLogger{}
 	loggers = append(loggers, NewLogger())
@@ -44,7 +44,7 @@ func log(logger base.MyLogger) {
 		field.String("string", "logrus"),
 		field.Object("object", interface{}("1234abcd")),
 	)
-	
+
 	logger.Info("Info log (logrus)")
 	logger.Infoln("Infoln log (logrus)")
 	logger.Error("Error log (logrus)")

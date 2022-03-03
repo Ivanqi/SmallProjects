@@ -1,6 +1,6 @@
 package base
 
-import "../field"
+import "gLog/field"
 
 // Option 代表日志记录器的选项
 type Option interface {
@@ -44,7 +44,7 @@ type MyLogger interface {
 	Panic(v ...interface{})
 	Panicf(format string, v ...interface{})
 	Panicln(v ...interface{})
-	
+
 	Warn(v ...interface{})
 	Warnf(format string, v ...interface{})
 	Warnln(v ...interface{})

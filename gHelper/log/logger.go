@@ -2,15 +2,15 @@ package log
 
 import (
 	"fmt"
+	"gLog/base"
+	"gLog/logrus"
 	"io"
 	"os"
 	"sync"
-	"./base"
-	"./logrus"
 )
 
 // LoggerCreator 代表日志记录器的创建器
-type LoggerCreator func (
+type LoggerCreator func(
 	level base.LogLevel,
 	format base.LogFormat,
 	writer io.Writer,
@@ -23,7 +23,7 @@ var loggerCreatorMap = map[base.LoggerType]LoggerCreator{}
 var rwm sync.RWMutex
 
 // RegisterLogger 用于注册日志记录器
-func RegisterLogger (loggerType base.LoggerType, creator LoggerCreator, cover bool) error {
+func RegisterLogger(loggerType base.LoggerType, creator LoggerCreator, cover bool) error {
 	if loggerType == "" {
 		return fmt.Errorf("logger register error: invalid logger type")
 	}
@@ -45,7 +45,7 @@ func RegisterLogger (loggerType base.LoggerType, creator LoggerCreator, cover bo
 
 // DLogger 会返回一个新的默认日志记录器
 func DLogger() base.MyLogger {
-	return Logger (
+	return Logger(
 		base.TYPE_LOGRUS,
 		base.LEVEL_INFO,
 		base.FORMAT_TEXT,

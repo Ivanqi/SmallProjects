@@ -4,18 +4,18 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"loadgen/lib"
 	"strings"
 	"time"
-	"./lib"
 )
 
 // ParamSet 代表了载荷发生器参数的集合
 type ParamSet struct {
-	Caller	lib.Caller 					// 调度器
-	TimeoutNS	time.Duration			// 响应超时时间，单位: 纳秒
-	LPS	uint32							// 每秒载荷量
-	DurationNS	time.Duration			// 负载持续时间，单位：纳秒
-	ResultCh	chan *lib.CallResult	// 调用结果通道
+	Caller     lib.Caller           // 调度器
+	TimeoutNS  time.Duration        // 响应超时时间，单位: 纳秒
+	LPS        uint32               // 每秒载荷量
+	DurationNS time.Duration        // 负载持续时间，单位：纳秒
+	ResultCh   chan *lib.CallResult // 调用结果通道
 }
 
 // Check 会检查当前值的所有字段的有效性
