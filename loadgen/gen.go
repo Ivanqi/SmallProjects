@@ -210,6 +210,7 @@ func (gen *myGenerator) printIgnoredResult(result *lib.CallResult, cause string)
 // prepareStop 用于为停止载荷发生器做准备
 func (gen *myGenerator) prepareToStop(ctxError error) {
 	logger.Infoln("Prepare to stop load generator (cause: %s)...", ctxError)
+	// CompareAndSwapUint32原子性的比较 gen.status 和 lib.STATUS_STARTED ，如果相同则将 lib.STATUS_STOPPING 赋值给 gen.status 并返回真
 	atomic.CompareAndSwapUint32(&gen.status, lib.STATUS_STARTED, lib.STATUS_STOPPING)
 
 	logger.Infof("Closing result channel...")
@@ -245,12 +246,15 @@ func (gen *myGenerator) genLoad(throttle <-chan time.Time) {
 func (gen *myGenerator) Start() bool {
 	logger.Infoln("Starting load generator...")
 	// 检查是否具备可启动的状态，顺便设置状态为正启动
+	// CompareAndSwapUint32原子性的比较 gen.status 和 lib.STATUS_ORIGINAL ，如果相同则将 lib.STATUS_STARTING 赋值给 gen.status 并返回真
 	if !atomic.CompareAndSwapUint32(&gen.status, lib.STATUS_ORIGINAL, lib.STATUS_STARTING) {
 		if !atomic.CompareAndSwapUint32(&gen.status, lib.STATUS_STOPPED, lib.STATUS_STARTING) {
 			return false
 		}
 	}
 
+	// channel 即指通道类型，也指代可以传递某种类型的值的通道
+	// 通道是在多个goroutine之间传递数据和同步的重要手段，而对通道的操作本身也是同步的
 	// 设定节流阀
 	var throttle <-chan time.Time
 	if gen.lps > 0 {
@@ -266,6 +270,7 @@ func (gen *myGenerator) Start() bool {
 	gen.callCount = 0
 
 	// 设置状态为已启动
+	// StoreUint32原子性的将 lib.STATUS_STARTED 的值保存到 gen.status
 	atomic.StoreUint32(&gen.status, lib.STATUS_STARTED)
 
 	go func() {
