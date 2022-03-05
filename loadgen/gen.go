@@ -62,12 +62,14 @@ func (gen *myGenerator) init() error {
 	buf.WriteString("Initializing the load genrator...")
 
 	// 载荷的并发量 = 载荷的响应超时时间 / 载荷的发送间隔时间
+	// 1e9/gen.lps 表示就是根据使用方对每秒载荷发送量的设定计算出的载荷发生器的间隔时间，单位ns
 	var total64 = int64(gen.timeoutNS)/int64(1e9/gen.lps) + 1
 	if total64 > math.MaxInt32 {
 		total64 = math.MaxInt32
 	}
 
 	gen.concurrency = uint32(total64)
+	//计算并发量的最大意义是：为了约束并发运行的goroutine的数据提供依据
 	tickets, err := lib.NewGoTickets(gen.concurrency)
 	if err != nil {
 		return err
@@ -219,7 +221,16 @@ func (gen *myGenerator) prepareToStop(ctxError error) {
 	atomic.StoreUint32(&gen.status, lib.STATUS_STOPPED)
 }
 
-// genLoad 会产生载荷并向承受方发送
+/**
+genLoad 会产生载荷并向承受方发送
+	总体上控制调用流程的执行，该方法接收节流阀throttle作为参数
+	在方法中，使用了一个for循环周期性地向被测软件发送载荷，这个周期的长短由节流阀控制
+
+	在循环体的结尾处，如果lps字段的值大于0，就表示节流阀是有效并需要使用的。这时，利用select语句等待节流阀的到期通知
+	一旦接收到了这样一个通知，就立即开始下一次迭代(即开始生成并发送下一个载荷)
+
+	当然，如果在等待节流阀到期通知的过程中接收到了上下文的“信号”，就需要立即为停止载荷发生器做准备
+*/
 func (gen *myGenerator) genLoad(throttle <-chan time.Time) {
 	for {
 		select {
