@@ -85,6 +85,7 @@ func (gen *myGenerator) init() error {
 
 // callOne 会想载荷承受方发起一次调用
 func (gen *myGenerator) callOne(rawReq *lib.RawReq) *lib.RawResp {
+	// AddInt64原子性的将val的值添加到 gen.callCount 并返回新值
 	atomic.AddInt64(&gen.callCount, 1)
 	if rawReq == nil {
 		return &lib.RawResp{ID: -1, Err: errors.New("Invalid raw request")}
@@ -115,6 +116,8 @@ func (gen *myGenerator) callOne(rawReq *lib.RawReq) *lib.RawResp {
 
 // asyncSend 会异步地调用承受方接口
 func (gen *myGenerator) asyncCall() {
+	// 从goroutine票池获得一张goroutine票
+	// 一旦goroutine池中无票可拿，就阻塞于此
 	gen.tickets.Take()
 	go func() {
 		defer func() {
@@ -136,7 +139,7 @@ func (gen *myGenerator) asyncCall() {
 
 				gen.sendResult(result)
 			}
-
+			// 归还goroutine票
 			gen.tickets.Return()
 		}()
 
@@ -187,6 +190,7 @@ func (gen *myGenerator) asyncCall() {
 
 // sendResult 用于发送调用结果
 func (gen *myGenerator) sendResult(result *lib.CallResult) bool {
+	// LoadUint32原子性的获取 gen.status 的值
 	if atomic.LoadUint32(&gen.status) != lib.STATUS_STARTED {
 		gen.printIgnoredResult(result, "stopped load generator")
 		return false

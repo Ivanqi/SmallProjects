@@ -44,3 +44,8 @@
 
 并发公式:
 - 并发量 = 单个载荷的响应超时时间 / 载荷的发送间隔时间
+
+# 测试语句
+开始: go test -v -run=TestStart
+
+结束: go test -v -run=TestStop
