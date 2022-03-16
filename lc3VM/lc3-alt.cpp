@@ -191,6 +191,7 @@ uint16_t mem_read(uint16_t address) {
     if (address == MR_KBSR) {
         if (check_key()) {
             memory[MR_KBSR] = (1 << 15);
+            // getchar()函数的作用是从标准的输入stdin中读取字符
             memory[MR_KBDR] = getchar();
         } else {
             memory[MR_KBSR] = 0;
@@ -209,7 +210,10 @@ void disable_input_buffering() {
     tcsetattr(STDIN_FILENO, TCSANOW, &new_tio);
 }
 
+// 获取键盘事件
 void restore_input_buffering() {
+    // tcsetattr 用于获取与终端相关的参数，提供异步通讯接口
+    // TCSANOW：更改立即发生
     tcsetattr(STDIN_FILENO, TCSANOW, &original_tio);
 }
 
@@ -309,6 +313,7 @@ void ins(uint16_t instr) {
                 /* TRAP GETC */
                 /* read a single ASCII char */
                 reg[R_R0] = (uint16_t)getchar();
+                update_flags(R_R0);
 
                 break;
 
@@ -339,7 +344,9 @@ void ins(uint16_t instr) {
                     printf("Enter a character: ");
                     char c = getchar();
                     putc(c, stdout);
+                    fflush(stdout);
                     reg[R_R0] = (uint16_t)c;
+                    update_flags(R_R0);
                 }
 
                 break;
@@ -406,13 +413,15 @@ int main(int argc, const char *argv[]) {
     signal(SIGINT, handle_interrupt);
     disable_input_buffering();
 
+    reg[R_COND] = FL_ZRO;
+
     // 设置PC的起始地址
     enum {PC_START = 0x3000};
     reg[R_PC] = PC_START;
 
     while (running) {
         uint16_t instr = mem_read(reg[R_PC]++);
-        uint16_t op = instr >> 2;
+        uint16_t op = instr >> 12;
         op_table[op](instr);
     }
 
