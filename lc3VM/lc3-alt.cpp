@@ -419,6 +419,14 @@ int main(int argc, const char *argv[]) {
     enum {PC_START = 0x3000};
     reg[R_PC] = PC_START;
 
+    /**
+     * @brief 执行过程
+     * 1. 从 PC 寄存器指向的内存地址中加载一条指令
+     * 2. 递增 PC 寄存器
+     * 3. 查看指令中的 opcode 字段，判断指令类型
+     * 4. 根据指令类型和指令中所带的参数执行该指令
+     * 5. 跳转到步骤 1
+     */
     while (running) {
         uint16_t instr = mem_read(reg[R_PC]++);
         uint16_t op = instr >> 12;
