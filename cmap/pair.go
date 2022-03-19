@@ -8,7 +8,7 @@ import (
 )
 
 // linkerPair 代表单向链表的键-元素对的接口
-type linkerPair interface {
+type linkedPair interface {
 	// Next 用于获取下一个键-元素对
 	// 若返回值为nil,则说明当前已在单链表的末尾
 	Next() Pair
@@ -19,7 +19,7 @@ type linkerPair interface {
 // Pair 代表并发安全的键 - 元素对的接口
 type Pair interface {
 	// linkedPair 代笔单链键 - 元素对接口
-	linkerPair
+	linkedPair
 	// Key 会返回键的值
 	Key() string
 	// Hash 会返回键的哈希值
@@ -30,7 +30,7 @@ type Pair interface {
 	SetElement(element interface{}) error
 	// Copy 会生成一个当前键-元素对的副本并返回
 	Copy() Pair
-	// String 会返回当前键-元素对的字符串表示形成
+	// String 会返回当前键-元素对的字符串表示形式
 	String() string
 }
 
@@ -66,7 +66,7 @@ func (p *pair) Hash() uint64 {
 	return p.hash
 }
 
-func Element() interface{} {
+func (p *pair) Element() interface{} {
 	pointer := atomic.LoadPointer(&p.element)
 	if pointer == nil {
 		return nil

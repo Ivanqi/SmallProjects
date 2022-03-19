@@ -1,6 +1,11 @@
 package cmap
 
 import "testing"
+import "math/rand"
+import "encoding/hex"
+import "encoding/binary"
+import "bytes"
+import "fmt"
 
 // keyElement 用于存储键 - 元素对
 type keyElement struct {
@@ -37,4 +42,78 @@ func genTestingKeyElementSlice(number int) []*keyElement {
 
 func TestPairNew(t *testing.T) {
 	testCases := genTestingKeyElementSlice(100)
+	testCases[0] = &keyElement{"", randElement()}
+
+	for _, tc := range testCases {
+		t.Run(fmt.Sprintf("Key=%s, Element=%#v", tc.key, tc.element), func(t *testing.T) {
+			p, err := newPair(tc.key, tc.element)
+			if err != nil {
+				t.Fatalf("An error occurs when new a pair: %s (key: %s, element: %#v)", err, tc.key, tc.element)
+			}
+
+			if p == nil {
+				t.Fatalf("Couldn't new pair! (key: %s, element: %#v)", tc.key, tc.element)
+			}
+		})
+	}
+}
+
+func TestPairKeyAndHashAndElement(t *testing.T) {
+	testCases := genTestingKeyElementSlice(30)
+	for _, tc := range testCases {
+		t.Run(fmt.Sprintf("Key=%s,Element=%#v", tc.key, tc.element), func(t *testing.T) {
+			p, err := newPair(tc.key, tc.element)
+			if err != nil {
+				t.Fatalf("An error occurs when new a pair: %s (key: %s, element: %#v)", err, tc.key, tc.element)
+			}
+
+			if p.Key() != tc.key {
+				t.Fatalf("Inconsistent key: expected: %s, actual: %s", tc.key, p.Key())
+			}
+
+			expectedHash := hash(tc.key)
+			if p.Hash() != expectedHash {
+				t.Fatalf("Inconsistent hash: expected: %d, actual: %d", expectedHash, p.Hash())
+			}
+
+			if p.Element() != tc.element {
+				t.Fatalf("Inconsistent element: expected: %#v, actual: %#v", tc.element, p.Element())
+			}
+		})
+	}
+}
+
+func TestPairSet(t *testing.T) {
+	testCases := genTestingKeyElementSlice(30)
+	for _, tc := range testCases {
+		t.Run(fmt.Sprintf("Key=%s,Element=%#v", tc.key, tc.element), func(t *testing.T) {
+			p, err := newPair(tc.key, tc.element)
+			if err != nil {
+				t.Fatalf("An error occurs when new a pair: %s (key: %s, element: %#v)", err, tc.key, tc.element)
+			}
+
+			newElement := randString()
+			p.SetElement(newElement)
+
+			if p.Element() != newElement {
+				t.Fatalf("Inconsistent element: expected: %#v, actual: %#v", newElement, p.Element())
+			}
+		})
+	}
+}
+
+func TestPairNext(t *testing.T) {
+	number := 30
+	testCases := genTestingKeyElementSlice(number)
+
+	var current Pair
+	var prev Pair
+	var err error
+
+	for _, tc := range testCases {
+		current, err = newPair(tc.key, tc.element)
+		if err != nil {
+			t.Fatalf("An error occurs when new a pair: %s (key: %s, element: %#v)", err, tc.key, tc.element)
+		}
+	}
 }
