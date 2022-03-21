@@ -15,6 +15,7 @@ enum LabelType {
 typedef struct Reloc {
     struct Reloc *next;
     struct Reloc *prev;
+    int pos;
 } Reloc;
 
 typedef struct code_s {
@@ -33,7 +34,7 @@ typedef struct code_s {
 
 CodeObject* create_code_object();
 
-void create_object_append_bytecode(CodeObject *co, byte op_code, byte parameter);
+void code_object_append_bytecode(CodeObject *co, byte op_code, byte parameter);
 int code_object_find_constant_index(CodeObject *co, int t);
 int code_object_find_variable_index(CodeObject *co, char *t);
 void code_object_bind(CodeObject *co, enum LabelType lt);
