@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include "ast.h"
 #include "lexer.h"
 #include "bcgen.h"
 #include "code.h"

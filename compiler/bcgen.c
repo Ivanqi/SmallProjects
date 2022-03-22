@@ -45,7 +45,7 @@ void code_object_emit_code(CodeObject *co, Node *root, Context *context) {
         code_object_jump_false(co, WHILE_END);
         code_object_emit_code(co, node->body, context);
         code_object_jump(co, WHILE_HEAD);
-        code_object_dump(co, WHILE_END);
+        code_object_bind(co, WHILE_END);
     } else if (root->ntype == NT_LIST) {
         ListNode *node = (ListNode *)root;
         for (int i = 0; i < node->length; i++) {

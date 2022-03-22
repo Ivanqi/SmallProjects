@@ -1,6 +1,8 @@
 #ifndef AST_H
 #define AST_H
 
+#include "lexer.h"
+
 enum TokeType;
 
 // 节点类型
@@ -33,7 +35,7 @@ typedef struct {
 
 typedef struct {
     Node parent;
-    Node *name;  
+    char *name;  
 } VarNode;
 
 typedef struct {
@@ -76,7 +78,7 @@ typedef struct {
 Node *create_int(int v);
 Node *create_print(Node *v);
 Node *create_var(char *name);
-Node *create_assgin(Node *var, Node *value);
+Node *create_assign(Node *var, Node *value);
 Node *create_binop(enum TokenType tt, Node *left, Node *right);
 Node* create_if(Node* cond, Node* then_clause, Node* else_clause);
 Node* create_while(Node* cond, Node* body);

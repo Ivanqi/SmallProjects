@@ -11,4 +11,4 @@ LIST_CREATE(byte)
 LIST_CREATE(int)
 LIST_CREATE(string);
 
-LIST_FIND(int16_t)
+LIST_FIND(int)

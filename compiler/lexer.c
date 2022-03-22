@@ -19,7 +19,7 @@ struct Token* create_token(enum TokenType tt, char *begin, char *cur) {
     nt->_type == tt;
 
     if (tt == TT_VAR) {
-        nt->_type = (char *)malloc(cur - begin + 1);
+        nt->_value._str = (char *)malloc(cur - begin + 1);
         strncpy(nt->_value._str, begin, cur - begin);
         nt->_value._str[cur - begin] = 0;
     } else if (tt == TT_INTEGER) {
@@ -30,6 +30,8 @@ struct Token* create_token(enum TokenType tt, char *begin, char *cur) {
         }
         nt->_value._int = sum;
     }
+
+    return nt;
 }
 
 void destroy_token(struct Token *t) {
@@ -53,14 +55,32 @@ void log_token(struct Token *t) {
     }
 }
 
+/**
+ * @brief 判断是否是字母
+ * 
+ * @param c     输入的字符串
+ * @return char 
+ */
 char is_alpah(char c) {
     return (c <= 'Z' && c >= 'A') || (c <= 'z' && c >= 'a') || c == '_';
 }
 
+/**
+ * @brief 判断是否是数字
+ * 
+ * @param c     输入的字符串
+ * @return char 
+ */
 char is_num(char c) {
     return c <= '9' && c >= '0';
 }
 
+/**
+ * @brief 过滤词
+ *  对 if、else、int、while、print 设置为过滤词
+ * 
+ * @return struct Token*
+ */
 struct Token* filter_keyword(struct Token *t) {
     if (strcmp(t->_value._str, "if") == 0) {
         t->_type = TT_IF;
@@ -77,6 +97,12 @@ struct Token* filter_keyword(struct Token *t) {
     return t;
 }
 
+/**
+ * @brief 词法分析
+ * 有限自动机，会字符进行类型判断
+ * 
+ * @return struct Token* 
+ */
 struct Token* next_token() {
     enum State state = STATE_INIT;
     char *begin = 0;
@@ -84,6 +110,7 @@ struct Token* next_token() {
     while (*cur) {
         char c = *cur;
         if (state == STATE_INIT) {
+            // 在初始状态下，遇到空白字符串可以跳过
             if (c == ' ' || c == '\n' || c == '\t') {
                 cur++;
                 continue;

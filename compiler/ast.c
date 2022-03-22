@@ -22,14 +22,14 @@ Node* create_var(char *name) {
 }
 
 Node* create_print(Node *v) {
-    PrintNode *in = (PrintNode *)malloc(PrintNode);
+    PrintNode *in = (PrintNode *)malloc(sizeof(PrintNode));
     in->expr = v;
     in->parent.ntype = NT_PRINT;
     return (Node *)in;
 }
 
 Node* create_assign(Node *var, Node *value) {
-    AssignNode *in = (AssignNode)malloc(sizeof(AssignNode));
+    AssignNode *in = (AssignNode*) malloc(sizeof(AssignNode));
     in->var = var;
     in->value = value;
     in->parent.ntype = NT_ASN;
