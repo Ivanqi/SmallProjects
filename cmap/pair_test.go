@@ -115,5 +115,57 @@ func TestPairNext(t *testing.T) {
 		if err != nil {
 			t.Fatalf("An error occurs when new a pair: %s (key: %s, element: %#v)", err, tc.key, tc.element)
 		}
+
+		if prev != nil {
+			current.SetNext(prev)
+		}
+		prev = current
+	}
+
+	for i := number - 1; i >= 0; i-- {
+		next := current.Next()
+		if i == 0 {
+			if next != nil {
+				t.Fatalf("Next is not nil! (pair: %#v, index: %d)", current, i)
+			}
+		} else {
+			if next == nil {
+				t.Fatalf("Next is nil! (pair: %#v, index: %d)", current, i)
+			}
+
+			expectedNext := testCases[i-1]
+
+			if next.Key() != expectedNext.key {
+				t.Fatalf("Inconsistent next key: expected: %s, actual: %s, index: %d", expectedNext.key, next.Key(), i)
+			}
+
+			if next.Element() != expectedNext.element {
+				t.Fatalf("Inconsistent element: expected: %#v, actual: %#v, index: %d", expectedNext.element, next.Element(), i)
+			}
+		}
+		current = next
+	}
+}
+func TestPairCopy(t *testing.T) {
+	testCases := genTestingKeyElementSlice(30)
+	for _, tc := range testCases {
+		t.Run(fmt.Sprintf("Key=%s,Element=%#v", tc.key, tc.element), func(t *testing.T) {
+			p, err := newPair(tc.key, tc.element)
+			if err != nil {
+				t.Fatalf("An error occurs when new a pair: %s (key: %s, element: %#v)", err, tc.key, tc.element)
+			}
+			pCopy := p.Copy()
+			if pCopy.Key() != p.Key() {
+				t.Fatalf("Inconsistent key: expected: %s, actual: %s", p.Key(), pCopy.Key())
+			}
+
+			if pCopy.Hash() != p.Hash() {
+				t.Fatalf("Inconsistent hash: expected: %d, actual: %d", p.Hash(), pCopy.Hash())
+			}
+
+			if pCopy.Element() != p.Element() {
+				t.Fatalf("Inconsistent element: expected: %#v, actual: %#v", p.Element(), pCopy.Element())
+			}
+		})
 	}
 }
