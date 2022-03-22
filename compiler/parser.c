@@ -46,6 +46,11 @@ int match(enum TokenType tt) {
     return 1;
 }
 
+/**
+ * @brief 解析Token
+ * 
+ * @return Node* 
+ */
 Node* stmts() {
     ListNode* list = create_list();
     while (t != NULL) {
@@ -110,6 +115,11 @@ Node* print_stmt() {
     return a;
 }
 
+/**
+ * @brief if 语句处理
+ * 
+ * @return Node* 
+ */
 Node* if_stmt() {
     Node *then_clause, *else_clause;
     assert(t->_type == TT_IF);
@@ -201,6 +211,12 @@ Node* condition() {
     return a;
 }
 
+/**
+ * @brief 顶层规则
+ *  这条规则代表表达式的定义，一个表达式可以是多项式的一个项或者多个项的和或者差
+ * 
+ * @return Node* 
+ */
 Node* expr() {
     Node* a = NULL, *b = NULL;
     a = term();
@@ -220,6 +236,12 @@ Node* expr() {
     return a;
 }
 
+/**
+ * @brief 项的规则，一个项可以是一个因子，或者多个因子的积或商
+ *  这条规则保证了乘除法的优先级高于加减法
+ * 
+ * @return Node* 
+ */
 Node* term() {
     Node* a = NULL, *b = NULL;
     a = factor();
@@ -235,10 +257,16 @@ Node* term() {
             a = create_binop(TT_DIV, a, b);
         }
     }
-
     return a;
 }
 
+/**
+ * @brief 因子的规则
+ *  它可以是一个整数，或者是用括号括起来的表达式
+ *  这定义了括号的优先级是最高的
+ * 
+ * @return Node* 
+ */
 Node* factor() {
     if (t->_type == TT_INTEGER) {
         Node* a = create_int(t->_value._int);
