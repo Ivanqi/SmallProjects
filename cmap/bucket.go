@@ -157,6 +157,7 @@ func (b *bucket) Delete(key string, lock sync.Locker) bool {
 	return true
 }
 
+// 清空
 func (b *bucket) Clear(lock sync.Locker) {
 	if lock != nil {
 		lock.Lock()
