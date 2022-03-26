@@ -63,6 +63,7 @@ var bucketCountTemplate = `Bucket count:
 
 func (pr *myPairRedistributor) UpdateThreshold(pairTotal uint64, bucketNumber int) {
 	var average float64
+	// segment 中 pair的数量 / bucket中的数量
 	average = float64(pairTotal / uint64(bucketNumber))
 	if average < 100 {
 		average = 100
