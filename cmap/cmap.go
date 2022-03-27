@@ -24,11 +24,15 @@ type ConcurrentMap interface {
 	Len() uint64
 }
 
-// myConcurrentMap 代表 ConcurrentMap 接口的实现类型
+/**
+myConcurrentMap 代表 ConcurrentMap 接口的实现类型
+一个Segment类型值代表了一个散列段。每个散列段都提供对其包含的键-元素对的读写操作
+这里的读写操作需要由互斥锁保证其并发安全性，这个加锁方式称为'分段锁'
+*/
 type myConcurrentMap struct {
 	concurrency int
 	segments    []Segment
-	total       uint64
+	total       uint64 // 记录数量
 }
 
 // NewConcurrentMap 会创建一个ConcurrentMap 类型的实例

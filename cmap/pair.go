@@ -39,7 +39,7 @@ type pair struct {
 	key string
 	// hash 代表键的哈希值
 	hash    uint64
-	element unsafe.Pointer
+	element unsafe.Pointer // 代表一个可寻址的指针值，同时可以运用原子操作
 	next    unsafe.Pointer
 }
 

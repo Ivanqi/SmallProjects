@@ -102,6 +102,7 @@ func (s *segment) Size() uint64 {
 // redistribute 会检查给定参数并设置相应的阈值和计数，并在必要时重新分配所有散列桶中的所有键-元素对
 // 注意！必须在互斥锁的保护下调用本方法！
 func (s *segment) redistribute(pairTotal uint64, bucketSize uint64) (err error) {
+	// redistribute字段的值有可能是使用者传入，所以这里不能保证它不会引发运行时恐慌
 	defer func() {
 		if p := recover(); p != nil {
 			if pErr, ok := p.(error); ok {
