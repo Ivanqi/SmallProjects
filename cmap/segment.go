@@ -65,6 +65,7 @@ func (s *segment) Put(p Pair) (bool, error) {
 	ok, err := b.Put(p, nil)
 	if ok {
 		newTotal := atomic.AddUint64(&s.pairTotal, 1)
+		// 请求总的pair 和 单个 bucket中的pair数量
 		s.redistribute(newTotal, b.Size())
 	}
 	s.lock.Unlock()

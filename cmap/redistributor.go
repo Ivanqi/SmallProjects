@@ -113,6 +113,7 @@ func (pr *myPairRedistributor) Redistribe(bucketStatus BucketStatus, buckets []B
 		if atomic.LoadUint64(&pr.overweightBucketCount)*4 < currentNumber {
 			return nil, false
 		}
+		// 乘以2
 		newNumber = currentNumber << 1
 	// BUCKET_STATUS_UNDERWEIGHT 代表散列桶过轻
 	case BUCKET_STATUS_UNDERWEIGHT:
@@ -127,12 +128,14 @@ func (pr *myPairRedistributor) Redistribe(bucketStatus BucketStatus, buckets []B
 		return nil, false
 	}
 
+	// 如果长度相等，证明并不过过重和过轻
 	if newNumber == currentNumber {
 		atomic.StoreUint64(&pr.overweightBucketCount, 0)
 		atomic.StoreUint64(&pr.emptyBucketCount, 0)
 		return nil, false
 	}
 
+	// 把所有buckets的pair，都放到pairs中
 	var pairs []Pair
 	for _, b := range buckets {
 		for e := b.GetFirstPair(); e != nil; e = e.Next() {
@@ -140,6 +143,7 @@ func (pr *myPairRedistributor) Redistribe(bucketStatus BucketStatus, buckets []B
 		}
 	}
 
+	// 如果 newNumber 大于 currentNumber。 就清空buckets， 并新增 newNumber - currentNumber 个 bucket
 	if newNumber > currentNumber {
 		for i := uint64(0); i < currentNumber; i++ {
 			buckets[i].Clear(nil)
@@ -156,6 +160,7 @@ func (pr *myPairRedistributor) Redistribe(bucketStatus BucketStatus, buckets []B
 	}
 
 	var count int
+	// 把每个 p 按 hash 和 newNumber的长度，重新分配的buckets中
 	for _, p := range pairs {
 		index := int(p.Hash() % newNumber)
 		b := buckets[index]

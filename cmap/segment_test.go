@@ -141,7 +141,7 @@ func TestSegmentGetInParallel(t *testing.T) {
 	}
 }
 
-func TestSegmentDelete(T *testing.T) {
+func TestSegmentDelete(t *testing.T) {
 	number := 30
 	testCases := genTestingPairs(number)
 	s := newSegment(-1, nil)
@@ -157,7 +157,141 @@ func TestSegmentDelete(T *testing.T) {
 		}
 
 		if count > 0 {
+			count--
+		}
 
+		if s.Size() != count {
+			t.Fatalf("Inconsistent size: expected: %d, actual: %d", count, s.Size())
 		}
 	}
+
+	if s.Size() != 0 {
+		t.Fatalf("Inconsistent size: expected: %d, actual: %d", 0, s.Size())
+	}
+}
+
+func TestSegmentDeleteInParallel(t *testing.T) {
+	number := 30
+	testCases := genNoRepetitiveTestingPairs(number)
+	s := newSegment(-1, nil)
+
+	for _, p := range testCases {
+		s.Put(p)
+	}
+
+	testingFunc := func(p Pair, t *testing.T) func(t *testing.T) {
+		return func(t *testing.T) {
+			t.Parallel()
+			done := s.Delete(p.Key())
+			if !done {
+				t.Fatalf("Couldn't delete a pair from segment! (pair: %#v)", p)
+			}
+			actualPair := s.Get(p.Key())
+			if actualPair != nil {
+				t.Fatalf("Inconsistent pair: expected: %#v, actual: %#v", nil, actualPair)
+			}
+
+			done = s.Delete(p.Key())
+			if done {
+				t.Fatalf("Couldn't delete a pair from segment again! (pair: %#v)", p)
+			}
+		}
+	}
+
+	t.Run("Delete in parallel", func(t *testing.T) {
+		for _, p := range testCases {
+			t.Run(fmt.Sprintf("Key=%s", p.Key()), testingFunc(p, t))
+		}
+	})
+
+	if s.Size() != 0 {
+		t.Fatalf("Inconsistent size: expected: %d, actual: %d", 0, s.Size())
+	}
+}
+
+var testCaseNumberForSegmentTest = 200000
+var testCasesForSegmentTest = genNoRepetitiveTestingPairs(testCaseNumberForSegmentTest)
+var testCases1ForSegmentTest = testCasesForSegmentTest[:testCaseNumberForSegmentTest/2]
+var testCases2ForSegmentTest = testCasesForSegmentTest[testCaseNumberForSegmentTest/2:]
+
+func TestSegmentAllInParallel(t *testing.T) {
+	testCases1 := testCases1ForSegmentTest
+	testCases2 := testCases2ForSegmentTest
+	s := newSegment(-1, nil)
+	t.Run("All in parallel", func(t *testing.T) {
+		t.Run("Put1", func(t *testing.T) {
+			t.Parallel()
+			for _, p := range testCases1 {
+				_, err := s.Put(p)
+				if err != nil {
+					t.Fatalf("An error occurs when putting a pair to the segment: %s (pair: %#v)",
+						err, p)
+				}
+			}
+		})
+		t.Run("Put2", func(t *testing.T) {
+			t.Parallel()
+			for _, p := range testCases2 {
+				_, err := s.Put(p)
+				if err != nil {
+					t.Fatalf("An error occurs when putting a pair to the segment: %s (pair: %#v)",
+						err, p)
+				}
+			}
+		})
+		t.Run("Get1", func(t *testing.T) {
+			t.Parallel()
+			for _, p := range testCases1 {
+				actualPair := s.Get(p.Key())
+				if actualPair == nil {
+					continue
+				}
+				if actualPair.Key() != p.Key() {
+					t.Fatalf("Inconsistent key: expected: %s, actual: %s",
+						p.Key(), actualPair.Key())
+				}
+				if actualPair.Hash() != p.Hash() {
+					t.Fatalf("Inconsistent hash: expected: %d, actual: %d (key=%s)",
+						p.Hash(), actualPair.Hash(), p.Key())
+				}
+				if actualPair.Element() != p.Element() {
+					t.Fatalf("Inconsistent element: expected: %#v, actual: %#v (key=%s)",
+						p.Element(), actualPair.Element(), p.Key())
+				}
+			}
+		})
+		t.Run("Get2", func(t *testing.T) {
+			t.Parallel()
+			for _, p := range testCases2 {
+				actualPair := s.Get(p.Key())
+				if actualPair == nil {
+					continue
+				}
+				if actualPair.Key() != p.Key() {
+					t.Fatalf("Inconsistent key: expected: %s, actual: %s",
+						p.Key(), actualPair.Key())
+				}
+				if actualPair.Hash() != p.Hash() {
+					t.Fatalf("Inconsistent hash: expected: %d, actual: %d (key=%s)",
+						p.Hash(), actualPair.Hash(), p.Key())
+				}
+				if actualPair.Element() != p.Element() {
+					t.Fatalf("Inconsistent element: expected: %#v, actual: %#v (key=%s)",
+						p.Element(), actualPair.Element(), p.Key())
+				}
+			}
+		})
+		t.Run("Delete1", func(t *testing.T) {
+			t.Parallel()
+			for _, p := range testCases1 {
+				s.Delete(p.Key())
+			}
+		})
+		t.Run("Delete2", func(t *testing.T) {
+			t.Parallel()
+			for _, p := range testCases2 {
+				s.Delete(p.Key())
+			}
+		})
+	})
 }
