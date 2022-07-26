@@ -1,4 +1,4 @@
-CC=g++ -g -I./
+CC=g++ -g -I./ -O0
 TARGET=coroutine
 
 all:

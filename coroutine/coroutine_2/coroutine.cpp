@@ -19,7 +19,9 @@ class coroutine
                 return;
             }
 
+            // 申请1kb的内存，作为协程栈
             stack = (char *)malloc(STACK_SIZE);
+            // 栈底指针 base 指向栈的底部
             char *base = stack + STACK_SIZE;
             
             stack_pointer = (long *) base;
@@ -28,6 +30,10 @@ class coroutine
             *stack_pointer = (long) entry;
             stack_pointer -= 1;
 
+            /*
+                栈是由上向下增长的, 所以又在协程栈上放入了 base 地址和起始地址
+                栈顶，先存放程序入口地址，模拟ret指令的返回地址 接下来放入base地址，模拟rbp地址
+            */
             *stack_pointer = (long) base;
         }
 
