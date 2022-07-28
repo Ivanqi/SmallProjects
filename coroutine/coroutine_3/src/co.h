@@ -26,6 +26,11 @@ int co_setspecific(int key, const void *value);
     #define CO_STACK_BOTTOM 0x80000000
 #endif
 
+extern unsigned long COPY_STACK;
+#define MMAP_STACK (4*1024*1024)
+#define DEFAULT_STACK (128*1024)
+
+
 //syscall.c
 #include <unistd.h>
 int cousleep(useconds_t us);

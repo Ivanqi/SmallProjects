@@ -1,7 +1,7 @@
 #ifndef __COMPILE_H__
 #define __COMPILE_H__
 
-#define <stddef.h>
+#include <stddef.h>
 
 // 数组长度
 #define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
