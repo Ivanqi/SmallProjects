@@ -50,6 +50,15 @@ class coroutine
 
 coroutine* co_a, * co_b;
 
+/**
+ * @brief 协程切换
+ *  1. 把当前rsp寄存器的值存储到old_co的stack_pointer属性
+ *  2. 并且把新的协程的 stack_pointer 属性更新到 rsp 寄存器
+ *  2. 最后，通过retq指令将会从栈上取出调用者地址，并跳转回调用者继续执行
+ * 
+ * @param old_co 老协程
+ * @param co 新协程
+ */
 void yield_to(coroutine *old_co, coroutine *co) {
     __asm__(
     "movq %%rsp, %0\n\t" 
