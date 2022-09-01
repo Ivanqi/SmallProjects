@@ -1,0 +1,11 @@
+{
+    "name": "smallproect/websocket",
+    "require": {
+        "php": ">=7"
+    },
+    "autoload": {
+        "psr-4": {
+            "WebSocket\\": "src"
+        }
+    }
+}
