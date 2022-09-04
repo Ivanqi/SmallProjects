@@ -41,13 +41,13 @@ int Network_Interface::init()
     server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
     server_addr.sin_port = htons(PORT);
 
-    if (-1 == bind(listen_, (struct sockaddr *) (&server_addr), sizeof(server_addr))) {
-        DEBUG_LOG("绑定套接字失败!")
+    if (-1 == bind(listenfd_, (struct sockaddr *) (&server_addr), sizeof(server_addr))) {
+        DEBUG_LOG("绑定套接字失败!");
         return -1;
     }
 
-    if (-1 == listen(listen_, 5)) {
-        DEBUG_LOG("监听失败!")
+    if (-1 == listen(listenfd_, 5)) {
+        DEBUG_LOG("监听失败!");
         return -1;
     }
 
@@ -69,7 +69,7 @@ int Network_Interface::epoll_loop()
     struct epoll_event events[MAXEVENTSSIZE];
 
     while (true) {
-        nfds = epoll_wait(epollfd_, events, MAXEVENTSSIZE; TIMEWAIT);
+        nfds = epoll_wait(epollfd_, events, MAXEVENTSSIZE, TIMEWAIT);
         for (int i = 0; i < nfds; i++) {
             if (events[i].data.fd == listenfd_) {
                 fd = accept(listenfd_, (struct sockaddr *)&client_addr, &client);
@@ -119,7 +119,7 @@ void Network_Interface::ctl_event(int fd, bool flag)
 {
     struct epoll_event ev;
     ev.data.fd = fd;
-    ev.event = flag ? EPOLLIN : 0;
+    ev.events = flag ? EPOLLIN : 0;
     epoll_ctl(epollfd_, flag ? EPOLL_CTL_ADD : EPOLL_CTL_DEL, fd, &ev);
     if (flag) {
         set_noblock(fd);

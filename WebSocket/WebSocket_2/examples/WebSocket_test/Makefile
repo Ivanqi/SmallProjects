@@ -1,20 +1,17 @@
-CC = g++
-FLAG = -g -I ../../src/
-INCLUDE = 
-LIBDIR =
-LIB = 
-BIN = 
+PROJECT := $(shell pwd)
+SRCDIR  := $(PROJECT)/../../
+TEST := $(wildcard $(PROJECT)/main.cpp)
+SRCS := $(wildcard $(SRCDIR)/src/*.cpp)
+override SRCS := $(SRCS) $(TEST) 
+
+INCLUDE = -I ../../src/
+
 TARGET = websocketserver
-SRCS = ../../src/base64.cpp ../../src/sha1.cpp ../../src/network_interface.cpp \ 
-	   ../../src/debug_log.cpp ../../src/websocket_handler.cpp \
-	   ../../src/websocket_request.cpp main.cpp
 
-$(TARGET):$(SRCS:.cpp=.o)
-	$(CC) $(FLAG) $(LIBDIR) $(LIB) -o $@ $^
-	-rm -f *.o *.d
 
-%.o:%.cpp
-	$(CC) $(FLAG) $(INCLUDE) -c -o $@ $<
+$(TARGET): $(SRCS)
+	$(CXX) $(CFLAGS) $(INCLUDE) -o $@ $^ $(LIBS)
 
-clean:
-	-rm -f *.o *.d
+clean :
+	find . -name '*.o' | xargs rm -f
+	find . -name $(TARGET) | xargs rm -f

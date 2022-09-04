@@ -59,6 +59,12 @@ int Websocket_Request::fetch_opcode(char* msg, int &pos)
     return 0;
 }
 
+int Websocket_Request::fetch_mask(char *msg, int &pos)
+{
+	mask_ = (unsigned char)msg[pos] >> 7;
+	return 0;
+}
+
 int Websocket_Request::fetch_masking_key(char* msg, int &pos)
 {
     if (mask_ != 1) {

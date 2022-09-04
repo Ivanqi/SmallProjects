@@ -37,13 +37,15 @@
  *
  */
 
+
 #include "sha1.h"
+
 
 /*  
  *  SHA1
  *
  *  Description:
- *      这是 sha1 类的构造函数
+ *      This is the constructor for the sha1 class.
  *
  *  Parameters:
  *      None.
@@ -63,7 +65,7 @@ SHA1::SHA1()
  *  ~SHA1
  *
  *  Description:
- *      这是 sha1 类的析构函数
+ *      This is the destructor for the sha1 class
  *
  *  Parameters:
  *      None.
@@ -76,14 +78,15 @@ SHA1::SHA1()
  */
 SHA1::~SHA1()
 {
-
+    // The destructor does nothing
 }
 
 /*  
  *  Reset
  *
  *  Description:
- *      此函数将初始化 sha1 类成员变量为计算新消息摘要做准备
+ *      This function will initialize the sha1 class member variables
+ *      in preparation for computing a new message digest.
  *
  *  Parameters:
  *      None.
@@ -114,7 +117,8 @@ void SHA1::Reset()
  *  Result
  *
  *  Description:
- *      此函数将160位消息摘要返回到提供的数组中
+ *      This function will return the 160-bit message digest into the
+ *      array provided.
  *
  *  Parameters:
  *      message_digest_array: [out]
@@ -127,20 +131,23 @@ void SHA1::Reset()
  *  Comments:
  *
  */
-bool SHA1::Result(unsigned* message_digest_array)
+bool SHA1::Result(unsigned *message_digest_array)
 {
-    int i;
+    int i;                                  // Counter
 
-    if (Corrupted) {
+    if (Corrupted)
+    {
         return false;
     }
 
-    if (!Computed) {
+    if (!Computed)
+    {
         PadMessage();
         Computed = true;
     }
 
-    for (i = 0; i < 5; i++) {
+    for(i = 0; i < 5; i++)
+    {
         message_digest_array[i] = H[i];
     }
 
@@ -151,7 +158,8 @@ bool SHA1::Result(unsigned* message_digest_array)
  *  Input
  *
  *  Description:
- *      此函数接受一个八位字节数组作为消息的下一部分
+ *      This function accepts an array of octets as the next portion of
+ *      the message.
  *
  *  Parameters:
  *      message_array: [in]
@@ -164,31 +172,38 @@ bool SHA1::Result(unsigned* message_digest_array)
  *  Comments:
  *
  */
-void SHA1::Input(const unsigned char *message_array, unsigned length)
+void SHA1::Input(   const unsigned char *message_array,
+                    unsigned            length)
 {
-    if (!length) {
+    if (!length)
+    {
         return;
     }
 
-    if (Computed || Corrupted) {
+    if (Computed || Corrupted)
+    {
         Corrupted = true;
         return;
     }
 
-    while (length-- && !Corrupted) {
+    while(length-- && !Corrupted)
+    {
         Message_Block[Message_Block_Index++] = (*message_array & 0xFF);
 
         Length_Low += 8;
-        Length_Low &= 0xFFFFFFFF;           // 强制为 32 位
-        if (Length_Low) {
+        Length_Low &= 0xFFFFFFFF;               // Force it to 32 bits
+        if (Length_Low == 0)
+        {
             Length_High++;
-            Length_High &= 0xFFFFFFFF;      // 强制为 32 位
-            if (Length_High == 0) {
-                Corrupted = true;           // 消息过长
+            Length_High &= 0xFFFFFFFF;          // Force it to 32 bits
+            if (Length_High == 0)
+            {
+                Corrupted = true;               // Message is too long
             }
         }
 
-        if (Message_Block_Index == 64) {
+        if (Message_Block_Index == 64)
+        {
             ProcessMessageBlock();
         }
 
@@ -200,7 +215,8 @@ void SHA1::Input(const unsigned char *message_array, unsigned length)
  *  Input
  *
  *  Description:
- *      此函数接受一个八位字节数组作为消息的下一部分
+ *      This function accepts an array of octets as the next portion of
+ *      the message.
  *
  *  Parameters:
  *      message_array: [in]
@@ -215,7 +231,8 @@ void SHA1::Input(const unsigned char *message_array, unsigned length)
  *  Comments:
  *
  */
-void SHA1::Input(const char *message_array, unsigned length)
+void SHA1::Input(   const char  *message_array,
+                    unsigned    length)
 {
     Input((unsigned char *) message_array, length);
 }
@@ -224,7 +241,28 @@ void SHA1::Input(const char *message_array, unsigned length)
  *  Input
  *
  *  Description:
- *      此函数接受单个八位字节作为下一个消息元素
+ *      This function accepts a single octets as the next message element.
+ *
+ *  Parameters:
+ *      message_element: [in]
+ *          The next octet in the message.
+ *
+ *  Returns:
+ *      Nothing.
+ *
+ *  Comments:
+ *
+ */
+void SHA1::Input(unsigned char message_element)
+{
+    Input(&message_element, 1);
+}
+
+/*  
+ *  Input
+ *
+ *  Description:
+ *      This function accepts a single octet as the next message element.
  *
  *  Parameters:
  *      message_element: [in]
@@ -245,7 +283,8 @@ void SHA1::Input(char message_element)
  *  operator<<
  *
  *  Description:
- *      此运算符便于将字符串提供给SHA1对象进行处理
+ *      This operator makes it convenient to provide character strings to
+ *      the SHA1 object for processing.
  *
  *  Parameters:
  *      message_array: [in]
@@ -262,7 +301,8 @@ SHA1& SHA1::operator<<(const char *message_array)
 {
     const char *p = message_array;
 
-    while (*p) {
+    while(*p)
+    {
         Input(*p);
         p++;
     }
@@ -274,7 +314,8 @@ SHA1& SHA1::operator<<(const char *message_array)
  *  operator<<
  *
  *  Description:
- *      此运算符便于向SHA1对象提供字符串进行处理
+ *      This operator makes it convenient to provide character strings to
+ *      the SHA1 object for processing.
  *
  *  Parameters:
  *      message_array: [in]
@@ -291,7 +332,8 @@ SHA1& SHA1::operator<<(const unsigned char *message_array)
 {
     const unsigned char *p = message_array;
 
-    while (*p) {
+    while(*p)
+    {
         Input(*p);
         p++;
     }
@@ -303,7 +345,7 @@ SHA1& SHA1::operator<<(const unsigned char *message_array)
  *  operator<<
  *
  *  Description:
- *      此函数提供消息中的下一个八位字节
+ *      This function provides the next octet in the message.
  *
  *  Parameters:
  *      message_element: [in]
@@ -327,7 +369,7 @@ SHA1& SHA1::operator<<(const char message_element)
  *  operator<<
  *
  *  Description:
- *      此函数提供消息中的下一个八位字节。
+ *      This function provides the next octet in the message.
  *
  *  Parameters:
  *      message_element: [in]
@@ -351,7 +393,8 @@ SHA1& SHA1::operator<<(const unsigned char message_element)
  *  ProcessMessageBlock
  *
  *  Description:
- *      该函数将处理存储在message_Block数组中的消息的下一个512位
+ *      This function will process the next 512 bits of the message
+ *      stored in the Message_Block array.
  *
  *  Parameters:
  *      None.
@@ -367,28 +410,31 @@ SHA1& SHA1::operator<<(const unsigned char message_element)
  */
 void SHA1::ProcessMessageBlock()
 {
-    const unsigned K[] = {  // 为 SHA-1 定义的常量
-        0x5A827999,
-        0x6ED9EBA1,
-        0x8F1BBCDC,
-        0xCA62C1D6
-    };
+    const unsigned K[] =    {               // Constants defined for SHA-1
+                                0x5A827999,
+                                0x6ED9EBA1,
+                                0x8F1BBCDC,
+                                0xCA62C1D6
+                            };
+    int         t;                          // Loop counter
+    unsigned    temp;                       // Temporary word value
+    unsigned    W[80];                      // Word sequence
+    unsigned    A, B, C, D, E;              // Word buffers
 
-    int t;                  // 循环计数器
-    unsigned temp;          // 临时字值
-    unsigned W[80];         // 词序
-    unsigned A, B, C, D, E; // 字缓冲区
-
-    // 初始化数组 W 中的前 16 个字
-    for (t = 0; t < 16; t++) {
+    /*
+     *  Initialize the first 16 words in the array W
+     */
+    for(t = 0; t < 16; t++)
+    {
         W[t] = ((unsigned) Message_Block[t * 4]) << 24;
         W[t] |= ((unsigned) Message_Block[t * 4 + 1]) << 16;
         W[t] |= ((unsigned) Message_Block[t * 4 + 2]) << 8;
         W[t] |= ((unsigned) Message_Block[t * 4 + 3]);
     }
 
-    for (t = 16; t < 80; t++) {
-        W[t] = CircularShift(1,W[t-3] ^ W[t-8] ^ W[t-14] ^ W[t-16]);
+    for(t = 16; t < 80; t++)
+    {
+       W[t] = CircularShift(1,W[t-3] ^ W[t-8] ^ W[t-14] ^ W[t-16]);
     }
 
     A = H[0];
@@ -397,7 +443,8 @@ void SHA1::ProcessMessageBlock()
     D = H[3];
     E = H[4];
 
-    for (t = 0; t < 20; t++) {
+    for(t = 0; t < 20; t++)
+    {
         temp = CircularShift(5,A) + ((B & C) | ((~B) & D)) + E + W[t] + K[0];
         temp &= 0xFFFFFFFF;
         E = D;
@@ -407,7 +454,8 @@ void SHA1::ProcessMessageBlock()
         A = temp;
     }
 
-    for (t = 20; t < 40; t++) {
+    for(t = 20; t < 40; t++)
+    {
         temp = CircularShift(5,A) + (B ^ C ^ D) + E + W[t] + K[1];
         temp &= 0xFFFFFFFF;
         E = D;
@@ -417,8 +465,10 @@ void SHA1::ProcessMessageBlock()
         A = temp;
     }
 
-    for (t = 40; t < 60; t++) {
-        temp = CircularShift(5,A) + ((B & C) | (B & D) | (C & D)) + E + W[t] + K[2];
+    for(t = 40; t < 60; t++)
+    {
+        temp = CircularShift(5,A) +
+               ((B & C) | (B & D) | (C & D)) + E + W[t] + K[2];
         temp &= 0xFFFFFFFF;
         E = D;
         D = C;
@@ -427,7 +477,8 @@ void SHA1::ProcessMessageBlock()
         A = temp;
     }
 
-    for (t = 60; t < 80; t++) {
+    for(t = 60; t < 80; t++)
+    {
         temp = CircularShift(5,A) + (B ^ C ^ D) + E + W[t] + K[3];
         temp &= 0xFFFFFFFF;
         E = D;
@@ -450,12 +501,13 @@ void SHA1::ProcessMessageBlock()
  *  PadMessage
  *
  *  Description:
- * 根据标准，消息必须填充到偶数512位。第一个填充位必须是“1”。
- * 最后64位表示原始消息的长度。
- * 之间的所有位应为0。
- * 此函数将根据这些规则填充消息块数组，从而填充消息。
- * 它还将适当地调用ProcessMessageBlock（）。
- * 当它返回时，可以假定消息摘要已经计算
+ *      According to the standard, the message must be padded to an even
+ *      512 bits.  The first padding bit must be a '1'.  The last 64 bits
+ *      represent the length of the original message.  All bits in between
+ *      should be 0.  This function will pad the message according to those
+ *      rules by filling the message_block array accordingly.  It will also
+ *      call ProcessMessageBlock() appropriately.  When it returns, it
+ *      can be assumed that the message digest has been computed.
  *
  *  Parameters:
  *      None.
@@ -469,28 +521,38 @@ void SHA1::ProcessMessageBlock()
 void SHA1::PadMessage()
 {
     /*
-        检查当前消息块是否太小，无法容纳初始填充位和长度。
-        如果是，我们将填充该块，处理它，然后继续填充到第二个块中。
-    */
-    if (Message_Block_Index > 55) {
+     *  Check to see if the current message block is too small to hold
+     *  the initial padding bits and length.  If so, we will pad the
+     *  block, process it, and then continue padding into a second block.
+     */
+    if (Message_Block_Index > 55)
+    {
         Message_Block[Message_Block_Index++] = 0x80;
-        while (Message_Block_Index < 64) {
+        while(Message_Block_Index < 64)
+        {
             Message_Block[Message_Block_Index++] = 0;
         }
 
         ProcessMessageBlock();
 
-        while (Message_Block_Index < 56) {
-            Message_Block[Message_Block_Index++] = 0;
-        }
-    } else {
-        Message_Block[Message_Block_Index++] = 0x80;
-        while (Message_Block_Index < 56) {
+        while(Message_Block_Index < 56)
+        {
             Message_Block[Message_Block_Index++] = 0;
         }
     }
+    else
+    {
+        Message_Block[Message_Block_Index++] = 0x80;
+        while(Message_Block_Index < 56)
+        {
+            Message_Block[Message_Block_Index++] = 0;
+        }
 
-    // 将消息长度存储为最后 8 个八位字节
+    }
+
+    /*
+     *  Store the message length as the last 8 octets
+     */
     Message_Block[56] = (Length_High >> 24) & 0xFF;
     Message_Block[57] = (Length_High >> 16) & 0xFF;
     Message_Block[58] = (Length_High >> 8) & 0xFF;
@@ -503,11 +565,12 @@ void SHA1::PadMessage()
     ProcessMessageBlock();
 }
 
+
 /*  
  *  CircularShift
  *
  *  Description:
- *      此成员功能将执行循环换档操作
+ *      This member function will perform a circular shifting operation.
  *
  *  Parameters:
  *      bits: [in]

@@ -34,16 +34,16 @@ class SHA1
         void Reset();
 
         // 返回消息摘要
-        bool Result(unsigned *message_digest_array);
+        bool Result(unsigned* message_digest_array);
 
         // 向SHA1提供输入
-        void Input(const unsigned char *message_array, unsigned length);
-        void Input(const char *message_array, unsigned length);
+        void Input(const unsigned char* message_array, unsigned length);
+        void Input(const char* message_array, unsigned length);
         void Input(unsigned char message_element);
         void Input(char message_element);
 
-        SHA1& operator<<(const char *message_array);
-        SHA1& operator<<(const unsigned char *message_array);
+        SHA1& operator<<(const char* message_array);
+        SHA1& operator<<(const unsigned char* message_array);
         SHA1& operator<<(const char message_element);
         SHA1& operator<<(const unsigned char message_element);
 
