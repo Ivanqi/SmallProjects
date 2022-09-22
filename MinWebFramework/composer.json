@@ -1,0 +1,21 @@
+{
+    "config": {
+        "vendor-dir" : "vendor"
+    },
+    "repositories": [
+    ],
+    "require": {
+    },
+   "autoload" : {
+        "classmap": [
+        ],
+        "psr-4": {
+            "App\\": "App/",
+            "Core\\": "Core/",
+            "Deps\\Namespace\\": ""
+        },
+        "files": [
+            "tool/functions.php"
+        ]
+   }
+}
