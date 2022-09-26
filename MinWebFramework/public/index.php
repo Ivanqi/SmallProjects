@@ -5,7 +5,15 @@ $app = new Core\Application(
     realpath(__DIR__.'/../')
 );
 
-$request = Core\Http\Request::capture();
-$app->dispatchToRouter($request);
-// $response = Core\Http\Response();
+
+try {
+    $request = Core\Http\Request::capture();
+    $app->dispatchToRouter($request);
+    $response = Core\Http\Response();
+    $response->send();
+} catch(\Exception $e) {
+    print_r([$e->getMessage()]);
+}
+
+
 

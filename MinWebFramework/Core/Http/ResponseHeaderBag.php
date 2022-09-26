@@ -8,6 +8,9 @@ class ResponseHeaderBag extends HeaderBag {
     const DISPOSITION_ATTACHMENT = 'attachment';
     const DISPOSITION_INLINE = 'inline';
 
+    protected $cookies = [];
+    protected $headerNames = [];
+
     public function __construct(array $headers = [])
     {
         parent::__construct($headers);
@@ -44,7 +47,13 @@ class ResponseHeaderBag extends HeaderBag {
         return $flattenedCookies;
     }
 
-    public function all()
+    public function setCookie(Cookie $cookie)
+    {
+        $this->cookies[$cookie->getDomain()][$cookie->getPath()][$cookie->getName()] = $cookie;
+        $this->headerNames['set-cookie'] = 'Set-Cookie';
+    }
+
+    public function all(): array
     {
         $headers = parent::all();
         foreach ($this->getCookies() as $cookie) {

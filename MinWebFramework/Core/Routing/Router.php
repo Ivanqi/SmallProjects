@@ -4,7 +4,7 @@ namespace Core\Routing;
 use Core\Container\Container;
 use Core\Routing\Route;
 use Core\Routing\RouteGroup;
-use Core\Routing\Response;
+use Core\Http\Response;
 
 class Router {
     protected $events;

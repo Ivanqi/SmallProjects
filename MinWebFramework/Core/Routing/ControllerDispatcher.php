@@ -4,7 +4,7 @@ namespace Core\Routing;
 class ControllerDispatcher {
     protected $container;
 
-    public function __construct(Container $container)
+    public function __construct($container)
     {
         $this->container = $container;
     }

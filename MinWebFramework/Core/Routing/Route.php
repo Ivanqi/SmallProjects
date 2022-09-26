@@ -3,14 +3,19 @@ namespace Core\Routing;
 
 use Core\Routing\Router;
 use Core\Container\Container;
+use Core\Support\Str;
 
 class Route {
+
+    use RouteDependencyResolverTrait;
+
     public $uri;
     public $methods;
     public $action;
     public $controller;
     public $compiled;
     public $wheres = [];
+    public $defaults = [];
 
     protected $router;
     protected $container;
@@ -32,7 +37,8 @@ class Route {
 
     protected function parseAction($action)
     {
-        return RouteAction::parse($this->uri, $action);
+        $actionParse = RouteAction::parse($this->uri, $action);
+        return $actionParse;
     }
 
     public function methods()
@@ -100,7 +106,7 @@ class Route {
 
             return $this->runCallable();
         } catch (\Exception $e) {
-            return $e->getResponse();
+            throw new \Exception($e->getMessage());
         }
     }
 
@@ -123,10 +129,9 @@ class Route {
     protected function runCallable()
     {
         $callable = $this->action['uses'];
-
-        return $callable(...array_values(
+        return $callable(...array_values($this->resolveMethodDependencies(
             $this->parametersWithoutNulls(), new \ReflectionFunction($this->action['uses'])
-        ));
+        )));
     }
 
     protected function isControllerAction()
@@ -187,7 +192,6 @@ class Route {
 
     public function matches($request, $includingMethod = true)
     {
-        print_r(['url', $this->uri]);
         $this->compileRoute();
 
         // foreach ($this->getValidators() as $validator) {
@@ -210,5 +214,23 @@ class Route {
         $this->parameters = (new RouteParameterBinder($this))->parameters($request);
 
         return $this;
+    }
+
+    protected function compileParameterNames()
+    {
+        preg_match_all('/\{(.*?)\}/', $this->domain().$this->uri, $matches);
+
+        return array_map(function ($m) {
+            return trim($m, '?');
+        }, $matches[1]);
+    }
+
+    public function parameterNames()
+    {
+        if (isset($this->parameterNames)) {
+            return $this->parameterNames;
+        }
+
+        return $this->parameterNames = $this->compileParameterNames();
     }
 }

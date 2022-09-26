@@ -231,8 +231,13 @@ class BaseResponse {
             $this->headers->set('expires', -1);
         }
 
-        $this->ensureIEOverSSLCompatibility($request);
+        // $this->ensureIEOverSSLCompatibility($request);
 
         return $this;
+    }
+
+    public function getProtocolVersion()
+    {
+        return $this->version;
     }
 }

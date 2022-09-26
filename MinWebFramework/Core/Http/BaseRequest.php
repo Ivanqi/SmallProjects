@@ -24,7 +24,10 @@ class BaseRequest {
     protected $method;
     protected $format;
 
+    protected static $formats;
     protected static $requestFactory;
+    
+    private $isHostValid = true;
 
 
     /**
@@ -36,7 +39,7 @@ class BaseRequest {
      * @param array                $server     The SERVER parameters
      * @param string|resource|null $content    The raw body data
      */
-    public function __construct(array $query = array(), array $request = array(), array $attributes = array(), array $cookies = array(), array $files = array(), array $server = array(), $content = null)
+    public function __construct(array $query = [], array $request = [], array $attributes = [], array $cookies = [], array $files = [], array $server = [], $content = null)
     {
         $this->initialize($query, $request, $attributes, $cookies, $files, $server, $content);
     }
@@ -374,10 +377,6 @@ class BaseRequest {
 
     public function isSecure()
     {
-        // if ($this->isFromTrustedProxy() && $proto = $this->getTrustedValues(self::HEADER_CLIENT_PROTO)) {
-        //     return in_array(strtolower($proto[0]), array('https', 'on', 'ssl', '1'), true);
-        // }
-
         $https = $this->server->get('HTTPS');
 
         return !empty($https) && 'off' !== strtolower($https);
@@ -460,5 +459,86 @@ class BaseRequest {
     public function decodedPath()
     {
         return rawurldecode($this->path());
+    }
+
+    public function getPort()
+    {
+        if (!$host = $this->headers->get('HOST')) {
+            return $this->server->get('SERVER_PORT');
+        }
+
+        if ('[' === $host[0]) {
+            $pos = strpos($host, ':', strrpos($host, ']'));
+        } else {
+            $pos = strrpos($host, ':');
+        }
+
+        if (false !== $pos) {
+            return (int) substr($host, $pos + 1);
+        }
+
+        return 'https' === $this->getScheme() ? 443 : 80;
+    }
+
+    public function getHost()
+    {
+        if (!$host = $this->headers->get('HOST')) {
+            if (!$host = $this->server->get('SERVER_NAME')) {
+                $host = $this->server->get('SERVER_ADDR', '');
+            }
+        }
+
+        // trim and remove port number from host
+        // host is lowercase as per RFC 952/2181
+        $host = strtolower(preg_replace('/:\d+$/', '', trim($host)));
+
+        // as the host can come from the user (HTTP_HOST and depending on the configuration, SERVER_NAME too can come from the user)
+        // check that it does not contain forbidden characters (see RFC 952 and RFC 2181)
+        // use preg_replace() instead of preg_match() to prevent DoS attacks with long host names
+        if ($host && '' !== preg_replace('/(?:^\[)?[a-zA-Z0-9-:\]_]+\.?/', '', $host)) {
+            if (!$this->isHostValid) {
+                return '';
+            }
+            $this->isHostValid = false;
+
+            throw new \Exception(sprintf('Invalid Host "%s".', $host));
+        }
+
+        return $host;
+    }
+
+    public function getRequestFormat($default = 'html')
+    {
+        if (null === $this->format) {
+            $this->format = $this->attributes->get('_format');
+        }
+
+        return null === $this->format ? $default : $this->format;
+    }
+
+    protected static function initializeFormats()
+    {
+        static::$formats = array(
+            'html' => array('text/html', 'application/xhtml+xml'),
+            'txt' => array('text/plain'),
+            'js' => array('application/javascript', 'application/x-javascript', 'text/javascript'),
+            'css' => array('text/css'),
+            'json' => array('application/json', 'application/x-json'),
+            'jsonld' => array('application/ld+json'),
+            'xml' => array('text/xml', 'application/xml', 'application/x-xml'),
+            'rdf' => array('application/rdf+xml'),
+            'atom' => array('application/atom+xml'),
+            'rss' => array('application/rss+xml'),
+            'form' => array('application/x-www-form-urlencoded'),
+        );
+    }
+
+    public function getMimeType($format)
+    {
+        if (null === static::$formats) {
+            static::initializeFormats();
+        }
+
+        return isset(static::$formats[$format]) ? static::$formats[$format][0] : null;
     }
 }

@@ -53,6 +53,9 @@ class Application extends Container {
     {
         $router = self::getInstance()->make('router');
         $router->get('/user/{id}/', 'UsersController@index');
+        // $router->get('/user/{id}/', function () {
+        //     echo "aaaa";
+        // });
         $router->dispatch($request);
     }
 }
