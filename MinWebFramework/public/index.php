@@ -5,15 +5,16 @@ $app = new Core\Application(
     realpath(__DIR__.'/../')
 );
 
+$app->make(Core\Kernel::class);
 
-try {
-    $request = Core\Http\Request::capture();
-    $app->dispatchToRouter($request);
-    $response = Core\Http\Response();
-    $response->send();
-} catch(\Exception $e) {
-    print_r([$e->getMessage()]);
-}
+// try {
+//     $request = Core\Http\Request::capture();
+//     $app->dispatchToRouter($request);
+//     $response = Core\Http\Response();
+//     $response->send();
+// } catch(\Exception $e) {
+//     print_r([$e->getMessage()]);
+// }
 
 
 

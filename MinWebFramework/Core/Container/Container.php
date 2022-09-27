@@ -4,6 +4,7 @@ namespace Core\Container;
 class Container {
     // 绑定回调函数
     public $binds = [];
+	protected $with = [];
 
     protected static $instance;
 
@@ -38,10 +39,13 @@ class Container {
 
     // 获取回调函数
 	public function getClosure($abstract, $concrete) {
-		return function ($container) use ($abstract, $concrete) {
-			$method = ($abstract == $concrete) ? 'build' : 'make';
-			return $container->$method($concrete);
-		};
+		return function ($container, $parameters = []) use ($abstract, $concrete) {
+            if ($abstract == $concrete) {
+                return $container->build($concrete);
+            }
+
+            return $container->makeWith($concrete, $parameters);
+        };
 	}
 
 	protected function getConcrete($abstract) {
@@ -54,12 +58,26 @@ class Container {
     // 生成实例对象
 	public function make($abstract)
     {
+		return $this->resolve($abstract);
+	}
+
+	public function makeWith($abstract, array $parameters)
+    {
+        return $this->resolve($abstract, $parameters);
+    }
+
+	protected function resolve($abstract, $parameters = [])
+    {
+		$this->with[] = $parameters;
+
 		$concrete = $this->getConcrete($abstract);
 		if ($this->isBuildable($abstract, $concrete)) {
 			$obj = $this->build($concrete);
 		} else {
 			$obj = $this->make($concrete);
 		}
+
+		array_pop($this->with);
 		return $obj;
 	}
 
@@ -72,6 +90,8 @@ class Container {
     // 通过反射来实例化 $concrete 的对象
 	public function build($concrete)
     {
+		print_r($concrete);
+		echo PHP_EOL;
 		if ($concrete instanceof \Closure) {
 			return $concrete($this);
 		}
@@ -105,12 +125,14 @@ class Container {
 				$deps[] = $this->resolveClass($refParam);
 			}
 		}
+		print_r($deps);
 		return (array)$deps;
 	}
 
     // 获取参数的类型类名字
 	public function resolveClass(\ReflectionParameter $refParam): string 
     {
+		print_r(['resolveClass', $refParam->getClass()->name]);
 		return $this->make($refParam->getClass()->name);
 	}
 }

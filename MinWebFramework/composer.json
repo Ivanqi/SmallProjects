@@ -15,6 +15,7 @@
             "Deps\\Namespace\\": ""
         },
         "files": [
+            "Core/helpers.php",
             "tool/functions.php"
         ]
    }

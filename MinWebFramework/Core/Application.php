@@ -10,6 +10,10 @@ class Application extends Container {
 
     protected $basePath;
 
+    protected $bootstrappers = [
+        \Core\Bootstrap\RegisterProviders::class,
+    ];
+
     public function __construct($basePath = null)
     {
         if ($basePath) {
@@ -49,13 +53,14 @@ class Application extends Container {
         return $provider;
     }
 
-    public function dispatchToRouter($request)
+    public function basePath($path = '')
     {
-        $router = self::getInstance()->make('router');
-        $router->get('/user/{id}/', 'UsersController@index');
-        // $router->get('/user/{id}/', function () {
-        //     echo "aaaa";
-        // });
-        $router->dispatch($request);
+        return $this->basePath.($path ? DIRECTORY_SEPARATOR.$path : $path);
+    }
+
+    public function registerConfiguredProviders()
+    {
+        (new ProviderRepository($this))
+                    ->load($this->config['app.providers']);
     }
 }
