@@ -1,3 +1,4 @@
+// 访存数据通路模块
 module ex_mem(
     input         clk,
     input         reset,
@@ -15,58 +16,63 @@ module ex_mem(
     output [31:0] data_pc
 );
 
-  reg [4:0] reg_regWAddr; 
-  reg [31:0] reg_regRData2; 
-  reg [31:0] reg_result; 
-  reg [31:0] reg_pc; 
+	reg [4:0] reg_regWAddr; 
+	reg [31:0] reg_regRData2; 
+	reg [31:0] reg_result; 
+	reg [31:0] reg_pc; 
 
-  wire [31:0] resulet_w = (ex_result_sel == 2'h0) ? alu_result :
+  	//ex_result_sel 就是对流水线执行阶段的结果进行选择
+	//	1. 当（ex_result_sel == 2’h0）时，就选择 ALU 的运算结果
+	//	2. 当（ex_result_sel == 2’h1）时，就会选择指令解码得到的立即数（其实就是对应 LUI 指令)
+	//	3. 当（ex_result_sel == 2’h2）时，选择 PC 加 4 的值，也就是下一个 PC 的值
+	wire [31:0] resulet_w = (ex_result_sel == 2'h0) ? alu_result :
                           (ex_result_sel == 2'h1) ? id_ex_data_imm :
                           (ex_result_sel == 2'h2) ? (in_pc + 32'h4): 32'h0;
 
-  assign data_regWAddr = reg_regWAddr; 
-  assign data_regRData2 = reg_regRData2; 
-  assign data_result = reg_result; 
-  assign data_pc = reg_pc; 
+	assign data_regWAddr = reg_regWAddr; 
+  	assign data_regRData2 = reg_regRData2; 
+  	assign data_result = reg_result; 
+  	assign data_pc = reg_pc; 
 
-  always @(posedge clk or posedge reset) begin
-    if (reset) begin 
-      reg_regWAddr <= 5'h0; 
-    end else if (flush) begin 
-      reg_regWAddr <= 5'h0; 
-    end else begin 
-      reg_regWAddr <= in_regWAddr; 
-    end
-  end
+  	// 访存数据通路模块也是根据流水线的冲刷控制信号 flush，判断访存阶段的数据是否需要清零
+  	// 如果不需要清零，就把上一阶段送过来的数据通过寄存器保存下来
+  	always @(posedge clk or posedge reset) begin
+    	if (reset) begin 
+      		reg_regWAddr <= 5'h0; 
+    	end else if (flush) begin 
+      		reg_regWAddr <= 5'h0; 
+    	end else begin 
+      		reg_regWAddr <= in_regWAddr; 
+    	end
+  	end
 
-  always @(posedge clk or posedge reset) begin
-    if (reset) begin 
-      reg_regRData2 <= 32'h0; 
-    end else if (flush) begin 
-      reg_regRData2 <= 32'h0; 
-    end else begin 
-      reg_regRData2 <= in_regRData2; 
-    end
-  end
+  	always @(posedge clk or posedge reset) begin
+    	if (reset) begin 
+      		reg_regRData2 <= 32'h0; 
+    	end else if (flush) begin 
+      		reg_regRData2 <= 32'h0; 
+    	end else begin 
+      		reg_regRData2 <= in_regRData2; 
+    	end
+  	end
 
-  always @(posedge clk or posedge reset) begin
-    if (reset) begin 
-      reg_result <= 32'h0; 
-    end else if (flush) begin 
-      reg_result <= 32'h0; 
-    end else begin 
-      reg_result <= resulet_w; 
-    end
-  end
+  	always @(posedge clk or posedge reset) begin
+    	if (reset) begin 
+      		reg_result <= 32'h0; 
+    	end else if (flush) begin 
+      		reg_result <= 32'h0; 
+    	end else begin 
+      		reg_result <= resulet_w; 
+    	end
+  	end
 
-  always @(posedge clk or posedge reset) begin
-    if (reset) begin 
-      reg_pc <= 32'h0; 
-    end else if (flush) begin 
-      reg_pc <= 32'h0; 
-    end else begin 
-      reg_pc <= in_pc; 
-    end
-  end
-
+  	always @(posedge clk or posedge reset) begin
+    	if (reset) begin 
+      		reg_pc <= 32'h0; 
+    	end else if (flush) begin 
+      		reg_pc <= 32'h0; 
+    	end else begin 
+      		reg_pc <= in_pc; 
+    	end
+  	end
 endmodule
