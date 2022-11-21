@@ -40,6 +40,7 @@ module hazard(
             EX_MEM_flush <= 1;
         end
         else if (ex_mem_taken) begin
+            // 支预测失败，需要冲刷流水线，更新pc值
             pcFromTaken  <= 1;
             pcStall      <= 0; 
             IF_ID_flush  <= 1;

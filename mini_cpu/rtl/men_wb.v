@@ -1,3 +1,4 @@
+// 写回数据通路模块
 module mem_wb (
     input           clk,
     input           reset,
@@ -15,6 +16,13 @@ module mem_wb (
     reg[31:0]   reg_result;
     reg[31:0]   reg_readData;
     reg[31:0]   reg_pc;
+
+    // 写回数据通路模块产生的信号主要包括写回目标寄存器的地址 reg_WAddr
+    // 流水线执行运算后的结果数据 result，从存储器读取的数据 readData
+
+    // 写回阶段的模块没有了流水线的停止控制信号 stall 和流水线的冲刷控制信号 flush
+    // 这是因为写回阶段的数据经过了数据冒险和控制冒险模块的处理
+    // 已经可以确保流水线产生的结果无误了，所以写回阶段的数据不受停止信号 stall 和清零信号 flush 的控制
 
     always @(posedge clk or posedge reset) begin
         if (reset) begin
