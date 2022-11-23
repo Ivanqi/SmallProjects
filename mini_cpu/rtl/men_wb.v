@@ -1,4 +1,5 @@
 // 写回数据通路模块
+//  1. 数据通路模块则包含了写回目标寄存器的地址、ALU 的运算结果以及访存阶段读存储器得到的数据
 module mem_wb (
     input           clk,
     input           reset,

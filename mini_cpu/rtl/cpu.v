@@ -185,7 +185,7 @@ module cpu (
         .regRData2(regs_regRData2)
     );
   
-    alu_ctrl u_alu_ctrl( 
+    alu_ctrl u_alu_ctrl ( 
         .funct3(aluControl_funct3),
         .funct7(aluControl_funct7),
         .itype(aluControl_itype),
@@ -372,7 +372,7 @@ module cpu (
         .out_wb_ctrl_regWrite(ex_mem_ctrl_data_wb_ctrl_regWrite)
     );
 
-    dmem_rw u_dmem_rw(
+    dmem_rw u_dmem_rw (
         .reset(reset),
         .clk(clk),
         .ex_mem_ctrl_data_mem_ctrl_memWrite(ex_mem_ctrl_data_mem_ctrl_memWrite ),
@@ -414,7 +414,7 @@ module cpu (
         .data_wb_ctrl_regWrite(mem_wb_ctrl_data_wb_ctrl_regWrite)
     );
 
-    pc_gen u_pc_gen(
+    pc_gen u_pc_gen (
         .reset(reset  ),
         .clk(clk  ),
         .alu_result(alu_aluOut  ),
