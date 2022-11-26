@@ -4,7 +4,7 @@ module forwarding(
     input[4:0]  rs1,
     input[4:0]  rs2,
     // exMemRd 信号是来自访存模块的对通用寄存器的访问地址
-    input[4,0]  exMemRd,
+    input[4:0]  exMemRd,
     // exMemRw 是流水线访存阶段对通用寄存器的写使能控制信号
     input       exMemRw,
     // memWBRd 和 memWBRw 分别是写回模块对通用寄存器的地址和写使能控制信号

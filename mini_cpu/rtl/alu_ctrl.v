@@ -1,7 +1,7 @@
 // 执行控制模块
 module alu_ctrl (
-    input[2:0]  funct3
-    input[6:0]  funct7
+    input[2:0]  funct3,
+    input[6:0]  funct7,
     input[1:0]  aluCtrlOp,
     input       itype,      // I 型指令类型的判断信号 itype
     output reg[3:0] aluOp   // 一个4位的ALU操作信号
@@ -15,9 +15,9 @@ module alu_ctrl (
                 // 如果是 itype 信号等于“1”，操作码直接由 funct3 和高位补“0”组成
                 // 如果不是 I 型指令，ALU 操作码则要由 funct3 和 funct7 的第五位组成
                 if (itype & funct3[1:0] != 2'b01)
-                    aluOp <= {1'b0, funct3}
+                    aluOp <= {1'b0, funct3};
                 else
-                    aluOp <= {funct7[5], funct3}    // normal ALUI/ALUR
+                    aluOp <= {funct7[5], funct3};    // normal ALUI/ALUR
             end
             2'b10:  begin                   // 条件分支解析
                 // $display("~~~aluCtrl bxx~~~%d", funct3);

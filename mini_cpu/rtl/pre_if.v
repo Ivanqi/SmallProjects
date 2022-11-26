@@ -21,5 +21,5 @@ module pre_if (
     // 指令地址的偏移量
     wire[31:0] adder = is_jal ? jimm : (is_bxx & bimm[31]) ? bimm : 4;
     // 预读取电路会根据当前的 PC 值和指令的偏移量相加，得到预测的 PC 值，并用预测的 PC 值提前读出下一条指令
-    assign pre_pc = pc + adder
+    assign pre_pc = pc + adder;
 endmodule

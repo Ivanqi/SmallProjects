@@ -4,14 +4,14 @@ module cpu (
     output[31:0] imem_addr,
     output imem_valid,
     input imem_good,
-    input[31:0] imem_instr
+    input[31:0] imem_instr,
 
     output[31:0] dmem_addr,
     output dmem_valid,
     input dmem_good,
     output[31:0] dmem_writeData,
     output dmem_memRead,
-    output dmem_memWrite
+    output dmem_memWrite,
     output[1:0] dmem_maskMode,
     output dmem_sext,
     input[31:0] dmem_readData,

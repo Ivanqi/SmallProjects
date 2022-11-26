@@ -22,7 +22,7 @@ module id_ex(
     output[4:0]     out_rd_addr,
     output[6:0]     out_funct7,
     output[2:0]     out_funct3,
-    output[31:0]    out_imm.
+    output[31:0]    out_imm,
     output[31:0]    out_rs2_data,
     output[31:0]    out_rs1_data,
     output[31:0]    out_pc,
@@ -95,7 +95,7 @@ module id_ex(
         end else if (flush) begin
             reg_rs2_data <= 32'h0;
         end else if (valid) begin
-            reg_rs2_data <= in_rs2_data
+            reg_rs2_data <= in_rs2_data;
         end
     end
 

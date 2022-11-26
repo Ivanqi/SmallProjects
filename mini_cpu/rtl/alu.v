@@ -38,7 +38,7 @@ module alu(
     // shift 信号是根据 aluOp 判断是算术右移还是逻辑右移，如果是算术右移，则在最高位补一个符号位
     // shiftt 信号是右移之后的结果，这里用到了$signed() 函数对移位前的数据 shift 进行了修饰
     // $signed() 的作用是决定如何对操作数扩位这个问题
-    wire[32:0]  shift = {alu_op_i[3] & shin[31], shin}
+    wire[32:0]  shift = {alu_op_i[3] & shin[31], shin};
 
     // 在右移操作前，$signed() 函数先把操作数的符号位，扩位成跟结果相同的位宽
     // 然后再进行移位操作，而 shiftr 就是右移后的结果

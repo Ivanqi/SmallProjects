@@ -22,7 +22,7 @@ module decode (
     output[1:0]     alu_ctrlop,
     output          valid_inst,
     output[31:0]    imm    
-)
+);
 
 localparam DEC_INVALID = 21'b0;
 

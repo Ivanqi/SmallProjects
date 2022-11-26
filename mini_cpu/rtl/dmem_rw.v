@@ -13,7 +13,7 @@ module dmem_rw (
     output[31:0] dmem_writeData,
     output dmem_memRead,
     output dmem_memWrite,
-    output[1:0] dmem_maskMode
+    output[1:0] dmem_maskMode,
     output dmem_sext,
     input[31:0] dmem_readData,
     output[31:0] dmem_readBack

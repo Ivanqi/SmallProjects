@@ -72,7 +72,7 @@ module id_ex_ctrl(
 
     always @(posedge clk or posedge reset) begin
         if (reset) begin
-            reg_ex_ctrl_itype <= 1'h0
+            reg_ex_ctrl_itype <= 1'h0;
         end else if (flush) begin
             reg_ex_ctrl_itype <= 1'h0;
         end else if (valid) begin
@@ -186,7 +186,7 @@ module id_ex_ctrl(
         end else if (flush) begin
             reg_wb_ctrl_to_reg <= 1'h0;
         end else if (valid) begin
-            reg_wb_ctrl_to_reg <= in_wb_ctrl_to_reg
+            reg_wb_ctrl_to_reg <= in_wb_ctrl_to_reg;
         end
     end
 
@@ -206,7 +206,7 @@ module id_ex_ctrl(
         end else if (flush) begin
             reg_noflush <= 1'h0;
         end else if (valid) begin
-            reg_noflush <= in_noflush
+            reg_noflush <= in_noflush;
         end
     end
 

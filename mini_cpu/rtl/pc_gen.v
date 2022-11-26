@@ -20,7 +20,7 @@ module pc_gen (
 
     output[31:0] pc_o;
 
-    reg[31:0] pc
+    reg[31:0] pc;
 
     wire [31:0] next_pc = alu_result[0] ? branch_add : pc + 32'h4; 
 

@@ -23,9 +23,9 @@ module if_id (
     reg[31:0] reg_pc_next;
     reg       reg_noflush;
 
-    assign out_instr = reg_instr
-    assign out_pc = reg_pc
-    assign out_noflush = reg_noflush
+    assign out_instr = reg_instr;
+    assign out_pc = reg_pc;
+    assign out_noflush = reg_noflush;
 
     // 指令传递
     // 1. 首先是给后面解码模块提供的指令信号 reg_instr

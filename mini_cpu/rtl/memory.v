@@ -14,7 +14,7 @@ module dmem (
         if (we) begin
             dmem_reg[addr] <= din;
         end
-        dout <= dmem_reg
+        dout <= dmem_reg;
     end   
 endmodule
 

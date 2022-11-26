@@ -20,7 +20,7 @@ module gen_regs (
                 regs[ii] <= 32'b0;
         end
         else if (wen & (|regWAddr))
-            regs[regWAddr] <= regWData
+            regs[regWAddr] <= regWData;
     end
 
     // 因为写寄存器是边沿触发的，在一个时钟周期内写入的寄存器数据，需要在下一个时钟周期才能把写入的数据读取出来

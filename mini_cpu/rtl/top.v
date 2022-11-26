@@ -72,8 +72,8 @@ module top (
         .cpu_dmem_wen(cpu_dmem_wen),            // cpu -> device
         .cpu_dmem_data_out(cpu_dmem_data2cpu),  // device -> cpu
 
-        .imem_addr(imem_rd_addr),                  // cpu -> imem
-        .imem_data(imem_rd_data),                  // imem -> cpu
+        .imem_addr(imem_rd_addr),               // cpu -> imem
+        .imem_data(imem_rd_data),               // imem -> cpu
         
         .dmem_read_data(dmem_read_data),        // dmem -> cpu
         .dmem_write_data(dmem_write_data),      // cpu -> dmem
@@ -109,8 +109,8 @@ module top (
         ,.led(led)
 
         ,.uart_read_data(uart_read_data)     // uart -> cpu
-        ,.uart_write_data(uart_write_data)    // cpu -> uart
-        ,.uart_addr(uart_addr)          // cpu -> uart
+        ,.uart_write_data(uart_write_data)   // cpu -> uart
+        ,.uart_addr(uart_addr)               // cpu -> uart
         ,.uart_wen(uart_wen)
         );
 
