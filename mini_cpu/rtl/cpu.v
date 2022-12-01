@@ -44,7 +44,7 @@ module cpu (
 
     wire[2:0] aluControl_funct3; 
     wire[6:0] aluControl_funct7; 
-    wire       aluControl_itype; 
+    wire      aluControl_itype; 
     wire[1:0] aluControl_aluCtrlOp; 
     wire[3:0] aluControl_aluOp; 
 

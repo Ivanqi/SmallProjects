@@ -13,7 +13,7 @@
 module sys_bus (
     // cpu -> imem
     input[31:0] cpu_imem_addr,
-    input[31:0] cpu_imem_data,
+    output[31:0] cpu_imem_data,
     output[31:0] imem_addr,             // cpu -> imem
     input[31:0] imem_data,              // imem -> cpu
 

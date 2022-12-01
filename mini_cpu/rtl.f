@@ -2,6 +2,8 @@
 ./tb/uart_display.v
 ./rtl/defines.v
 ./rtl/forwarding.v
+./rtl/men_wb_ctrl.v
+./rtl/men_wb.v
 ./rtl/cpu.v
 ./rtl/pc_gen.v
 ./rtl/dmem_rw.v
@@ -22,5 +24,3 @@
 ./rtl/id_ex_ctrl.v
 ./rtl/id_ex.v
 ./rtl/if_id.v
-./rtl/men_wb_ctrl.v
-./rtl/men_wb.v
