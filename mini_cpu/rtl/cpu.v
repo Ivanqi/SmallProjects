@@ -173,6 +173,7 @@ module cpu (
 
     wire[31:0] pc; 
 
+    // 通用寄存器
     gen_regs u_gen_regs ( 
         .clk(clk),
         .reset(reset),
@@ -184,7 +185,8 @@ module cpu (
         .regRData1(regs_regRData1),
         .regRData2(regs_regRData2)
     );
-  
+    
+    // 执行控制模块
     alu_ctrl u_alu_ctrl ( 
         .funct3(aluControl_funct3),
         .funct7(aluControl_funct7),
@@ -193,6 +195,7 @@ module cpu (
         .aluOp(aluControl_aluOp)
     );
 
+    // ALU 模块
     alu u_alu ( 
         .alu_data1_i(alu_aluIn1),
         .alu_data2_i(alu_aluIn2),
@@ -200,6 +203,7 @@ module cpu (
         .alu_result_o(alu_aluOut)
     );
 
+    // 数据前递模块
     forwarding u_forwarding ( 
         .rs1(forwarding_rs1),
         .rs2(forwarding_rs2),
@@ -207,28 +211,29 @@ module cpu (
         .exMemRw(forwarding_exMemRw),
         .memWBRd(forwarding_memWBRd),
         .memWBRw(forwarding_memWBRw),
-        .mem_wb_ctrl_data_toReg(mem_wb_ctrl_data_wb_ctrl_toReg  ),
-        .mem_wb_readData(mem_wb_data_readData  ),
-        .mem_wb_data_result(mem_wb_data_result  ),
-        .id_ex_data_regRData1(id_ex_data_regRData1  ),
-        .id_ex_data_regRData2(id_ex_data_regRData2  ),
-        .ex_mem_data_result(ex_mem_data_result  ),
+        .mem_wb_ctrl_data_toReg(mem_wb_ctrl_data_wb_ctrl_toReg ),
+        .mem_wb_readData(mem_wb_data_readData),
+        .mem_wb_data_result(mem_wb_data_result),
+        .id_ex_data_regRData1(id_ex_data_regRData1),
+        .id_ex_data_regRData2(id_ex_data_regRData2),
+        .ex_mem_data_result(ex_mem_data_result),
         .forward_rs1_data(forward_rs1_data),
         .forward_rs2_data(forward_rs2_data)
     );
 
+    // 数据冒险
     hazard u_hazard ( 
         .rs1(decode_rs1_addr),
         .rs2(decode_rs2_addr),
-        .alu_result_0(alu_aluOut[0] ),
-        .id_ex_jump(id_ex_ctrl_data_ex_ctrl_jump ),
-        .id_ex_branch(id_ex_ctrl_data_ex_ctrl_branch ),
-        .id_ex_imm_31(id_ex_data_imm[31] ),
-        .id_ex_memRead(id_ex_ctrl_data_mem_ctrl_memRead ),
-        .id_ex_memWrite(id_ex_ctrl_data_mem_ctrl_memWrite ),
-        .id_ex_rd(id_ex_rd_addr ),
-        .ex_mem_maskMode(ex_mem_ctrl_data_mem_ctrl_maskMode ),
-        .ex_mem_memWrite(ex_mem_ctrl_data_mem_ctrl_memWrite ),
+        .alu_result_0(alu_aluOut[0]),
+        .id_ex_jump(id_ex_ctrl_data_ex_ctrl_jump),
+        .id_ex_branch(id_ex_ctrl_data_ex_ctrl_branch),
+        .id_ex_imm_31(id_ex_data_imm[31]),
+        .id_ex_memRead(id_ex_ctrl_data_mem_ctrl_memRead),
+        .id_ex_memWrite(id_ex_ctrl_data_mem_ctrl_memWrite),
+        .id_ex_rd(id_ex_rd_addr),
+        .ex_mem_maskMode(ex_mem_ctrl_data_mem_ctrl_maskMode),
+        .ex_mem_memWrite(ex_mem_ctrl_data_mem_ctrl_memWrite),
         .pcFromTaken(hazard_pcFromTaken),
         .pcStall(hazard_pcStall),
         .IF_ID_stall(hazard_IF_ID_stall),
@@ -237,13 +242,15 @@ module cpu (
         .EX_MEM_flush(hazard_EX_MEM_flush),
         .IF_ID_flush(hazard_IF_ID_flush)
     );
-  
+    
+    // 预读取模块
     pre_if u_pre_if ( 
         .instr(imem_instr),
         .pc(pc),
         .pre_pc(pre_pc)
     );
 
+    // 取指通路模块
     if_id u_if_id ( 
         .clk(clk),
         .reset(reset),
@@ -256,6 +263,7 @@ module cpu (
         .out_noflush(if_id_noflush)
     );
 
+    // 译码模块
     decode u_decode ( 
         .instr(if_id_instr),
         .rs1_addr(decode_rs1_addr),
@@ -278,6 +286,7 @@ module cpu (
         .imm(decode_imm)
     );
 
+    // 译码数据通路模块
     id_ex u_id_ex ( 
         .clk(clk),
         .reset(reset),
@@ -303,6 +312,7 @@ module cpu (
         .out_rs2_addr(id_ex_data_rs2)
     );
 
+    // 译码控制模块
     id_ex_ctrl u_id_ex_ctrl ( 
         .clk(clk),
         .reset(reset),
@@ -338,6 +348,7 @@ module cpu (
         .out_noflush(id_ex_ctrl_data_noflush)
     );
 
+    // 访存数据通路模块
     ex_mem u_ex_mem ( 
         .clk(clk),
         .reset(reset),
@@ -354,6 +365,7 @@ module cpu (
         .data_pc(ex_mem_data_pc)
     );
 
+    // 访存控制模块
     ex_mem_ctrl u_ex_mem_ctrl ( 
         .clk(clk),
         .reset(reset),
@@ -372,26 +384,28 @@ module cpu (
         .out_wb_ctrl_regWrite(ex_mem_ctrl_data_wb_ctrl_regWrite)
     );
 
+    // 
     dmem_rw u_dmem_rw (
         .reset(reset),
         .clk(clk),
-        .ex_mem_ctrl_data_mem_ctrl_memWrite(ex_mem_ctrl_data_mem_ctrl_memWrite ),
-        .ex_mem_ctrl_data_mem_ctrl_maskMode(ex_mem_ctrl_data_mem_ctrl_maskMode ),
-        .ex_mem_data_result(ex_mem_data_result ),
-        .ex_mem_data_regRData2(ex_mem_data_regRData2 ),
-        .ex_mem_ctrl_data_mem_ctrl_memRead(ex_mem_ctrl_data_mem_ctrl_memRead ),
-        .ex_mem_ctrl_data_mem_ctrl_sext(ex_mem_ctrl_data_mem_ctrl_sext ),
-        .dmem_addr(dmem_addr ),
-        .dmem_valid(dmem_valid ),
-        .dmem_writeData(dmem_writeData ),
-        .dmem_memRead(dmem_memRead ),
-        .dmem_memWrite(dmem_memWrite ),
-        .dmem_maskMode(dmem_maskMode ),
-        .dmem_sext(dmem_sext ),
-        .dmem_readData(dmem_readData ),
+        .ex_mem_ctrl_data_mem_ctrl_memWrite(ex_mem_ctrl_data_mem_ctrl_memWrite),
+        .ex_mem_ctrl_data_mem_ctrl_maskMode(ex_mem_ctrl_data_mem_ctrl_maskMode),
+        .ex_mem_data_result(ex_mem_data_result),
+        .ex_mem_data_regRData2(ex_mem_data_regRData2),
+        .ex_mem_ctrl_data_mem_ctrl_memRead(ex_mem_ctrl_data_mem_ctrl_memRead),
+        .ex_mem_ctrl_data_mem_ctrl_sext(ex_mem_ctrl_data_mem_ctrl_sext),
+        .dmem_addr(dmem_addr),
+        .dmem_valid(dmem_valid),
+        .dmem_writeData(dmem_writeData),
+        .dmem_memRead(dmem_memRead),
+        .dmem_memWrite(dmem_memWrite),
+        .dmem_maskMode(dmem_maskMode),
+        .dmem_sext(dmem_sext),
+        .dmem_readData(dmem_readData),
         .dmem_readBack(dmem_readBack)
     );
 
+    // 写回数据通路模块
     mem_wb u_mem_wb ( 
         .clk(clk),
         .reset(reset),
@@ -405,6 +419,7 @@ module cpu (
         .data_pc(mem_wb_data_pc)
     );
 
+    // 写回控制模块
     mem_wb_ctrl u_mem_wb_ctrl ( 
         .clk(clk),
         .reset(reset),
@@ -415,14 +430,14 @@ module cpu (
     );
 
     pc_gen u_pc_gen (
-        .reset(reset  ),
-        .clk(clk  ),
-        .alu_result(alu_aluOut  ),
-        .branch_add(branch_add  ),
-        .hazard_pcStall(hazard_pcStall  ),
-        .hazard_pcFromTaken(hazard_pcFromTaken  ),
-        .id_ex_ctrl_data_ex_ctrl_jump(id_ex_ctrl_data_ex_ctrl_jump  ),
-        .pre_pc(pre_pc  ),
+        .reset(reset),
+        .clk(clk),
+        .alu_result(alu_aluOut),
+        .branch_add(branch_add),
+        .hazard_pcStall(hazard_pcStall),
+        .hazard_pcFromTaken(hazard_pcFromTaken),
+        .id_ex_ctrl_data_ex_ctrl_jump(id_ex_ctrl_data_ex_ctrl_jump),
+        .pre_pc(pre_pc),
         .pc_o(pc)
     );
 

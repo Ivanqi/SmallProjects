@@ -47,9 +47,12 @@ module tb_top ();
         dmem_init(0, 255);
 
         #100
+        // $wirte 使用方法与 $display 完全一样，只是前者会在每次显示信息完毕后不会自动换行，后者会自动换行
         $write("HEXFILE = ");
+        // $display 使用方法和 C 语言中的 printf 函数非常类似，可以直接打印字符串
         $display(`HEXFILE);
         
+        // $readmemh用来从文件中读取数据到存储器中
         $readmemh(`HEXFILE, MiniCPU.u_imem.imem_reg);
         
         $display("pc = 0x0 : %x", MiniCPU.u_imem.imem_reg[0]);
@@ -63,7 +66,7 @@ module tb_top ();
     always @(negedge clk) begin
         #1
         if(MiniCPU.u_cpu.pc == 32'b0) $display();
-       // $write("\npc %x,\t instr %x\t\t\n", MiniCPU.u_cpu.pc, MiniCPU.cpu_imem_data);
+        // $write("\npc %x,\t instr %x\t\t\n", MiniCPU.u_cpu.pc, MiniCPU.cpu_imem_data);
         if(MiniCPU.u_cpu.mem_wb_data_pc != 32'b0 && MiniCPU.u_cpu.mem_wb_data_pc >= 32'b0) begin
             // $fwrite(FILE, "%x\n", MiniCPU.u_cpu.pc);
             cycle = cycle + 1;
@@ -75,8 +78,9 @@ module tb_top ();
         $dumpfile("./tmp/tb_top.vcd");  //生成的vcd文件名称
         $dumpvars(0, tb_top);       //tb模块名称
     end
-
+    
     integer ii;
+    // 任务在模块中任意位置定义，并在模块内任意位置引用，作用范围也局限于此模块
     task imem_init;
         input [4:0] in1, in2;
         begin
