@@ -62,3 +62,9 @@ Symbol table '.symtab' contains 12 entries:
     10: 0000000000000000    36 FUNC    GLOBAL DEFAULT    1 main
     11: 0000000000000000     0 NOTYPE  GLOBAL DEFAULT  UND puts
 ```
+
+# GCC 传入的参数
+通过与GCC联动
+```
+[./ld -plugin /usr/lib/gcc-cross/riscv64-linux-gnu/10/liblto_plugin.so -plugin-opt=/usr/lib/gcc-cross/riscv64-linux-gnu/10/lto-wrapper -plugin-opt=-fresolution=/tmp/ccDYhVfE.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_eh -plugin-opt=-pass-through=-lc --sysroot=/ --build-id -hash-style=gnu -as-needed -melf64lriscv -static -o out/tests/hello/out /usr/lib/gcc-cross/riscv64-linux-gnu/10/../../../../riscv64-linux-gnu/lib/crt1.o /usr/lib/gcc-cross/riscv64-linux-gnu/10/crti.o /usr/lib/gcc-cross/riscv64-linux-gnu/10/crtbeginT.o -L. -L/usr/lib/gcc-cross/riscv64-linux-gnu/10 -L/usr/lib/gcc-cross/riscv64-linux-gnu/10/../../../../riscv64-linux-gnu/lib -L/usr/lib/riscv64-linux-gnu out/tests/hello/a.o --start-group -lgcc -lgcc_eh -lc --end-group /usr/lib/gcc-cross/riscv64-linux-gnu/10/crtend.o /usr/lib/gcc-cross/riscv64-linux-gnu/10/crtn.o]
+```

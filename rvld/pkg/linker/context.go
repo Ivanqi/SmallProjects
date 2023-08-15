@@ -1,9 +1,9 @@
 package linker
 
 type ContextArgs struct {
-	Output       string
-	Emulation    MachineType
-	LibraryPaths []string
+	Output       string      // 输出值
+	Emulation    MachineType // 机器类型
+	LibraryPaths []string    // 第三方扩展路径数组
 }
 
 type Context struct {
@@ -26,12 +26,12 @@ type Context struct {
 	// MergedSections []*MergedSection
 }
 
-// func NewContext() *Context {
-// 	return &Context{
-// 		Args: ContextArgs{
-// 			Output:    "a.out",
-// 			Emulation: MachineTypeNone,
-// 		},
-// 		SymbolMap: make(map[string]*Symbol),
-// 	}
-// }
+func NewContext() *Context {
+	return &Context{
+		Args: ContextArgs{
+			Output:    "a.out",
+			Emulation: MachineTypeNone,
+		},
+		// SymbolMap: make(map[string]*Symbol),
+	}
+}
