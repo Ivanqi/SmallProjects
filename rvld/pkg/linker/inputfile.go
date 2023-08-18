@@ -10,12 +10,12 @@ type InputFile struct {
 	File         *File
 	ElfSections  []Shdr // 存储整个section header table
 	ElfSyms      []Sym
-	FirstGlobal  int64 // 记录第一个Global的Symbol 的位置
+	FirstGlobal  int // 记录第一个Global的Symbol 的位置
 	ShStrtab     []byte
 	SymbolStrtab []byte
-	IsAlive      bool
-	// Symbols      []*Symbol
-	// LocalSymbols []Symbol
+	IsAlive      bool      // 用于标识是否需要保留的链接库文件
+	Symbols      []*Symbol // 存储所有symbol
+	LocalSymbols []Symbol  // 存储所有Local symbol
 }
 
 func NewInputFile(file *File) InputFile {

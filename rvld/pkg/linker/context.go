@@ -21,8 +21,8 @@ type Context struct {
 
 	// Chunks []Chunker
 
-	Objs []*ObjectFile
-	// SymbolMap      map[string]*Symbol
+	Objs      []*ObjectFile
+	SymbolMap map[string]*Symbol // SymbolMap key为symbol的名字，val 为 Symbol struct
 	// MergedSections []*MergedSection
 }
 
@@ -32,6 +32,6 @@ func NewContext() *Context {
 			Output:    "a.out",
 			Emulation: MachineTypeNone,
 		},
-		// SymbolMap: make(map[string]*Symbol),
+		SymbolMap: make(map[string]*Symbol),
 	}
 }

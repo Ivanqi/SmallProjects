@@ -34,13 +34,17 @@ func main() {
 	}
 
 	linker.ReadInputFiles(ctx, remaining)
+	linker.ResolveSymbols(ctx)
 
-	println(len(ctx.Objs))
-
-	for _, obj := range ctx.Objs {
-		println(obj.File.Name)
+	for _, o := range ctx.Objs {
+		if o.File.Name == "out/tests/hello/a.o" {
+			for _, sym := range o.Symbols {
+				if sym.Name == "puts" {
+					println(sym.File.File.Parent.Name)
+				}
+			}
+		}
 	}
-
 }
 
 /**

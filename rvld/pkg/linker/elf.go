@@ -80,13 +80,18 @@ type Sym struct {
 }
 
 /**
- * @description: 是否为绝对值
- * @return {*}
- */
+* @description: 是否为绝对符号
+	1. 判断sym是否为绝对符号
+* @return {*}
+*/
 func (s *Sym) IsAbs() bool {
 	return s.Shndx == uint16(elf.SHN_ABS)
 }
 
+/**
+ * @description: 是否为未定义符号
+ * @return {*}
+ */
 func (s *Sym) IsUndef() bool {
 	return s.Shndx == uint16(elf.SHN_UNDEF)
 }
