@@ -102,35 +102,67 @@ type Rela struct {
 	Addend int64
 }
 
+// arch 文件格式
+// [!<arch>\n][Section]\n[Section][Section][Section]
+// [Section]里的数据: [ArHdr][ 真正的数据         ]
 type ArHdr struct {
 	Name [16]byte
-	Date [16]byte
+	Date [12]byte
 	Uid  [6]byte
 	Gid  [6]byte
 	Mode [8]byte
-	Size [10]byte
+	Size [10]byte // 通过size得到真正数据的长度
 	Fmag [2]byte
 }
 
+/**
+ * @description: arhdr name 的前缀检测
+ * @param {string} s
+ * @return {*}
+ */
 func (a *ArHdr) HasPrefix(s string) bool {
 	return strings.HasPrefix(string(a.Name[:]), s)
 }
 
+/**
+ * @description: 检测 arhdr 是不是strtable。
+ *  1. strtable 用于保存名字
+ * @return {*}
+ */
 func (a *ArHdr) IsStrtab() bool {
 	return a.HasPrefix("// ")
 }
 
+/**
+ * @description: 检测arhdr 是不是 symtable。是不是object文件
+ * @return {*}
+ */
+func (a *ArHdr) IsSymtab() bool {
+	return a.HasPrefix("/ ") || a.HasPrefix("/SYM64/ ")
+}
+
+/**
+ * @description: 得到 ArHdr size
+ * @return {*} 返回数字的 size
+ */
 func (a *ArHdr) GetSize() int {
+	// 把二进制数组转换成字符串
 	size, err := strconv.Atoi(strings.TrimSpace(string(a.Size[:])))
 	utils.MustNo(err)
 	return size
 }
 
+/**
+ * @description: 读取 arhdr 的name。
+ * @param {[]byte} strTab
+ * @return {*}
+ */
 func (a *ArHdr) ReadName(strTab []byte) string {
 	// Long filename
 	if a.HasPrefix("/") {
 		start, err := strconv.Atoi(strings.TrimSpace(string(a.Name[1:])))
 		utils.MustNo(err)
+		// 例子: "test.o/\n". 名字的文件格式
 		end := start + bytes.Index(strTab[start:], []byte("/\n"))
 		return string(strTab[start:end])
 	}

@@ -21,13 +21,24 @@ func main() {
 			if strings.HasPrefix(filename, "-") {
 				continue
 			}
-
 			file := linker.MustNewFile(filename)
 			ctx.Args.Emulation = linker.GetMachineTypeFromContents(file.Contents)
 			if ctx.Args.Emulation != linker.MachineTypeNone {
 				break
 			}
 		}
+	}
+
+	if ctx.Args.Emulation != linker.MachineTypeRISCV64 {
+		utils.Fatal("unknown emulation type")
+	}
+
+	linker.ReadInputFiles(ctx, remaining)
+
+	println(len(ctx.Objs))
+
+	for _, obj := range ctx.Objs {
+		println(obj.File.Name)
 	}
 
 }

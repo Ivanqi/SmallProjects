@@ -12,7 +12,7 @@ const (
 	FileTypeUnknown FileType = iota // 不认识的文件类型
 	FileTypeEmpty   FileType = iota // 空文件
 	FileTypeObject  FileType = iota // object 文件
-	FileTypeArchive FileType = iota //
+	FileTypeArchive FileType = iota // 静态链接库文件(归档文件，把众多的object文件合并在一起)
 )
 
 /**
@@ -35,7 +35,7 @@ func GetFileType(contents []byte) FileType {
 		return FileTypeUnknown
 	}
 
-	// 机器标识检测
+	// 静态链接库文件
 	if bytes.HasPrefix(contents, []byte("!<arch>\n")) {
 		return FileTypeArchive
 	}

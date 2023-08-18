@@ -21,7 +21,7 @@ type Context struct {
 
 	// Chunks []Chunker
 
-	// Objs []*ObjectFile
+	Objs []*ObjectFile
 	// SymbolMap      map[string]*Symbol
 	// MergedSections []*MergedSection
 }
