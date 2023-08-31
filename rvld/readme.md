@@ -3,7 +3,7 @@
 docker run -u root --volume /data/webapp/smallproject/rvld/:/code -it golang:1.19.2-bullseye
 
 apt update
-apt install -y gcc-10-riscv64-linux-gnu qemu-user
+apt install -y gcc-10-riscv64-linux-gnu qemu-user file bsdmainutils
 ln -sf /usr/bin/riscv64-linux-gnu-gcc-10 /usr/bin/riscv64-linux-gnu-gcc
 ```
 

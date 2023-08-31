@@ -1,15 +1,26 @@
-/*
- * @Author: ivanqi
- * @Date: 2023-08-18 23:47:44
- * @LastEditors: ivanqi
- * @LastEditTime: 2023-08-31 19:32:55
- * @Description:
- */
 package linker
 
 import (
 	"rvld/pkg/utils"
 )
+
+/**
+ * @description: 创建内部文件
+ * @param {*Context} ctx
+ * @return {*}
+ */
+func CreateInternalFile(ctx *Context) {
+	obj := &ObjectFile{}
+	ctx.InternalObj = obj
+	ctx.Objs = append(ctx.Objs, obj)
+
+	ctx.InternalEsyms = make([]Sym, 1)
+	obj.Symbols = append(obj.Symbols, NewSymbol(""))
+	obj.FirstGlobal = 1
+	obj.IsAlive = true
+
+	obj.ElfSyms = ctx.InternalEsyms
+}
 
 /**
  * @description: 找到这个symbols是从哪里来的
@@ -57,7 +68,7 @@ func MarkLiveObjects(ctx *Context) {
 			continue
 		}
 		// 如果文件是alive
-		file.MarkLiveObjects(ctx, func(file *ObjectFile) {
+		file.MarkLiveObjects(func(file *ObjectFile) {
 			// 把所依赖的文件添加到了roots中
 			roots = append(roots, file)
 		})
@@ -75,4 +86,29 @@ func RegisterSectionPieces(ctx *Context) {
 	for _, file := range ctx.Objs {
 		file.RegisterSectionPieces()
 	}
+}
+
+/**
+ * @description: 合成section
+ * @param {*Context} ctx
+ * @return {*}
+ */
+func CreateSyntheticSections(ctx *Context) {
+	ctx.Ehdr = NewOutputEhdr()
+	ctx.Chunks = append(ctx.Chunks, ctx.Ehdr)
+}
+
+/**
+ * @description: 得到文件的大小
+ * @param {*Context} ctx
+ * @return {*}
+ */
+func GetFileSize(ctx *Context) uint64 {
+	fileoff := uint64(0)
+	for _, c := range ctx.Chunks {
+		fileoff = utils.AlignTo(fileoff, c.GetShdr().AddrAlign)
+		fileoff += c.GetShdr().Size
+	}
+
+	return fileoff
 }

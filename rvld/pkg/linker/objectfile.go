@@ -181,7 +181,7 @@ func (o *ObjectFile) GetSection(esym *Sym, idx int) *InputSection {
  * @param {*} ObjectFile
  * @return {*}
  */
-func (o *ObjectFile) MarkLiveObjects(ctx *Context, feeder func(*ObjectFile)) {
+func (o *ObjectFile) MarkLiveObjects(feeder func(*ObjectFile)) {
 	// 判断ObjectFile 是否为活跃
 	utils.Assert(o.IsAlive)
 

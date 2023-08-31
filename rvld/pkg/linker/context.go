@@ -10,7 +10,7 @@ type Context struct {
 	Args ContextArgs
 	Buf  []byte
 
-	// Ehdr *OutputEhdr
+	Ehdr *OutputEhdr
 	// Shdr *OutputShdr
 	// Phdr *OutputPhdr
 	// Got  *GotSection
@@ -19,11 +19,13 @@ type Context struct {
 
 	// OutputSections []*OutputSection
 
-	// Chunks []Chunker
+	Chunks []Chunker
 
 	Objs           []*ObjectFile
 	SymbolMap      map[string]*Symbol // SymbolMap key为symbol的名字，val 为 Symbol struct
 	MergedSections []*MergedSection   // 存放这所有merged section，最终写到文件中
+	InternalObj    *ObjectFile
+	InternalEsyms  []Sym
 }
 
 func NewContext() *Context {

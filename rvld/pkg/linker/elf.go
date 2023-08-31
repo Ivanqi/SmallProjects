@@ -57,6 +57,7 @@ type Shdr struct {
 
 // 描述 ELF 文件中的程序段（program segment），包括段的类型、标志、偏移、虚拟地址、文件大小、内存大小等信息
 // https://zhuanlan.zhihu.com/p/36887189
+// 执行期使用
 type Phdr struct {
 	Type     uint32 // 类型
 	Flags    uint32
