@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"rvld/pkg/linker"
 	"rvld/pkg/utils"
 	"strings"
@@ -35,6 +36,7 @@ func main() {
 
 	linker.ReadInputFiles(ctx, remaining)
 	linker.ResolveSymbols(ctx)
+	linker.RegisterSectionPieces(ctx)
 
 	for _, o := range ctx.Objs {
 		if o.File.Name == "out/tests/hello/a.o" {
@@ -147,6 +149,11 @@ func parseArgs(ctx *linker.Context) []string {
 			remaining = append(remaining, args[0])
 			args = args[1:]
 		}
+	}
+
+	// filepath.Clean: 通过纯词法处理返回与指定路径等效的最短路径名
+	for i, path := range ctx.Args.LibraryPaths {
+		ctx.Args.LibraryPaths[i] = filepath.Clean(path)
 	}
 
 	return remaining

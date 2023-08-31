@@ -1,3 +1,10 @@
+/*
+ * @Author: ivanqi
+ * @Date: 2023-08-18 23:47:44
+ * @LastEditors: ivanqi
+ * @LastEditTime: 2023-08-31 19:32:55
+ * @Description:
+ */
 package linker
 
 import (
@@ -56,5 +63,16 @@ func MarkLiveObjects(ctx *Context) {
 		})
 
 		roots = roots[1:]
+	}
+}
+
+/**
+ * @description: 初始化Mergeable section。构建fragment
+ * @param {*Context} ctx
+ * @return {*}
+ */
+func RegisterSectionPieces(ctx *Context) {
+	for _, file := range ctx.Objs {
+		file.RegisterSectionPieces()
 	}
 }

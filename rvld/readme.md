@@ -1,3 +1,19 @@
+# 环境搭建
+```
+docker run -u root --volume /data/webapp/smallproject/rvld/:/code -it golang:1.19.2-bullseye
+
+apt update
+apt install -y gcc-10-riscv64-linux-gnu qemu-user
+ln -sf /usr/bin/riscv64-linux-gnu-gcc-10 /usr/bin/riscv64-linux-gnu-gcc
+```
+
+如果关闭了容器怎么重新进入容器
+```
+容器参看: docker container ls -a
+启动容器: docker container start 容器ID
+进入容器: docker exec -it 容器ID bash
+```
+
 # ELF 格式
 ![ELF](./imgs/ELF文件格式.png)
 - Program header table: 固定长度的数组，可以直接映射到数组中去。用于运行时
@@ -63,8 +79,34 @@ Symbol table '.symtab' contains 12 entries:
     11: 0000000000000000     0 NOTYPE  GLOBAL DEFAULT  UND puts
 ```
 
+# section header 与 symbol table 的关系
+Symbol Table 包含了一组 Symbol。这些 Symbol 在程序中，要么表示定义，要么表示引用，它们的作用是在编译和链接的过程中，进行定位或者重定位
+
+```
+readelf -SW out/tests/hello/a.o
+Section Headers:
+  [Nr] Name              Type            Address          Off    Size   ES Flg Lk Inf Al
+  [ 8] .symtab           SYMTAB          0000000000000000 0000a0 000120 18      9  10  8
+```
+
+由上可知 Symbol Table Section
+- 名字叫 “.symtab”
+- 类型是 SYMTAB
+- offset = 0xa0 =  160 bytes
+- size = 0x120 = 288 bytes
+- 每个 Symbol 的 size = 0x18  = 24
+- Symbol 数为: 288 / 24 = 12
+
 # GCC 传入的参数
 通过与GCC联动
 ```
 [./ld -plugin /usr/lib/gcc-cross/riscv64-linux-gnu/10/liblto_plugin.so -plugin-opt=/usr/lib/gcc-cross/riscv64-linux-gnu/10/lto-wrapper -plugin-opt=-fresolution=/tmp/ccDYhVfE.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_eh -plugin-opt=-pass-through=-lc --sysroot=/ --build-id -hash-style=gnu -as-needed -melf64lriscv -static -o out/tests/hello/out /usr/lib/gcc-cross/riscv64-linux-gnu/10/../../../../riscv64-linux-gnu/lib/crt1.o /usr/lib/gcc-cross/riscv64-linux-gnu/10/crti.o /usr/lib/gcc-cross/riscv64-linux-gnu/10/crtbeginT.o -L. -L/usr/lib/gcc-cross/riscv64-linux-gnu/10 -L/usr/lib/gcc-cross/riscv64-linux-gnu/10/../../../../riscv64-linux-gnu/lib -L/usr/lib/riscv64-linux-gnu out/tests/hello/a.o --start-group -lgcc -lgcc_eh -lc --end-group /usr/lib/gcc-cross/riscv64-linux-gnu/10/crtend.o /usr/lib/gcc-cross/riscv64-linux-gnu/10/crtn.o]
 ```
+
+
+
+# 参考资料
+- [Linux ELF 详解1 -- ELF Header](https://blog.csdn.net/helowken2/article/details/113739946)
+- [Linux ELF 详解2 -- Section Header & Section](https://blog.csdn.net/helowken2/article/details/113757332)
+- [Linux ELF 详解3 -- Symbol Table & Symbol](https://blog.csdn.net/helowken2/article/details/113782851)
+- [Linux ELF 详解4 -- 深入 Symbol](https://blog.csdn.net/helowken2/article/details/113792555)

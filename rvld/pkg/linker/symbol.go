@@ -3,11 +3,14 @@ package linker
 import "rvld/pkg/utils"
 
 type Symbol struct {
-	File         *ObjectFile
-	InputSection *InputSection // 属于/不属于某个inputsectioin
-	Name         string
-	Value        uint64 //sym struct 的Val属性
-	SymIdx       int    //在 inputFile ElfSyms 中的下标
+	File   *ObjectFile
+	Name   string
+	Value  uint64 //sym struct 的Val属性
+	SymIdx int    //在 inputFile ElfSyms 中的下标
+
+	// 某一个symbol可能属于inputsection or SectionFragment
+	InputSection    *InputSection // 属于/不属于某个inputsectioin
+	SectionFragment *SectionFragment
 }
 
 func NewSymbol(name string) *Symbol {
@@ -17,6 +20,12 @@ func NewSymbol(name string) *Symbol {
 
 func (s *Symbol) SetInputSection(isec *InputSection) {
 	s.InputSection = isec
+	s.SectionFragment = nil
+}
+
+func (s *Symbol) SetSectionFragment(frag *SectionFragment) {
+	s.InputSection = nil
+	s.SectionFragment = frag
 }
 
 /**

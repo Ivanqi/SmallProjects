@@ -90,14 +90,7 @@ func (f *InputFile) GetBytesFromIdx(idx int64) []byte {
 func (f *InputFile) FillUpElfSyms(s *Shdr) {
 	bs := f.GetBytesFromShdr(s)
 	// 获取所有symbol数量
-	nums := len(bs) / SymSize
-	f.ElfSyms = make([]Sym, 0, nums)
-	// 把所有symbol 填充到 f.ElfSyms中去
-	for nums > 0 {
-		f.ElfSyms = append(f.ElfSyms, utils.Read[Sym](bs))
-		bs = bs[SymSize:]
-		nums--
-	}
+	f.ElfSyms = utils.ReadSlice[Sym](bs, SymSize)
 }
 
 /**

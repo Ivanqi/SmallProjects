@@ -56,7 +56,7 @@ func Read[T any](data []byte) (val T) {
 }
 
 /**
- * @description: 
+ * @description: 读取一个数组
  * @return {*}
  */
 func ReadSlice[T any](data []byte, sz int) []T {

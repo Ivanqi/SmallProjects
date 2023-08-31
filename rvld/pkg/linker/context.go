@@ -21,9 +21,9 @@ type Context struct {
 
 	// Chunks []Chunker
 
-	Objs      []*ObjectFile
-	SymbolMap map[string]*Symbol // SymbolMap key为symbol的名字，val 为 Symbol struct
-	// MergedSections []*MergedSection
+	Objs           []*ObjectFile
+	SymbolMap      map[string]*Symbol // SymbolMap key为symbol的名字，val 为 Symbol struct
+	MergedSections []*MergedSection   // 存放这所有merged section，最终写到文件中
 }
 
 func NewContext() *Context {
