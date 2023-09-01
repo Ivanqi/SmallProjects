@@ -1,6 +1,6 @@
 #!/bin/bash
  
- # 获取目录名
+# 获取目录名
 test_name=$(basename "$0" .sh)
 t=out/tests/$test_name
 

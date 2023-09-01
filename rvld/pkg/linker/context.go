@@ -11,13 +11,13 @@ type Context struct {
 	Buf  []byte
 
 	Ehdr *OutputEhdr
-	// Shdr *OutputShdr
+	Shdr *OutputShdr
 	// Phdr *OutputPhdr
 	// Got  *GotSection
 
 	// TpAddr uint64
 
-	// OutputSections []*OutputSection
+	OutputSections []*OutputSection
 
 	Chunks []Chunker
 

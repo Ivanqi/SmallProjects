@@ -39,8 +39,15 @@ func main() {
 	linker.ResolveSymbols(ctx)
 	linker.RegisterSectionPieces(ctx)
 	linker.CreateSyntheticSections(ctx)
+	linker.BinSections(ctx)
+	ctx.Chunks = append(ctx.Chunks, linker.CollectOutputSections(ctx)...)
+	linker.ComputeSectionSizes(ctx)
 
-	fileSize := linker.GetFileSize(ctx)
+	for _, chunk := range ctx.Chunks {
+		chunk.UpdateShdr(ctx)
+	}
+
+	fileSize := linker.SetOutputSectionOffsets(ctx)
 	ctx.Buf = make([]byte, fileSize)
 
 	file, err := os.OpenFile(ctx.Args.Output, os.O_RDWR|os.O_CREATE, 0777)

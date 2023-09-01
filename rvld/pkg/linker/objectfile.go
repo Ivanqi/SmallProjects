@@ -36,7 +36,7 @@ func (o *ObjectFile) Parse(ctx *Context) {
 		o.SymbolStrtab = o.GetBytesFromIdx(int64(o.SymtabSec.Link))
 	}
 
-	o.InitializeSections()
+	o.InitializeSections(ctx)
 	o.InitializeSymbols(ctx)
 	o.InitializeMergeableSections(ctx)
 }
@@ -45,7 +45,7 @@ func (o *ObjectFile) Parse(ctx *Context) {
  * @description: 初始化sections
  * @return {*}
  */
-func (o *ObjectFile) InitializeSections() {
+func (o *ObjectFile) InitializeSections(ctx *Context) {
 	o.Sections = make([]*InputSection, len(o.ElfSections))
 	for i := 0; i < len(o.ElfSections); i++ {
 		shdr := &o.ElfSections[i]
@@ -56,7 +56,8 @@ func (o *ObjectFile) InitializeSections() {
 		case elf.SHT_SYMTAB_SHNDX: // 当sym shndx 过大时候，需要来这里找
 			o.FillUpSymtabShndxSec(shdr)
 		default:
-			o.Sections[i] = NewInputSection(o, uint32(i))
+			name := ElfGetName(o.InputFile.ShStrtab, shdr.Name)
+			o.Sections[i] = NewInputSection(ctx, name, o, uint32(i))
 		}
 	}
 }

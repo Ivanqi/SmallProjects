@@ -14,6 +14,9 @@ type InputSection struct {
 	ShSize   uint32      // input section 所属的section 的 size
 	IsAlive  bool        // 表示这个input section 是不是放到最终的可执行文件中
 	P2Align  uint8       // power of 2. 对齐方式
+
+	Offset        uint32
+	OutputSection *OutputSection // 记录属于那个output section
 }
 
 /**
@@ -22,7 +25,7 @@ type InputSection struct {
  * @param {uint32} shndx
  * @return {*}
  */
-func NewInputSection(file *ObjectFile, shndx uint32) *InputSection {
+func NewInputSection(ctx *Context, name string, file *ObjectFile, shndx uint32) *InputSection {
 	s := &InputSection{
 		File:    file,
 		Shndx:   shndx,
@@ -46,6 +49,8 @@ func NewInputSection(file *ObjectFile, shndx uint32) *InputSection {
 
 	s.P2Align = toP2Align(shdr.AddrAlign)
 
+	s.OutputSection = GetOutputSection(ctx, name, uint64(shdr.Type), shdr.Flags)
+
 	return s
 }
 
@@ -64,4 +69,27 @@ func (i *InputSection) Shdr() *Shdr {
  */
 func (i *InputSection) Name() string {
 	return ElfGetName(i.File.ShStrtab, i.Shdr().Name)
+}
+
+/**
+ * @description: 把内容写到buf中
+ * @param {[]byte} buf
+ * @return {*}
+ */
+func (i *InputSection) WriteTo(buf []byte) {
+	// 判断section header type 等于 SHT_NOBITS(.bss段)不写入
+	if i.Shdr().Type == uint32(elf.SHT_NOBITS) || i.ShSize == 0 {
+		return
+	}
+
+	i.CopyContents(buf)
+}
+
+/**
+ * @description: 把content的内容拷贝到buf中
+ * @param {[]byte} buf
+ * @return {*}
+ */
+func (i *InputSection) CopyContents(buf []byte) {
+	copy(buf, i.Contents)
 }
