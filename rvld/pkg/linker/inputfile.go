@@ -108,3 +108,11 @@ func (f *InputFile) FindSection(ty uint32) *Shdr {
 
 	return nil
 }
+
+/**
+ * @description: 读取 inputfile 里的 ehdr
+ * @return {*}
+ */
+func (f *InputFile) GetEhdr() Ehdr {
+	return utils.Read[Ehdr](f.File.Contents)
+}

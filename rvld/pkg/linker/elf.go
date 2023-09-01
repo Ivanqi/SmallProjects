@@ -29,7 +29,7 @@ type Ehdr struct {
 	Type      uint16    // ELF文件的类型，表示文件的用途，如可执行文件、共享库等
 	Machine   uint16    // 目标硬件平台的架构类型，如x86、ARM等
 	Version   uint32    // ELF文件的版本号
-	Entry     uint64    // 程序的入口点，即程序运行时将会执行的第一条指令的地址
+	Entry     uint64    // 程序的入口点，即程序运行时将会执行的第一条指令的地址.第一条指令的虚拟地址
 	PhOff     uint64    // 程序头部表的偏移量，即程序头部表在文件中的位置
 	ShOff     uint64    // 节头部表的偏移量，即节头部表在文件中的位置
 	Flags     uint32    // 与目标平台相关的标志
@@ -37,7 +37,7 @@ type Ehdr struct {
 	PhEntSize uint16    // 程序头部表项的大小
 	PhNum     uint16    // 程序头部表项的数量
 	ShEntSize uint16    // 节头部表项的大小
-	ShNum     uint16    // 节头部表项的数量。一共有多少个section header
+	ShNum     uint16    // 节头部表项的数量。一共有多少个section header,默认不会超过65535
 	ShStrndx  uint16    // 包含节名称字符串表的节的索引. 指向的是section header 的下标
 }
 
