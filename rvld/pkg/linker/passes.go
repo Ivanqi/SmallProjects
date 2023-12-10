@@ -181,7 +181,7 @@ func BinSections(ctx *Context) {
 }
 
 /**
- * @description: 收集所有output section
+ * @description: 收集所有output section 和 merged section
  * @param {*Context} ctx
  * @return {*}
  */
@@ -189,6 +189,12 @@ func CollectOutputSections(ctx *Context) []Chunker {
 	osecs := make([]Chunker, 0)
 	for _, osec := range ctx.OutputSections {
 		if len(osec.Members) > 0 {
+			osecs = append(osecs, osec)
+		}
+	}
+
+	for _, osec := range ctx.MergedSections {
+		if osec.Shdr.Size > 0 {
 			osecs = append(osecs, osec)
 		}
 	}
@@ -273,6 +279,17 @@ func SortOutputSections(ctx *Context) {
 	sort.SliceStable(ctx.Chunks, func(i, j int) bool {
 		return rank(ctx.Chunks[i]) < rank(ctx.Chunks[j])
 	})
+}
+
+/**
+ * @description: 计算merged section offset
+ * @param {*Context} ctx
+ * @return {*}
+ */
+func ComputeMergedSectionSizes(ctx *Context) {
+	for _, osec := range ctx.MergedSections {
+		osec.AssignOffsets()
+	}
 }
 
 /**

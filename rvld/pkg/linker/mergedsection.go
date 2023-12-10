@@ -1,6 +1,10 @@
 package linker
 
-import "debug/elf"
+import (
+	"debug/elf"
+	"rvld/pkg/utils"
+	"sort"
+)
 
 // 把多个mergeablesection合并成一个merged section。最终写入可执行文件中
 type MergedSection struct {
@@ -73,4 +77,66 @@ func (m *MergedSection) Insert(key string, p2align uint32) *SectionFragment {
 	}
 
 	return frag
+}
+
+/**
+ * @description: 初始化offset
+ * @return {*}
+ */
+func (m *MergedSection) AssignOffsets() {
+	var fragments []struct {
+		Key string
+		Val *SectionFragment
+	}
+
+	for key := range m.Map {
+		fragments = append(fragments, struct {
+			Key string
+			Val *SectionFragment
+		}{Key: key, Val: m.Map[key]})
+	}
+
+	// 对fragments 进行排序
+	sort.SliceStable(fragments, func(i, j int) bool {
+		x := fragments[i]
+		y := fragments[j]
+		if x.Val.P2Align != y.Val.P2Align {
+			return x.Val.P2Align < y.Val.P2Align
+		}
+
+		if len(x.Key) != len(y.Key) {
+			return len(x.Key) < len(y.Key)
+		}
+
+		return x.Key < y.Key
+	})
+
+	offset := uint64(0)
+	p2align := uint64(0) // 取fragments中最大的
+	for _, frag := range fragments {
+		offset = utils.AlignTo(offset, 1<<frag.Val.P2Align)
+		frag.Val.Offset = uint32(offset)
+		offset += uint64(len(frag.Key))
+		if p2align < uint64(frag.Val.P2Align) {
+			p2align = uint64(frag.Val.P2Align)
+		}
+	}
+
+	m.Shdr.Size = utils.AlignTo(offset, 1<<p2align)
+	m.Shdr.AddrAlign = 1 << p2align
+}
+
+/**
+ * @description: 把 fragment  拷贝到buf中
+ * @param {*Context} ctx
+ * @return {*}
+ */
+func (m *MergedSection) CopyBuf(ctx *Context) {
+	buf := ctx.Buf[m.Shdr.Offset:]
+	for key := range m.Map {
+		if frag, ok := m.Map[key]; ok {
+			// key: frag 实际的数据
+			copy(buf[frag.Offset:], key)
+		}
+	}
 }
