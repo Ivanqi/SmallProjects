@@ -225,8 +225,8 @@ EOT;
     /**
      * 填入错误信息
      * @param 错误类型
-     * @param $recordName recode 中名称 
-     * @param $rName recode 字段名称
+     * @param $recordName record 中名称 
+     * @param $rName record 字段名称
      */
     private function insertErrorMsg($key, $recordName, $rName)
     {
@@ -361,7 +361,7 @@ EOT;
 
     /**
      * 获取record信息
-     * @param $recode recode 语句
+     * @param $record record 语句
      * @param $search 获取信息的关键词
      * @return void
      */
@@ -378,9 +378,9 @@ EOT;
 
     /**
      * record 处理
-     *  1. 对recode 内的字段进行处理
+     *  1. 对record 内的字段进行处理
      *  2. 处理record类型和备注类型
-     * @param $recode recode 语句
+     * @param $record record 语句
      * @param $search 语句关键词
      * @return void
      */
@@ -391,16 +391,16 @@ EOT;
         // 正则表达式
         $pattern = '/^(\w+)[,，]*\s*{*(.+)}*/i';
         if (preg_match($pattern, $recordStr, $match)) {
-            // $origin: 原始recode
-            // $recordName: recode 名称
-            // $recordInfo: recode 内字段
+            // $origin: 原始record
+            // $recordName: record 名称
+            // $recordInfo: record 内字段
             @list($origin, $recordName, $recordInfo ) = $match;
             // 字段数组
             $recordInfo = explode(',', $this->replaceStr($recordInfo,'[\s，}).\r\n]+'));
             $recordFieldArr = [];
             foreach ($recordInfo as $filterRecord) {
                 @list($field, $type) = explode('=', $filterRecord);
-                // 判断recode内字段是否重复
+                // 判断record内字段是否重复
                 if (isset($recordFieldArr[$field])) {
                     $this->insertErrorMsg('fieldRepetitionDefinition', $recordName, $field);
                 }
@@ -413,11 +413,11 @@ EOT;
 
     /**
      * 处理record类型和备注类型
-     *  1. recode 内字段与注释信息匹配
+     *  1. record 内字段与注释信息匹配
      *  2. 检查字段类型
-     *  3. 生成 recode 字段数组
-     * @param $recordName recode 名称
-     * @param $recordFieldArr recode 内字段
+     *  3. 生成 record 字段数组
+     * @param $recordName record 名称
+     * @param $recordFieldArr record 内字段
      * @return void
     */
     private function handleRecordDataType($recordName, $recordFieldArr)
@@ -428,7 +428,7 @@ EOT;
         foreach ($recordFieldArr as $field => $type) {
             $accuracy = false;
             $remark = '';
-            // recode 内字段与注释信息匹配
+            // record 内字段与注释信息匹配
             if (isset(self::$erlangNotesArr[$field])) {
                 // 得到注释信息
                 $notesArr = self::$erlangNotesArr[$field];
@@ -452,7 +452,7 @@ EOT;
                 }
 
                 $type =  $notesArr['fieldType'] ? $notesArr['fieldType'] : $type;
-                // 获取recode 字段注释信息
+                // 获取record 字段注释信息
                 $remark = $notesArr['fieldRemark'];
                 // 注释匹配完成，并删除
                 unset(self::$erlangNotesArr[$field]);
@@ -551,7 +551,7 @@ EOT;
 
     /**
      * 获取erlang注释信息
-     * @param $record recode 语句
+     * @param $record record 语句
      * @param $notes 过滤语句
      * @param $num 过滤语句限制数量
      * @return void
@@ -576,9 +576,9 @@ EOT;
 
     /**
      * 获取默认定义信息
-     * @param $record recode语句
+     * @param $record record语句
      * @param $search 搜索语句
-     * @param $keyword 搜索语句对应的关键词，用于开启临时存储数据，存储对应的recode 的字段数据
+     * @param $keyword 搜索语句对应的关键词，用于开启临时存储数据，存储对应的record 的字段数据
      * @return void
      */
     private function gainDefaultInfo($record, $search, $keyword)
@@ -620,7 +620,7 @@ EOT;
 
     /**
      * 过滤注释 #
-     * @param $record recode 语句
+     * @param $record record 语句
      * @param $notes 过滤语句
      * @param $num 过滤语句限制数量
      * @return bool
