@@ -1,0 +1,41 @@
+#############################################
+## 下面的所有字段如无说明，
+## 该字段类型即为 int类型
+## 字段类型：int bigint char varchar text/string float double 其中char/varchar需要指定长度
+## int:10 char:10 float:7,3
+## 注意：不支持换行
+#############################################
+# 常量定义
+-define( ROLE_ID, '角色ID;BIGINT:20')
+-define( ITEM_JSON, 'JSON，结构[{"type": xx, "type_id": xx, "num":xx}]，type为1.元宝；2；铜钱；3；经验；4.二级货币；5.道具；type_id为道具或积分ID，其他情况为0；num为数量;text')
+-define( GAINS, '获得奖励，ITEM_JSON')
+-define( CONSUMES, '消耗，ITEM_JSON' )
+# 默认的字段解释 之后的表结构如果存在该字段就会使用定义的字段解释，不用重新写
+-field(agent_id, '代理ID;int:10')
+-field(role_id, 'ROLE_ID')
+-field(server_id, '区服ID;int')
+-field(account_name, '帐号;varchar:100')
+-field(role_name, '角色名;varchar:100')
+-field(upf, 'United pf')
+-field(pf, '渠道;int')
+-field(platform, '渠道;int')
+-field(is_internal, '是否内部号')
+-field(mtime, '时间')
+-field(level, '角色等级')
+-field(regrow, '角色转生')
+-field(client_oid, 'client_oid;varchar:50')
+-field(client_version, '客户端版本;varchar:50')
+-field(server_version, '后端版本;varchar:50')
+
+%% 封禁
+%% ban_agent_id;代理ID;int:10
+%% ban_pf_id;平台ID;int
+%% ban_type;封禁类型;int
+%% ban_key;封禁内容;varchar:255
+%% drop_rate;不绑定产出概率降低;int
+%% end_time;结束时间;int
+%% reason;封禁内容;varchar:255
+%% admin;封禁内容;varchar:50
+%% admin;封禁内容;varchar:50
+
+-record(log_ban, {ban_agent_id, ban_pf_id, ban_type, ban_key, drop_rate, end_time, mtime=0, reason, admin}).
